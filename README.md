@@ -1,7 +1,7 @@
 # MAVIS
 
-**Multi-species Animal Vitality Intelligence System** ## 1. Overview
-MAVIS is an AI-driven IoT-based animal health monitoring system designed to track and analyze animal vitals in real-time.
+**Multi-model Animal Vitality Intelligence System** ## 1. Overview
+MAVIS is an AI-driven, IoT-based health monitoring system designed to track and analyze animal vitality metrics in real-time. By leveraging multi-modal data, it provides comprehensive insights into animal well-being.
 
 ## 1. Tech Stack
 
