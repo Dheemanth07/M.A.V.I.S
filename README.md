@@ -1,16 +1,17 @@
 # MAVIS
 
-**Multi-model Animal Vitality Intelligence System** ## 1. Overview
+**Multi-model Animal Vitality Intelligence System** 
+## 1. Overview
 MAVIS is an AI-driven, IoT-based health monitoring system designed to track and analyze animal vitality metrics in real-time. By leveraging multi-modal data, it provides comprehensive insights into animal well-being.
 
-## 1. Tech Stack
+## 2. Tech Stack
 
 * **Backend:** Node.js, Express, Socket.IO
 * **Database:** MongoDB (via Mongoose ODM)
 * **DevOps:** Docker, Docker Compose
 * **Monitoring:** Nodemon (for Hot Reloading)
 
-## 2. Project Structure
+## 3. Project Structure
 
 ```text
 MAVIS/
@@ -24,7 +25,7 @@ MAVIS/
 
 ```
 
-## 3. Development Setup
+## 4. Development Setup
 
 ### Prerequisites
 
@@ -65,7 +66,7 @@ docker compose up --build
 
 
 
-## 4. Key Docker Features in this Setup
+## 5. Key Docker Features in this Setup
 
 * **Hot Reloading:** The `/backend` folder is volume-mounted. Any change you save in VS Code will trigger **Nodemon** inside the container to restart the server automatically.
 * **Data Persistence:** Database records are saved in a Docker volume (`mongo-data`), so your data stays safe even if you stop the containers.
