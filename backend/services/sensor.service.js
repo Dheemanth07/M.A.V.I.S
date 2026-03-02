@@ -22,7 +22,7 @@ class SensorService {
         const sensorData = await repository.create(data);
 
         // Business Logic
-        if (sensorData.physiology.temperature > 40) {
+        if (sensorData.physiology.temperature > 45) {
             io.emit("alert", {
                 animalId: sensorData.animalId,
                 message: "High temperature detected!",
