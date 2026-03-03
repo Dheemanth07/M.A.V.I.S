@@ -1,33 +1,23 @@
-/**
- * Configuration for Cross-Origin Resource Sharing (CORS).
- * * CORS is a security feature that allows or restricts resources on a web page
- * to be requested from another domain outside the domain from which the first resource was served.
- * * In this project, it allows your frontend (likely on a different port)
- * to securely communicate with this Express backend.
- */
 import cors from "cors";
 
 /**
  * @type {import('cors').CorsOptions}
- * corsOptions defines the rules for how external clients can interact with this API.
+ * Configuration for Cross-Origin Resource Sharing (CORS).
  */
 const corsOptions = {
     /**
-     * Origin defines which domains are allowed to access your API.
-     * "*" means all origins are allowed (Useful for development).
-     * For production, you would change this to your specific frontend URL.
+     * Allowed origins. Set to "*" for development;
+     * update to specific domain for production.
      */
     origin: "*",
 
     /**
-     * Methods defines the HTTP verbs allowed when accessing the resource.
-     * Common verbs for Mavis: GET (Fetch data), POST (Create data), PUT (Update), DELETE.
+     * Allowed HTTP verbs for API interaction.
      */
     methods: ["GET", "POST", "PUT", "DELETE"],
 
     /**
-     * Credentials allows the browser to send cookies or authorization headers
-     * across different domains.
+     * Enable cross-origin cookies and authorization headers.
      */
     credentials: true,
 };

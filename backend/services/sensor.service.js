@@ -1,43 +1,31 @@
 /**
  * SensorService
- * * Pattern: Service Layer
- * Purpose: This class encapsulates the "Core Intelligence" of Mavis.
- * It handles business rules (like fever alerts) and coordinates between the
- * Repository (Database) and Socket.IO (Real-time events).
- * * Pattern: Dependency Injection
- * Purpose: Receives a repository instance via the constructor, making the service
- * easy to test without needing a live database.
+ * Handles business logic, health monitoring, and real-time alerts.
  */
 class SensorService {
-    // Private field to protect the repository instance from external access
     #repository;
 
     /**
-     * @param {Object} repository - An instance of SensorRepository (Singleton).
+     * @param {Object} repository - SensorRepository instance.
      */
     constructor(repository) {
         this.#repository = repository;
     }
 
     /**
-     * Processes new sensor readings and triggers real-time alerts if anomalies are found.
-     * * @param {Object} data - The validated sensor data from the controller.
-     * @param {Object} io - The Socket.IO instance for broadcasting alerts.
-     * @returns {Promise<Object>} The saved sensor document.
+     * Processes readings and broadcasts alerts for physiological anomalies.
+     * @param {Object} data - Validated sensor data.
+     * @param {Object} io - Socket.IO instance.
+     * @returns {Promise<Object>}
      */
     async createSensorData(data, io) {
-        const repository = this.#repository;
+        const sensorData = await this.#repository.create(data);
 
-        // Persist the data via the repository
-        // Note: Ensure repository has a .create() or .save() method matching this call
-        const sensorData = await repository.create(data);
+        if (!sensorData) {
+            throw new Error("Failed to save sensor data", 500);
+        }
 
-        /**
-         * Business Logic: Health Monitoring
-         * ---------------------------------
-         * Rule 1: Fever Detection
-         * Trigger an alert if the animal's temperature exceeds the safety threshold.
-         */
+        // Fever Detection
         if (sensorData.physiology.temperature > 45) {
             io.emit("alert", {
                 animalId: sensorData.animalId,
@@ -47,10 +35,7 @@ class SensorService {
             });
         }
 
-        /**
-         * Rule 2: Hardware Maintenance
-         * Trigger an alert if the wearable device's battery drops below 20%.
-         */
+        // Hardware Maintenance
         if (sensorData.device.batteryLevel < 20) {
             io.emit("alert", {
                 animalId: sensorData.animalId,
@@ -64,25 +49,39 @@ class SensorService {
     }
 
     /**
-     * Fetches the most recent status of an animal.
-     * * @param {string} animalId - The ID of the animal to query.
-     * @returns {Promise<Object|null>} The latest sensor reading.
+     * @param {string} animalId
+     * @returns {Promise<Object|null>}
      */
     async getLatest(animalId) {
-        const repository = this.#repository;
-        return await repository.findLatestByAnimal(animalId);
+        const data = await this.#repository.findLatestByAnimal(animalId);
+
+        if (!data) {
+            throw new AppError(
+                `No sensor data found for animal ID: ${animalId}`,
+                404,
+            );
+        }
+
+        return data;
     }
 
     /**
-     * Retrieves historical data for trend analysis or graphing.
-     * * @param {string} animalId - The ID of the animal.
-     * @param {Date} from - Start date of the range.
-     * @param {Date} to - End date of the range.
-     * @returns {Promise<Array>} List of readings within the timeframe.
+     * @param {string} animalId
+     * @param {Date} from
+     * @param {Date} to
+     * @returns {Promise<Array>}
      */
     async getLatestByRange(animalId, from, to) {
-        const repository = this.#repository;
-        return await repository.findByRange(animalId, from, to);
+        const data = await this.#repository.findByRange(animalId, from, to);
+
+        if (!data || data.length === 0) {
+            throw new AppError(
+                "No data found for the specified date range",
+                404,
+            );
+        }
+
+        return data;
     }
 }
 
