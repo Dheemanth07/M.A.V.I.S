@@ -1,4 +1,4 @@
-# MAVIS
+# MAVIS ( IN DEVELOPMENT )
 **Multi-model Animal Vitality Intelligence System**
 
 ## 1. Overview
