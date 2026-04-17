@@ -1,3 +1,4 @@
 node_modules/
 .env
 MAVIS.md
+sensor_data.json
