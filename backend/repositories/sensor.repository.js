@@ -9,7 +9,7 @@ class SensorRepository {
      * @param {Object} data - Validated sensor data.
      * @returns {Promise<Object>}
      */
-    async save(data) {
+    async create(data) {
         return await SensorData.create(data);
     }
 

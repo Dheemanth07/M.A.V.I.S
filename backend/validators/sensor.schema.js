@@ -8,26 +8,37 @@ import Joi from "joi";
  * @type {Joi.ObjectSchema}
  */
 export const sensorSchema = Joi.object({
-    animalId: Joi.string().required(),
+  animalId: Joi.string().required(),
 
-    physiology: Joi.object({
-        // Temperature in Celsius [30-45]
-        temperature: Joi.number().min(30).max(45).required().messages({
-            "number.min": "Temperature is too low",
-            "number.max": "Temperature is too high",
-        }),
+  physiology: Joi.object({
+    temperature: Joi.number().min(30).max(45).required(),
+    heartRate: Joi.number().min(30).max(200).required(),
+    respiratoryRate: Joi.number().min(5).max(60).required(),
+    bloodOxygen: Joi.number().min(70).max(100).required(),
+  }).required(),
 
-        heartRate: Joi.number().min(30).max(200).optional(),
-    }).required(),
+  behavior: Joi.object({
+    motion: Joi.boolean().required(),
+    steps: Joi.number().optional(),
+    lyingDown: Joi.boolean().optional(),
+  }).required(),
 
-    behavior: Joi.object({
-        motion: Joi.string().required(),
-    }).required(),
+  environment: Joi.object({
+    ambientTemperature: Joi.number().optional(),
+    humidity: Joi.number().min(0).max(100).optional(),
+    aqi: Joi.number().optional(),
+  }).optional(),
 
-    device: Joi.object({
-        batteryLevel: Joi.number().min(0).max(100).optional(),
-    }).optional(),
+  location: Joi.object({
+    latitude: Joi.number().optional(),
+    longitude: Joi.number().optional(),
+    zone: Joi.string().optional(),
+  }).optional(),
 
-    // Ensures the timestamp is not in the future
-    timestamp: Joi.date().max("now").required(),
+  device: Joi.object({
+    batteryLevel: Joi.number().min(0).max(100).optional(),
+    signalStrength: Joi.number().optional(),
+  }).optional(),
+
+  timestamp: Joi.date().max("now").optional(),
 });
