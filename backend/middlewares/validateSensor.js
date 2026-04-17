@@ -2,7 +2,7 @@
  * Middleware: validateSensor
  * Ensures the request body matches the Joi schema before proceeding to the controller.
  */
-import { sensorSchema } from "../schemas/sensor.schema.js";
+import { sensorSchema } from "../validators/sensor.schema.js";
 
 /**
  * @param {import('express').Request} req

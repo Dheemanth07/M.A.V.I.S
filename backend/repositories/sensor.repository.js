@@ -2,7 +2,7 @@
  * SensorRepository
  * Abstracts data access logic using the Repository and Singleton patterns.
  */
-import SensorData from "../models/sensor.model";
+import SensorData from "../models/sensor.model.js";
 
 class SensorRepository {
     /**

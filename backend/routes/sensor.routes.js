@@ -3,10 +3,10 @@
  * Connects API endpoints to controller methods and handles dependency injection.
  */
 import express from "express";
-import validateSensorData from "../middlewares/validateSensorData.middleware";
-import sensorRepository from "../repositories/sensor.repository";
-import SensorService from "../services/sensor.service";
-import SensorController from "../controllers/sensor.controller";
+import validateSensorData from "../middlewares/validateSensor.js";
+import sensorRepository from "../repositories/sensor.repository.js";
+import SensorService from "../services/sensor.service.js";
+import SensorController from "../controllers/sensor.controller.js";
 
 const router = express.Router();
 

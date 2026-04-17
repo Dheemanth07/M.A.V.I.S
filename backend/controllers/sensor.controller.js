@@ -3,7 +3,7 @@
  * Handles incoming HTTP requests for animal sensor data.
  */
 
-import AppError from "../utils/AppError";
+import AppError from "../utils/AppError.js";
 
 class SensorController {
     #service;
