@@ -38,7 +38,7 @@ const sensorSchema = new mongoose.Schema(
         },
         timestamp: {
             type: Date,
-            required: true,
+            default: Date.now,
             index: true,
         },
     },
