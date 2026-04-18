@@ -20,7 +20,6 @@ class SensorRepository {
     async findLatestByAnimal(animalId) {
         // Sort by timestamp descending to retrieve the most recent record
         return await SensorData.findOne({ animalId }).sort({ timestamp: -1 });
-        console.log("Query result:", data);
     }
 
     /**
