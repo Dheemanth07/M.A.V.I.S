@@ -2,6 +2,7 @@
  * MAVIS Server Entry Point
  * Initializes Express, Socket.io, and Database connections.
  */
+
 import express from "express";
 import cors from "cors";
 import { createServer } from "http";
@@ -15,21 +16,21 @@ import sensorRoutes from "./routes/sensor.routes.js";
 import globalErrorHandler from "./middlewares/error.middleware.js";
 
 dotenv.config();
+
 const PORT = process.env.PORT || 5000;
 const app = express();
 
-// Database Connection
-connectDB();
+/* -------------------- Core Middlewares -------------------- */
 
-// Core Middlewares
 app.use(cors(corsOptions));
 app.use(express.json());
 
-// Socket.IO Setup
+/* -------------------- Socket.IO Setup -------------------- */
+
 const httpServer = createServer(app);
 const io = new Server(httpServer, { cors: corsOptions });
 
-// Make Socket.IO accessible to controllers via the request object
+// Make Socket.IO accessible in controllers
 app.set("io", io);
 
 io.on("connection", (socket) => {
@@ -53,18 +54,29 @@ app.get("/", (req, res) => {
     });
 });
 
-// API Modules
+// API Routes
 app.use("/api", sensorRoutes);
 
 /* -------------------- Error Handling -------------------- */
 
-/**
- * Global Error Middleware
- * Must be defined after all routes to catch 'next(err)' calls.
- */
 app.use(globalErrorHandler);
 
-// Start Server
-httpServer.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+/* -------------------- Server Startup -------------------- */
+
+const startServer = async () => {
+    try {
+        // Connect to DB first
+        await connectDB();
+
+        // Start server ONLY after DB is connected
+        httpServer.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+        });
+
+    } catch (err) {
+        console.error("Failed to start server:", err.message);
+        process.exit(1);
+    }
+};
+
+startServer();
