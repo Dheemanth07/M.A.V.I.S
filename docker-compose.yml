@@ -16,25 +16,10 @@ services:
       - /usr/src/app/node_modules # Prevents local node_modules from overwriting container's node_modules
     command: npm run dev
     environment:
-      MONGO_URI: mongodb://db:27017/mavis
+      MONGO_URI: mongodb+srv://mavisUser:mavis123@mavis-cluster.pivhmgi.mongodb.net/mavis?retryWrites=true&w=majority
       NODE_ENV: development
     ports:
       - "5000:5000"
-    depends_on:
-      db:
-       condition: service_healthy
-  db:
-    image: mongo:latest
-    restart: always
-    ports:
-      - "27017:27017"
-    volumes:
-    - mongo-data:/data/db
-    healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
 volumes:
   mongo-data:
