@@ -2,6 +2,8 @@
  * SensorService
  * Handles business logic, health monitoring, and real-time alerts.
  */
+import AppError from "../utils/appError.js";
+
 class SensorService {
     #repository;
 
