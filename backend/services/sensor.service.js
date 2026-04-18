@@ -55,6 +55,7 @@ class SensorService {
      * @returns {Promise<Object|null>}
      */
     async getLatest(animalId) {
+        console.log("animalId received:", animalId);
         const data = await this.#repository.findLatestByAnimal(animalId);
 
         if (!data) {

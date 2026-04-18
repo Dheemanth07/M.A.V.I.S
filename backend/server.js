@@ -49,6 +49,7 @@ app.get("/", (req, res) => {
         message: "MAVIS backend running",
         database:
             mongoose.connection.readyState === 1 ? "connected" : "disconnected",
+        connected_DB: mongoose.connection.name,
     });
 });
 
