@@ -15,12 +15,10 @@ services:
       - ./backend:/usr/src/app
       - /usr/src/app/node_modules # Prevents local node_modules from overwriting container's node_modules
     command: npm run dev
+    env_file:
+      - ./backend/.env
     environment:
-      MONGO_URI: mongodb+srv://mavisUser:mavis123@mavis-cluster.pivhmgi.mongodb.net/mavis?retryWrites=true&w=majority
       NODE_ENV: development
     ports:
       - "5000:5000"
-
-volumes:
-  mongo-data:
 
