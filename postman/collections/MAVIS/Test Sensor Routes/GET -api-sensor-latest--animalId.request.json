@@ -1,0 +1,10 @@
+{
+  "postman_collection_v3_request": {
+    "name": "GET /api/sensor/latest/:animalId",
+    "request": {
+      "method": "GET",
+      "url": "{{baseUrl}}/api/sensor/latest/{{animalId}}",
+      "description": "Get the most recent sensor reading for a specific animal."
+    }
+  }
+}

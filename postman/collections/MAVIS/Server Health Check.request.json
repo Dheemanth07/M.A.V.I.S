@@ -1,0 +1,10 @@
+{
+  "postman_collection_v3_request": {
+    "name": "Server Health Check",
+    "request": {
+      "method": "GET",
+      "url": "http://localhost:5000",
+      "description": "Check if the MAVIS backend server is running. Returns server status, message, database connection state, and connected DB name."
+    }
+  }
+}

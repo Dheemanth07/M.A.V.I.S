@@ -1,0 +1,9 @@
+{
+  "postman_collection_v3": {
+    "info": {
+      "name": "MAVIS",
+      "description": "Collection for testing MAVIS HTTP API routes"
+    },
+    "item": []
+  }
+}
