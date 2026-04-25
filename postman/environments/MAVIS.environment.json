@@ -1,0 +1,17 @@
+{
+  "postman_environment": {
+    "name": "MAVIS",
+    "values": [
+      {
+        "key": "baseUrl",
+        "value": "http://localhost:5000",
+        "enabled": true
+      },
+      {
+        "key": "animalId",
+        "value": "cat_1",
+        "enabled": true
+      }
+    ]
+  }
+}

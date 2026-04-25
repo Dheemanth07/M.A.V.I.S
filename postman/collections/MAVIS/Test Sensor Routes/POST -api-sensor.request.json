@@ -1,0 +1,25 @@
+{
+  "postman_collection_v3_request": {
+    "name": "POST /api/sensor",
+    "request": {
+      "method": "POST",
+      "url": "{{baseUrl}}/api/sensor",
+      "header": [
+        {
+          "key": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "mode": "raw",
+        "raw": "{\n  \"animalId\": \"cat_1\",\n  \"physiology\": {\n    \"temperature\": 38.5,\n    \"heartRate\": 120,\n    \"respiratoryRate\": 24,\n    \"bloodOxygen\": 97.4\n  },\n  \"behavior\": {\n    \"motion\": true,\n    \"steps\": 42,\n    \"lyingDown\": false\n  },\n  \"environment\": {\n    \"ambientTemperature\": 22.3,\n    \"humidity\": 55.0,\n    \"aqi\": 38\n  },\n  \"location\": {\n    \"latitude\": 12.9716,\n    \"longitude\": 77.5946,\n    \"zone\": \"enclosure-A\"\n  },\n  \"device\": {\n    \"batteryLevel\": 82,\n    \"signalStrength\": -67\n  },\n  \"timestamp\": \"2026-04-17T10:30:00.000Z\"\n}",
+        "options": {
+          "raw": {
+            "language": "json"
+          }
+        }
+      },
+      "description": "Process new sensor data and broadcast alerts via Socket.io. Returns 201 on success."
+    }
+  }
+}
