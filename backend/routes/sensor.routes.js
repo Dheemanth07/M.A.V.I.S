@@ -1,35 +1,29 @@
 /**
  * Sensor Routes
- * Connects API endpoints to controller methods and handles dependency injection.
+ * Connects API endpoints to controller methods.
  */
 import express from "express";
-import validateSensorData from "../middlewares/validateSensor.js";
-import sensorRepository from "../repositories/sensor.repository.js";
-import SensorService from "../services/sensor.service.js";
-import SensorController from "../controllers/sensor.controller.js";
 
-const router = express.Router();
+class SensorRoutes {
+    constructor(sensorController, sensorValidator) {
+        this.router = express.Router();
+        this.sensorController = sensorController;
+        this.sensorValidator = sensorValidator;
 
-// Manual Dependency Injection
-const sensorService = new SensorService(sensorRepository);
-const sensorController = new SensorController(sensorService);
+        this.initializeRoutes();
+    }
 
-/**
- * @route   POST /api/sensor
- * @desc    Process new sensor data and alerts
- */
-router.post("/sensor", validateSensorData, sensorController.createSensorData);
+    initializeRoutes() {
+        // Notice the paths are just "/", "/latest/:animalId", etc.
+        // We will add the "/api/sensor" prefix in server.js!
+        this.router.post("/", this.sensorValidator.validate, this.sensorController.createSensorData);
+        this.router.get("/latest/:animalId", this.sensorController.getLatest);
+        this.router.get("/history/:animalId", this.sensorController.history);
+    }
 
-/**
- * @route   GET /api/sensor/latest/:animalId
- * @desc    Get most recent reading for an animal
- */
-router.get("/sensor/latest/:animalId", sensorController.getLatest);
+    getRouter() {
+        return this.router;
+    }
+}
 
-/**
- * @route   GET /api/sensor/history/:animalId
- * @desc    Get historical data for an animal
- */
-router.get("/sensor/history/:animalId", sensorController.history);
-
-export default router;
+export default SensorRoutes;
