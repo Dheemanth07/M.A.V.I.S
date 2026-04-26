@@ -5,13 +5,13 @@
 import AppError from "../utils/appError.js";
 
 class SensorService {
-    #repository;
+    #sensorRepository;
 
     /**
-     * @param {Object} repository - SensorRepository instance.
+     * @param {Object} sensorRepository - SensorRepository instance.
      */
-    constructor(repository) {
-        this.#repository = repository;
+    constructor(sensorRepository) {
+        this.#sensorRepository = sensorRepository;
     }
 
     /**
@@ -21,7 +21,7 @@ class SensorService {
      * @returns {Promise<Object>}
      */
     async createSensorData(data, io) {
-        const sensorData = await this.#repository.create(data);
+        const sensorData = await this.#sensorRepository.create(data);
 
         if (!sensorData) {
             throw new Error("Failed to save sensor data", 500);
@@ -56,7 +56,7 @@ class SensorService {
      */
     async getLatest(animalId) {
         console.log("animalId received:", animalId);
-        const data = await this.#repository.findLatestByAnimal(animalId);
+        const data = await this.#sensorRepository.findLatestByAnimal(animalId);
 
         if (!data) {
             throw new AppError(
@@ -75,7 +75,7 @@ class SensorService {
      * @returns {Promise<Array>}
      */
     async getLatestByRange(animalId, from, to) {
-        const data = await this.#repository.findByRange(animalId, from, to);
+        const data = await this.#sensorRepository.findByRange(animalId, from, to);
 
         if (!data || data.length === 0) {
             throw new AppError(

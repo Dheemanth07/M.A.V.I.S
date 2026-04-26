@@ -5,12 +5,18 @@
 import SensorData from "../models/sensor.model.js";
 
 class SensorRepository {
+    #model;
+
+    constructor(model) {
+        this.#model = model;
+    }
+
     /**
      * @param {Object} data - Validated sensor data.
      * @returns {Promise<Object>}
      */
     async create(data) {
-        return await SensorData.create(data);
+        return await this.#model.create(data);
     }
 
     /**
@@ -19,7 +25,7 @@ class SensorRepository {
      */
     async findLatestByAnimal(animalId) {
         // Sort by timestamp descending to retrieve the most recent record
-        return await SensorData.findOne({ animalId }).sort({ timestamp: -1 });
+        return await this.#model.findOne({ animalId }).sort({ timestamp: -1 });
     }
 
     /**
@@ -29,7 +35,7 @@ class SensorRepository {
      * @returns {Promise<Array>}
      */
     async findByRange(animalId, from, to) {
-        return await SensorData.find({
+        return await this.#model.find({
             animalId,
             timestamp: { $gte: from, $lte: to },
         }).sort({ timestamp: -1 });
