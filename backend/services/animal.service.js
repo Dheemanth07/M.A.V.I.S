@@ -26,8 +26,25 @@ class AnimalService {
         return animal;
     }
 
+    #sanitizeUpdateData(data) {
+        if (!data || typeof data !== "object" || Array.isArray(data)) {
+            throw new AppError("Invalid update payload", 400);
+        }
+
+        const sanitized = {};
+        for (const [key, value] of Object.entries(data)) {
+            if (key.startsWith("$") || key.includes(".")) {
+                continue;
+            }
+            sanitized[key] = value;
+        }
+
+        return sanitized;
+    }
+
     async updateAnimal(id, data) {
-        const updatedAnimal = await this.#animalRepository.update(id, data);
+        const sanitizedData = this.#sanitizeUpdateData(data);
+        const updatedAnimal = await this.#animalRepository.update(id, sanitizedData);
 
         if (!updatedAnimal)
             throw new AppError(`Animal with ID ${id} not found`, 404);
