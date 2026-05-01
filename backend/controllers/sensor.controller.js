@@ -1,22 +1,28 @@
 /**
- * SensorController
- * Handles incoming HTTP requests for animal sensor data.
+ * @file Express handlers for sensor reading endpoints.
  */
-
 import AppError from "../utils/AppError.js";
 
+/**
+ * Turns sensor HTTP requests into service calls and realtime events.
+ */
 class SensorController {
     #service;
 
     /**
-     * @param {Object} service - SensorService instance (Dependency Injection)
+     * @param {import("../services/sensor.service.js").default} service - Sensor service.
      */
     constructor(service) {
         this.#service = service;
     }
 
     /**
-     * POST: Creates readings and broadcasts alerts via Socket.io
+     * Creates a sensor reading and broadcasts the saved record.
+     *
+     * @param {import("express").Request} req - Request containing sensor data.
+     * @param {import("express").Response} res - Express response.
+     * @param {import("express").NextFunction} next - Error handler callback.
+     * @returns {Promise<void>}
      */
     createSensorData = async (req, res, next) => {
         const service = this.#service;
@@ -29,12 +35,17 @@ class SensorController {
 
             res.status(201).json(result);
         } catch (err) {
-            next(err); // Pass error to global error handler
+            next(err);
         }
     };
 
     /**
-     * GET: Fetches the most recent reading for a specific animal
+     * Returns the most recent sensor reading for an animal.
+     *
+     * @param {import("express").Request} req - Request with `animalId` route param.
+     * @param {import("express").Response} res - Express response.
+     * @param {import("express").NextFunction} next - Error handler callback.
+     * @returns {Promise<void>}
      */
     getLatest = async (req, res, next) => {
         const service = this.#service;
@@ -45,12 +56,17 @@ class SensorController {
 
             res.status(200).json(latest);
         } catch (err) {
-            next(err); // Pass error to global error handler
+            next(err);
         }
     };
 
     /**
-     * GET: Retrieves readings within a specific timeframe
+     * Returns sensor readings between two ISO date query params.
+     *
+     * @param {import("express").Request} req - Request with `animalId`, `from`, and `to`.
+     * @param {import("express").Response} res - Express response.
+     * @param {import("express").NextFunction} next - Error handler callback.
+     * @returns {Promise<void>}
      */
     history = async (req, res, next) => {
         const service = this.#service;
@@ -59,18 +75,15 @@ class SensorController {
             const { animalId } = req.params;
             const { from, to } = req.query;
 
-            // Validate that from and to parameters are provided
             if (!from || !to) {
                 return res.status(400).json({
                     error: "Missing required query parameters: 'from' and 'to'",
                 });
             }
 
-            // Parse and validate date strings
             const fromDate = new Date(from);
             const toDate = new Date(to);
 
-            // Check if dates are valid
             if (isNaN(fromDate.getTime())) {
                 return res.status(400).json({
                     error: `Invalid 'from' date format: ${from}. Use ISO format (e.g., 2026-04-17T10:00:00Z)`,
@@ -91,7 +104,7 @@ class SensorController {
 
             res.status(200).json(history);
         } catch (err) {
-            next(err); // Pass error to global error handler
+            next(err);
         }
     };
 }
