@@ -1,10 +1,12 @@
 /**
- * SensorService
- * Handles business logic, health monitoring, and real-time alerts.
+ * @file Business logic for sensor readings and realtime alerts.
  */
 import mongoose from "mongoose";
 import AppError from "../utils/AppError.js";
 
+/**
+ * Validates animal ownership, stores sensor data, and fetches readings.
+ */
 class SensorService {
     #sensorRepository;
     #animalRepository;
@@ -18,6 +20,13 @@ class SensorService {
         this.#animalRepository = animalRepository;
     }
 
+    /**
+     * Makes sure sensor readings are tied to a real animal document.
+     *
+     * @param {string} animalId - Animal ObjectId.
+     * @returns {Promise<Object>} Matching animal.
+     * @throws {AppError} When the id is invalid or missing.
+     */
     async #ensureAnimalExists(animalId) {
         if (!mongoose.isValidObjectId(animalId)) {
             throw new AppError(`Invalid animal ID: ${animalId}`, 400);
@@ -33,10 +42,11 @@ class SensorService {
     }
 
     /**
-     * Processes readings and broadcasts alerts for physiological anomalies.
-     * @param {Object} data - Validated sensor data.
-     * @param {Object} io - Socket.IO instance.
-     * @returns {Promise<Object>}
+     * Saves a reading and emits alert events for important conditions.
+     *
+     * @param {Object} data - Validated sensor payload.
+     * @param {import("socket.io").Server} io - Socket.IO server.
+     * @returns {Promise<Object>} Saved sensor reading.
      */
     async createSensorData(data, io) {
         await this.#ensureAnimalExists(data.animalId);
@@ -72,7 +82,8 @@ class SensorService {
 
     /**
      * @param {string} animalId
-     * @returns {Promise<Object|null>}
+     * @returns {Promise<Object>} Latest sensor reading.
+     * @throws {AppError} When the animal or reading is not found.
      */
     async getLatest(animalId) {
         await this.#ensureAnimalExists(animalId);
@@ -93,7 +104,8 @@ class SensorService {
      * @param {string} animalId
      * @param {Date} from
      * @param {Date} to
-     * @returns {Promise<Array>}
+     * @returns {Promise<Object[]>} Sensor readings in the requested range.
+     * @throws {AppError} When the animal or readings are not found.
      */
     async getLatestByRange(animalId, from, to) {
         await this.#ensureAnimalExists(animalId);
