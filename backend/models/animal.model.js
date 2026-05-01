@@ -1,5 +1,11 @@
+/**
+ * @file Mongoose model for tracked animals.
+ */
 import mongoose from 'mongoose';
 
+/**
+ * Stores animal profile data plus the current summarized health state.
+ */
 const animalSchema = new mongoose.Schema(
     {
         name: {
@@ -49,6 +55,11 @@ const animalSchema = new mongoose.Schema(
     }
 );
 
+/**
+ * Animal collection model.
+ *
+ * @type {mongoose.Model}
+ */
 const Animal = mongoose.model('Animal_Data', animalSchema);
 
 export default Animal;

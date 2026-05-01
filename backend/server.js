@@ -1,6 +1,7 @@
 /**
- * MAVIS Server Entry Point
- * Initializes Express, Socket.io, Database connections, and Domain wiring.
+ * @file Application entry point.
+ *
+ * Wires Express, Socket.IO, MongoDB, and the domain layers together.
  */
 
 import express from "express";
@@ -26,7 +27,7 @@ import SensorData from "./models/sensor.model.js";
 import SensorRepository from "./repositories/sensor.repository.js";
 import SensorService from "./services/sensor.service.js";
 import SensorController from "./controllers/sensor.controller.js";
-import SensorValidator from "./validators/sensor.validator.js"; // Assuming you wrapped your schema in a class!
+import SensorValidator from "./validators/sensor.validator.js";
 import SensorRoutes from "./routes/sensor.routes.js";
 
 dotenv.config();
@@ -34,17 +35,13 @@ dotenv.config();
 const PORT = process.env.PORT || 5000;
 const app = express();
 
-/* -------------------- Core Middlewares -------------------- */
-
 app.use(cors(corsOptions));
 app.use(express.json());
-
-/* -------------------- Socket.IO Setup -------------------- */
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, { cors: corsOptions });
 
-// Make Socket.IO accessible in controllers via req.app.get("io")
+// Controllers pull this from req.app when they need to emit realtime events.
 app.set("io", io);
 
 io.on("connection", (socket) => {
@@ -55,26 +52,21 @@ io.on("connection", (socket) => {
     });
 });
 
-/* -------------------- Domain Wiring (Dependency Injection) -------------------- */
-
-// 1. Animal Domain Wiring
 const animalRepository = new AnimalRepository(AnimalData);
-
-// 2. Sensor Domain Wiring
 const sensorRepository = new SensorRepository(SensorData);
-const animalService = new AnimalService(animalRepository, sensorRepository); // Inject sensorRepository for cross-domain validation
+const animalService = new AnimalService(animalRepository, sensorRepository);
 const animalController = new AnimalController(animalService);
 const animalValidator = new AnimalValidator();
 const animalRoutes = new AnimalRoutes(animalController, animalValidator);
-// Inject BOTH repositories into SensorService so it can verify the animal exists!
+
 const sensorService = new SensorService(sensorRepository, animalRepository);
 const sensorController = new SensorController(sensorService);
 const sensorValidator = new SensorValidator();
 const sensorRoutes = new SensorRoutes(sensorController, sensorValidator);
 
-/* -------------------- Routes -------------------- */
-
-// Health Check
+/**
+ * Basic liveness endpoint with database connection state.
+ */
 app.get("/", (req, res) => {
     res.json({
         status: "active",
@@ -84,23 +76,20 @@ app.get("/", (req, res) => {
     });
 });
 
-// API Routes
 app.use("/api/animals", animalRoutes.getRouter());
 app.use("/api/sensor", sensorRoutes.getRouter());
 
-/* -------------------- Error Handling -------------------- */
-
-// Must be the last middleware!
 app.use(globalErrorHandler);
 
-/* -------------------- Server Startup -------------------- */
-
+/**
+ * Connects to MongoDB before accepting HTTP requests.
+ *
+ * @returns {Promise<void>}
+ */
 const startServer = async () => {
     try {
-        // Connect to DB first
         await connectDB();
 
-        // Start server ONLY after DB is connected
         httpServer.listen(PORT, () => {
             console.log(`Server running on port ${PORT}`);
         });

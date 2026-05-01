@@ -1,22 +1,44 @@
+/**
+ * @file Business logic for animal profiles and health summaries.
+ */
 import AppError from "../utils/AppError.js";
 
+/**
+ * Coordinates animal persistence and sensor-backed health checks.
+ */
 class AnimalService {
     #animalRepository;
     #sensorRepository;
 
+    /**
+     * @param {import("../repositories/animal.repository.js").default} animalRepository - Animal data access.
+     * @param {import("../repositories/sensor.repository.js").default} sensorRepository - Sensor data access.
+     */
     constructor(animalRepository, sensorRepository) {
         this.#animalRepository = animalRepository;
         this.#sensorRepository = sensorRepository;
     }
 
+    /**
+     * @param {Object} data - Animal profile payload.
+     * @returns {Promise<Object>} Created animal.
+     */
     async createAnimal(data) {
         return await this.#animalRepository.create(data);
     }
 
+    /**
+     * @returns {Promise<Object[]>} All animals.
+     */
     async getAnimals() {
         return await this.#animalRepository.findAll();
     }
 
+    /**
+     * @param {string} id - Animal ObjectId.
+     * @returns {Promise<Object>} Matching animal.
+     * @throws {AppError} When the animal is not found.
+     */
     async getAnimal(id) {
         const animal = await this.#animalRepository.findById(id);
 
@@ -26,6 +48,14 @@ class AnimalService {
         return animal;
     }
 
+<<<<<<< docs/backend-jsdoc
+    /**
+     * @param {string} id - Animal ObjectId.
+     * @param {Object} data - Fields to update.
+     * @returns {Promise<Object>} Updated animal.
+     * @throws {AppError} When the animal is not found.
+     */
+=======
     #sanitizeUpdateData(data) {
         if (!data || typeof data !== "object" || Array.isArray(data)) {
             throw new AppError("Invalid update payload", 400);
@@ -42,6 +72,7 @@ class AnimalService {
         return sanitized;
     }
 
+>>>>>>> main
     async updateAnimal(id, data) {
         const sanitizedData = this.#sanitizeUpdateData(data);
         const updatedAnimal = await this.#animalRepository.update(id, sanitizedData);
@@ -52,6 +83,11 @@ class AnimalService {
         return updatedAnimal;
     }
 
+    /**
+     * @param {string} id - Animal ObjectId.
+     * @returns {Promise<Object>} Deleted animal.
+     * @throws {AppError} When the animal is not found.
+     */
     async deleteAnimal(id) {
         const deletedAnimal = await this.#animalRepository.delete(id);
 
@@ -62,6 +98,13 @@ class AnimalService {
 
     }
 
+    /**
+     * Builds a simple health summary from the latest sensor reading.
+     *
+     * @param {string} animalId - Animal ObjectId.
+     * @returns {Promise<Object>} Current health status, alerts, and key metrics.
+     * @throws {AppError} When the animal is not found.
+     */
     async getHealthStatus(animalId) {
         const animal = await this.#animalRepository.findById(animalId);
         if (!animal) {
@@ -80,7 +123,7 @@ class AnimalService {
         }
 
         let computedHealth = "healthy";
-        let alerts = [];
+        let activeAlerts = [];
 
         const { temperature, heartRate } = latestSensor.physiology;
         if (temperature > 40) {
