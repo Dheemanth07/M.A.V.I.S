@@ -1,6 +1,16 @@
+/**
+ * @file Animal route registration.
+ */
 import express from 'express';
 
+/**
+ * Owns the Express router for animal profile endpoints.
+ */
 class AnimalRoutes {
+    /**
+     * @param {import("../controllers/animal.controller.js").default} animalController - Animal controller.
+     * @param {import("../validators/animal.validator.js").default} animalValidator - Animal request validator.
+     */
     constructor(animalController, animalValidator) {
         this.router = express.Router();
         this.animalController = animalController;
@@ -9,6 +19,11 @@ class AnimalRoutes {
         this.initializeRoutes();
     }
 
+    /**
+     * Registers animal CRUD routes and the health summary route.
+     *
+     * @returns {void}
+     */
     initializeRoutes() {
         this.router.post('/', this.animalValidator.validate, this.animalController.createAnimal);
         this.router.get('/', this.animalController.getAnimals);
@@ -18,6 +33,9 @@ class AnimalRoutes {
         this.router.get('/:id/health', this.animalController.getHealthStatus);
     }
 
+    /**
+     * @returns {import("express").Router} Configured animal router.
+     */
     getRouter() {
         return this.router;
     }
