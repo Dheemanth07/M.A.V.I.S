@@ -6,7 +6,7 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "start": "node server.js",
-        "dev": "nodemon -L server.js"
+        "dev": "nodemon -L --ext js,mjs,cjs --ignore sensor_data.json --ignore animal_ids.json --ignore animal_mapping.json server.js"
     },
     "keywords": [],
     "author": "",

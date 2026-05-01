@@ -3,7 +3,10 @@ import json
 from datetime import datetime, timedelta
 
 # Animals list
-animals = ["dog_1", "dog_2", "cat_1", "cat_2"]
+with open("animal_mapping.json") as f:
+    mapping = json.load(f)
+
+animal_ids = list(mapping.values())
 
 # Base location
 location = {
@@ -17,7 +20,7 @@ start_time = datetime(2026, 4, 17, 10, 0, 0)
 
 data = []
 
-for animal in animals:
+for animal in animal_ids:
     current_time = start_time
 
     for i in range(20):  # 20 records per animal

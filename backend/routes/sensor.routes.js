@@ -14,8 +14,6 @@ class SensorRoutes {
     }
 
     initializeRoutes() {
-        // Notice the paths are just "/", "/latest/:animalId", etc.
-        // We will add the "/api/sensor" prefix in server.js!
         this.router.post("/", this.sensorValidator.validate, this.sensorController.createSensorData);
         this.router.get("/latest/:animalId", this.sensorController.getLatest);
         this.router.get("/history/:animalId", this.sensorController.history);

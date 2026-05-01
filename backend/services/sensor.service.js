@@ -2,16 +2,34 @@
  * SensorService
  * Handles business logic, health monitoring, and real-time alerts.
  */
+import mongoose from "mongoose";
 import AppError from "../utils/AppError.js";
 
 class SensorService {
     #sensorRepository;
+    #animalRepository;
 
     /**
      * @param {Object} sensorRepository - SensorRepository instance.
+     * @param {Object} animalRepository - AnimalRepository instance.
      */
-    constructor(sensorRepository) {
+    constructor(sensorRepository, animalRepository) {
         this.#sensorRepository = sensorRepository;
+        this.#animalRepository = animalRepository;
+    }
+
+    async #ensureAnimalExists(animalId) {
+        if (!mongoose.isValidObjectId(animalId)) {
+            throw new AppError(`Invalid animal ID: ${animalId}`, 400);
+        }
+
+        const animal = await this.#animalRepository.findById(animalId);
+
+        if (!animal) {
+            throw new AppError(`Animal with ID ${animalId} not found`, 404);
+        }
+
+        return animal;
     }
 
     /**
@@ -21,10 +39,12 @@ class SensorService {
      * @returns {Promise<Object>}
      */
     async createSensorData(data, io) {
+        await this.#ensureAnimalExists(data.animalId);
+
         const sensorData = await this.#sensorRepository.create(data);
 
         if (!sensorData) {
-            throw new Error("Failed to save sensor data", 500);
+            throw new AppError("Failed to save sensor data", 500);
         }
 
         // Fever Detection
@@ -38,7 +58,7 @@ class SensorService {
         }
 
         // Hardware Maintenance
-        if (sensorData.device.batteryLevel < 20) {
+        if (sensorData.device?.batteryLevel < 20) {
             io.emit("alert", {
                 animalId: sensorData.animalId,
                 type: "BATTERY",
@@ -55,7 +75,8 @@ class SensorService {
      * @returns {Promise<Object|null>}
      */
     async getLatest(animalId) {
-        console.log("animalId received:", animalId);
+        await this.#ensureAnimalExists(animalId);
+
         const data = await this.#sensorRepository.findLatestByAnimal(animalId);
 
         if (!data) {
@@ -75,6 +96,8 @@ class SensorService {
      * @returns {Promise<Array>}
      */
     async getLatestByRange(animalId, from, to) {
+        await this.#ensureAnimalExists(animalId);
+
         const data = await this.#sensorRepository.findByRange(animalId, from, to);
 
         if (!data || data.length === 0) {

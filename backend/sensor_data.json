@@ -1,21 +1,21 @@
 [
   {
-    "animalId": "dog_1",
+    "animalId": "69f484b7533232bcb34008ca",
     "physiology": {
       "temperature": 37.5,
-      "heartRate": 68,
-      "respiratoryRate": 20,
+      "heartRate": 84,
+      "respiratoryRate": 19,
       "bloodOxygen": 97
     },
     "behavior": {
       "motion": true,
-      "steps": 125,
+      "steps": 271,
       "lyingDown": false
     },
     "environment": {
-      "ambientTemperature": 37,
-      "humidity": 76,
-      "aqi": 91
+      "ambientTemperature": 38,
+      "humidity": 67,
+      "aqi": 86
     },
     "location": {
       "latitude": 12.9716,
@@ -23,28 +23,28 @@
       "zone": "farm_1"
     },
     "device": {
-      "batteryLevel": 83,
-      "signalStrength": -83
+      "batteryLevel": 40,
+      "signalStrength": -78
     },
     "timestamp": "2026-04-17T10:00:00Z"
   },
   {
-    "animalId": "dog_1",
+    "animalId": "69f484b7533232bcb34008ca",
     "physiology": {
-      "temperature": 37.6,
-      "heartRate": 86,
-      "respiratoryRate": 25,
-      "bloodOxygen": 96
+      "temperature": 38.9,
+      "heartRate": 81,
+      "respiratoryRate": 27,
+      "bloodOxygen": 99
     },
     "behavior": {
       "motion": true,
-      "steps": 183,
+      "steps": 226,
       "lyingDown": false
     },
     "environment": {
-      "ambientTemperature": 32,
-      "humidity": 66,
-      "aqi": 110
+      "ambientTemperature": 30,
+      "humidity": 76,
+      "aqi": 105
     },
     "location": {
       "latitude": 12.9716,
@@ -52,115 +52,28 @@
       "zone": "farm_1"
     },
     "device": {
-      "batteryLevel": 92,
-      "signalStrength": -84
+      "batteryLevel": 60,
+      "signalStrength": -76
     },
     "timestamp": "2026-04-17T10:05:00Z"
   },
   {
-    "animalId": "dog_1",
+    "animalId": "69f484b7533232bcb34008ca",
     "physiology": {
       "temperature": 37.8,
       "heartRate": 100,
-      "respiratoryRate": 20,
-      "bloodOxygen": 97
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 143,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 37,
-      "humidity": 41,
-      "aqi": 43
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 21,
-      "signalStrength": -78
-    },
-    "timestamp": "2026-04-17T10:10:00Z"
-  },
-  {
-    "animalId": "dog_1",
-    "physiology": {
-      "temperature": 39.0,
-      "heartRate": 93,
-      "respiratoryRate": 30,
-      "bloodOxygen": 98
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 253,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 34,
-      "humidity": 45,
-      "aqi": 74
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 77,
-      "signalStrength": -78
-    },
-    "timestamp": "2026-04-17T10:15:00Z"
-  },
-  {
-    "animalId": "dog_1",
-    "physiology": {
-      "temperature": 37.9,
-      "heartRate": 95,
-      "respiratoryRate": 26,
-      "bloodOxygen": 97
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 129,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 33,
-      "humidity": 43,
-      "aqi": 131
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 97,
-      "signalStrength": -68
-    },
-    "timestamp": "2026-04-17T10:20:00Z"
-  },
-  {
-    "animalId": "dog_1",
-    "physiology": {
-      "temperature": 38.2,
-      "heartRate": 89,
-      "respiratoryRate": 22,
+      "respiratoryRate": 16,
       "bloodOxygen": 95
     },
     "behavior": {
       "motion": true,
-      "steps": 89,
+      "steps": 211,
       "lyingDown": false
     },
     "environment": {
-      "ambientTemperature": 26,
-      "humidity": 55,
-      "aqi": 90
+      "ambientTemperature": 38,
+      "humidity": 50,
+      "aqi": 77
     },
     "location": {
       "latitude": 12.9716,
@@ -168,665 +81,27 @@
       "zone": "farm_1"
     },
     "device": {
-      "batteryLevel": 26,
-      "signalStrength": -61
+      "batteryLevel": 100,
+      "signalStrength": -74
     },
-    "timestamp": "2026-04-17T10:25:00Z"
+    "timestamp": "2026-04-17T10:10:00Z"
   },
   {
-    "animalId": "dog_1",
+    "animalId": "69f484b7533232bcb34008ca",
     "physiology": {
-      "temperature": 38.9,
-      "heartRate": 65,
-      "respiratoryRate": 23,
-      "bloodOxygen": 99
+      "temperature": 38.5,
+      "heartRate": 73,
+      "respiratoryRate": 17,
+      "bloodOxygen": 96
     },
     "behavior": {
       "motion": true,
-      "steps": 216,
+      "steps": 287,
       "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 37,
-      "humidity": 45,
-      "aqi": 106
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 68,
-      "signalStrength": -62
-    },
-    "timestamp": "2026-04-17T10:30:00Z"
-  },
-  {
-    "animalId": "dog_1",
-    "physiology": {
-      "temperature": 39.5,
-      "heartRate": 133,
-      "respiratoryRate": 31,
-      "bloodOxygen": 90
-    },
-    "behavior": {
-      "motion": false,
-      "steps": 6,
-      "lyingDown": true
     },
     "environment": {
       "ambientTemperature": 39,
-      "humidity": 42,
-      "aqi": 61
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 88,
-      "signalStrength": -70
-    },
-    "timestamp": "2026-04-17T10:35:00Z"
-  },
-  {
-    "animalId": "dog_1",
-    "physiology": {
-      "temperature": 38.9,
-      "heartRate": 79,
-      "respiratoryRate": 27,
-      "bloodOxygen": 99
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 149,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 30,
-      "humidity": 53,
-      "aqi": 143
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 30,
-      "signalStrength": -73
-    },
-    "timestamp": "2026-04-17T10:40:00Z"
-  },
-  {
-    "animalId": "dog_1",
-    "physiology": {
-      "temperature": 37.8,
-      "heartRate": 89,
-      "respiratoryRate": 28,
-      "bloodOxygen": 96
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 283,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 28,
-      "humidity": 62,
-      "aqi": 76
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 42,
-      "signalStrength": -64
-    },
-    "timestamp": "2026-04-17T10:45:00Z"
-  },
-  {
-    "animalId": "dog_1",
-    "physiology": {
-      "temperature": 37.9,
-      "heartRate": 89,
-      "respiratoryRate": 30,
-      "bloodOxygen": 99
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 199,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 33,
-      "humidity": 56,
-      "aqi": 141
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 35,
-      "signalStrength": -80
-    },
-    "timestamp": "2026-04-17T10:50:00Z"
-  },
-  {
-    "animalId": "dog_1",
-    "physiology": {
-      "temperature": 38.3,
-      "heartRate": 67,
-      "respiratoryRate": 22,
-      "bloodOxygen": 98
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 192,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 37,
-      "humidity": 80,
-      "aqi": 55
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 72,
-      "signalStrength": -61
-    },
-    "timestamp": "2026-04-17T10:55:00Z"
-  },
-  {
-    "animalId": "dog_1",
-    "physiology": {
-      "temperature": 38.1,
-      "heartRate": 89,
-      "respiratoryRate": 22,
-      "bloodOxygen": 99
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 189,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 30,
-      "humidity": 44,
-      "aqi": 30
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 78,
-      "signalStrength": -86
-    },
-    "timestamp": "2026-04-17T11:00:00Z"
-  },
-  {
-    "animalId": "dog_1",
-    "physiology": {
-      "temperature": 38.6,
-      "heartRate": 91,
-      "respiratoryRate": 21,
-      "bloodOxygen": 98
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 148,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 36,
-      "humidity": 62,
-      "aqi": 58
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 93,
-      "signalStrength": -59
-    },
-    "timestamp": "2026-04-17T11:05:00Z"
-  },
-  {
-    "animalId": "dog_1",
-    "physiology": {
-      "temperature": 38.0,
-      "heartRate": 83,
-      "respiratoryRate": 30,
-      "bloodOxygen": 97
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 65,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 26,
-      "humidity": 68,
-      "aqi": 145
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 96,
-      "signalStrength": -79
-    },
-    "timestamp": "2026-04-17T11:10:00Z"
-  },
-  {
-    "animalId": "dog_1",
-    "physiology": {
-      "temperature": 38.6,
-      "heartRate": 82,
-      "respiratoryRate": 17,
-      "bloodOxygen": 95
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 191,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 25,
-      "humidity": 67,
-      "aqi": 143
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 70,
-      "signalStrength": -74
-    },
-    "timestamp": "2026-04-17T11:15:00Z"
-  },
-  {
-    "animalId": "dog_1",
-    "physiology": {
-      "temperature": 39.0,
-      "heartRate": 69,
-      "respiratoryRate": 21,
-      "bloodOxygen": 96
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 268,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 38,
-      "humidity": 62,
-      "aqi": 62
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 35,
-      "signalStrength": -54
-    },
-    "timestamp": "2026-04-17T11:20:00Z"
-  },
-  {
-    "animalId": "dog_1",
-    "physiology": {
-      "temperature": 37.5,
-      "heartRate": 83,
-      "respiratoryRate": 24,
-      "bloodOxygen": 99
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 123,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 40,
-      "humidity": 60,
-      "aqi": 80
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 39,
-      "signalStrength": -87
-    },
-    "timestamp": "2026-04-17T11:25:00Z"
-  },
-  {
-    "animalId": "dog_1",
-    "physiology": {
-      "temperature": 38.8,
-      "heartRate": 66,
-      "respiratoryRate": 20,
-      "bloodOxygen": 96
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 266,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 31,
-      "humidity": 79,
-      "aqi": 68
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 51,
-      "signalStrength": -60
-    },
-    "timestamp": "2026-04-17T11:30:00Z"
-  },
-  {
-    "animalId": "dog_1",
-    "physiology": {
-      "temperature": 38.5,
-      "heartRate": 97,
-      "respiratoryRate": 22,
-      "bloodOxygen": 96
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 155,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 38,
-      "humidity": 61,
-      "aqi": 96
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 35,
-      "signalStrength": -83
-    },
-    "timestamp": "2026-04-17T11:35:00Z"
-  },
-  {
-    "animalId": "dog_2",
-    "physiology": {
-      "temperature": 38.2,
-      "heartRate": 60,
-      "respiratoryRate": 15,
-      "bloodOxygen": 99
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 145,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 25,
-      "humidity": 43,
-      "aqi": 101
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 94,
-      "signalStrength": -65
-    },
-    "timestamp": "2026-04-17T10:00:00Z"
-  },
-  {
-    "animalId": "dog_2",
-    "physiology": {
-      "temperature": 40.9,
-      "heartRate": 130,
-      "respiratoryRate": 48,
-      "bloodOxygen": 89
-    },
-    "behavior": {
-      "motion": false,
-      "steps": 2,
-      "lyingDown": true
-    },
-    "environment": {
-      "ambientTemperature": 25,
-      "humidity": 58,
-      "aqi": 40
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 20,
-      "signalStrength": -65
-    },
-    "timestamp": "2026-04-17T10:05:00Z"
-  },
-  {
-    "animalId": "dog_2",
-    "physiology": {
-      "temperature": 37.8,
-      "heartRate": 62,
-      "respiratoryRate": 22,
-      "bloodOxygen": 99
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 220,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 36,
-      "humidity": 69,
-      "aqi": 98
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 80,
-      "signalStrength": -59
-    },
-    "timestamp": "2026-04-17T10:10:00Z"
-  },
-  {
-    "animalId": "dog_2",
-    "physiology": {
-      "temperature": 37.6,
-      "heartRate": 62,
-      "respiratoryRate": 23,
-      "bloodOxygen": 95
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 90,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 38,
-      "humidity": 58,
-      "aqi": 31
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 38,
-      "signalStrength": -57
-    },
-    "timestamp": "2026-04-17T10:15:00Z"
-  },
-  {
-    "animalId": "dog_2",
-    "physiology": {
-      "temperature": 38.8,
-      "heartRate": 97,
-      "respiratoryRate": 27,
-      "bloodOxygen": 95
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 281,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 32,
-      "humidity": 66,
-      "aqi": 109
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 63,
-      "signalStrength": -74
-    },
-    "timestamp": "2026-04-17T10:20:00Z"
-  },
-  {
-    "animalId": "dog_2",
-    "physiology": {
-      "temperature": 38.2,
-      "heartRate": 94,
-      "respiratoryRate": 29,
-      "bloodOxygen": 96
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 253,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 27,
-      "humidity": 62,
-      "aqi": 147
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 83,
-      "signalStrength": -61
-    },
-    "timestamp": "2026-04-17T10:25:00Z"
-  },
-  {
-    "animalId": "dog_2",
-    "physiology": {
-      "temperature": 38.5,
-      "heartRate": 70,
-      "respiratoryRate": 17,
-      "bloodOxygen": 99
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 178,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 25,
-      "humidity": 74,
-      "aqi": 59
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 77,
-      "signalStrength": -74
-    },
-    "timestamp": "2026-04-17T10:30:00Z"
-  },
-  {
-    "animalId": "dog_2",
-    "physiology": {
-      "temperature": 37.6,
-      "heartRate": 74,
-      "respiratoryRate": 28,
-      "bloodOxygen": 95
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 182,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 31,
-      "humidity": 50,
-      "aqi": 120
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 26,
-      "signalStrength": -65
-    },
-    "timestamp": "2026-04-17T10:35:00Z"
-  },
-  {
-    "animalId": "dog_2",
-    "physiology": {
-      "temperature": 38.9,
-      "heartRate": 73,
-      "respiratoryRate": 26,
-      "bloodOxygen": 96
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 135,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 35,
-      "humidity": 53,
+      "humidity": 40,
       "aqi": 99
     },
     "location": {
@@ -835,28 +110,28 @@
       "zone": "farm_1"
     },
     "device": {
-      "batteryLevel": 55,
-      "signalStrength": -65
+      "batteryLevel": 59,
+      "signalStrength": -61
     },
-    "timestamp": "2026-04-17T10:40:00Z"
+    "timestamp": "2026-04-17T10:15:00Z"
   },
   {
-    "animalId": "dog_2",
+    "animalId": "69f484b7533232bcb34008ca",
     "physiology": {
-      "temperature": 40.2,
-      "heartRate": 118,
-      "respiratoryRate": 43,
-      "bloodOxygen": 85
+      "temperature": 38.5,
+      "heartRate": 79,
+      "respiratoryRate": 16,
+      "bloodOxygen": 95
     },
     "behavior": {
-      "motion": false,
-      "steps": 1,
-      "lyingDown": true
+      "motion": true,
+      "steps": 253,
+      "lyingDown": false
     },
     "environment": {
-      "ambientTemperature": 26,
-      "humidity": 72,
-      "aqi": 128
+      "ambientTemperature": 38,
+      "humidity": 73,
+      "aqi": 58
     },
     "location": {
       "latitude": 12.9716,
@@ -864,28 +139,86 @@
       "zone": "farm_1"
     },
     "device": {
-      "batteryLevel": 59,
-      "signalStrength": -73
+      "batteryLevel": 28,
+      "signalStrength": -61
     },
-    "timestamp": "2026-04-17T10:45:00Z"
+    "timestamp": "2026-04-17T10:20:00Z"
   },
   {
-    "animalId": "dog_2",
+    "animalId": "69f484b7533232bcb34008ca",
     "physiology": {
-      "temperature": 38.0,
-      "heartRate": 96,
-      "respiratoryRate": 21,
-      "bloodOxygen": 98
+      "temperature": 37.7,
+      "heartRate": 82,
+      "respiratoryRate": 27,
+      "bloodOxygen": 99
     },
     "behavior": {
       "motion": true,
-      "steps": 293,
+      "steps": 135,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 26,
+      "humidity": 48,
+      "aqi": 90
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 86,
+      "signalStrength": -82
+    },
+    "timestamp": "2026-04-17T10:25:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008ca",
+    "physiology": {
+      "temperature": 39.0,
+      "heartRate": 64,
+      "respiratoryRate": 17,
+      "bloodOxygen": 97
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 214,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 31,
+      "humidity": 73,
+      "aqi": 143
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 26,
+      "signalStrength": -51
+    },
+    "timestamp": "2026-04-17T10:30:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008ca",
+    "physiology": {
+      "temperature": 38.8,
+      "heartRate": 80,
+      "respiratoryRate": 21,
+      "bloodOxygen": 97
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 250,
       "lyingDown": false
     },
     "environment": {
       "ambientTemperature": 32,
       "humidity": 54,
-      "aqi": 126
+      "aqi": 69
     },
     "location": {
       "latitude": 12.9716,
@@ -893,143 +226,27 @@
       "zone": "farm_1"
     },
     "device": {
-      "batteryLevel": 39,
-      "signalStrength": -50
+      "batteryLevel": 76,
+      "signalStrength": -51
     },
-    "timestamp": "2026-04-17T10:50:00Z"
+    "timestamp": "2026-04-17T10:35:00Z"
   },
   {
-    "animalId": "dog_2",
-    "physiology": {
-      "temperature": 40.3,
-      "heartRate": 104,
-      "respiratoryRate": 46,
-      "bloodOxygen": 80
-    },
-    "behavior": {
-      "motion": false,
-      "steps": 14,
-      "lyingDown": true
-    },
-    "environment": {
-      "ambientTemperature": 34,
-      "humidity": 60,
-      "aqi": 95
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 65,
-      "signalStrength": -84
-    },
-    "timestamp": "2026-04-17T10:55:00Z"
-  },
-  {
-    "animalId": "dog_2",
-    "physiology": {
-      "temperature": 40.5,
-      "heartRate": 132,
-      "respiratoryRate": 43,
-      "bloodOxygen": 86
-    },
-    "behavior": {
-      "motion": false,
-      "steps": 11,
-      "lyingDown": true
-    },
-    "environment": {
-      "ambientTemperature": 27,
-      "humidity": 49,
-      "aqi": 81
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 83,
-      "signalStrength": -57
-    },
-    "timestamp": "2026-04-17T11:00:00Z"
-  },
-  {
-    "animalId": "dog_2",
-    "physiology": {
-      "temperature": 40.9,
-      "heartRate": 106,
-      "respiratoryRate": 41,
-      "bloodOxygen": 90
-    },
-    "behavior": {
-      "motion": false,
-      "steps": 3,
-      "lyingDown": true
-    },
-    "environment": {
-      "ambientTemperature": 28,
-      "humidity": 48,
-      "aqi": 127
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 50,
-      "signalStrength": -67
-    },
-    "timestamp": "2026-04-17T11:05:00Z"
-  },
-  {
-    "animalId": "dog_2",
-    "physiology": {
-      "temperature": 37.9,
-      "heartRate": 64,
-      "respiratoryRate": 26,
-      "bloodOxygen": 96
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 128,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 29,
-      "humidity": 76,
-      "aqi": 53
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 44,
-      "signalStrength": -67
-    },
-    "timestamp": "2026-04-17T11:10:00Z"
-  },
-  {
-    "animalId": "dog_2",
+    "animalId": "69f484b7533232bcb34008ca",
     "physiology": {
       "temperature": 38.9,
-      "heartRate": 68,
-      "respiratoryRate": 28,
+      "heartRate": 95,
+      "respiratoryRate": 17,
       "bloodOxygen": 97
     },
     "behavior": {
       "motion": true,
-      "steps": 278,
+      "steps": 179,
       "lyingDown": false
     },
     "environment": {
-      "ambientTemperature": 38,
-      "humidity": 71,
+      "ambientTemperature": 33,
+      "humidity": 54,
       "aqi": 138
     },
     "location": {
@@ -1038,86 +255,28 @@
       "zone": "farm_1"
     },
     "device": {
-      "batteryLevel": 58,
-      "signalStrength": -87
+      "batteryLevel": 80,
+      "signalStrength": -55
     },
-    "timestamp": "2026-04-17T11:15:00Z"
+    "timestamp": "2026-04-17T10:40:00Z"
   },
   {
-    "animalId": "dog_2",
+    "animalId": "69f484b7533232bcb34008ca",
     "physiology": {
-      "temperature": 38.9,
-      "heartRate": 96,
-      "respiratoryRate": 22,
-      "bloodOxygen": 100
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 217,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 25,
-      "humidity": 74,
-      "aqi": 101
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 48,
-      "signalStrength": -53
-    },
-    "timestamp": "2026-04-17T11:20:00Z"
-  },
-  {
-    "animalId": "dog_2",
-    "physiology": {
-      "temperature": 40.9,
-      "heartRate": 103,
-      "respiratoryRate": 44,
-      "bloodOxygen": 87
-    },
-    "behavior": {
-      "motion": false,
-      "steps": 0,
-      "lyingDown": true
-    },
-    "environment": {
-      "ambientTemperature": 33,
-      "humidity": 73,
-      "aqi": 130
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 50,
-      "signalStrength": -52
-    },
-    "timestamp": "2026-04-17T11:25:00Z"
-  },
-  {
-    "animalId": "dog_2",
-    "physiology": {
-      "temperature": 38.4,
-      "heartRate": 81,
-      "respiratoryRate": 19,
+      "temperature": 38.7,
+      "heartRate": 76,
+      "respiratoryRate": 20,
       "bloodOxygen": 99
     },
     "behavior": {
       "motion": true,
-      "steps": 257,
+      "steps": 76,
       "lyingDown": false
     },
     "environment": {
-      "ambientTemperature": 40,
-      "humidity": 61,
-      "aqi": 147
+      "ambientTemperature": 35,
+      "humidity": 68,
+      "aqi": 99
     },
     "location": {
       "latitude": 12.9716,
@@ -1125,134 +284,18 @@
       "zone": "farm_1"
     },
     "device": {
-      "batteryLevel": 40,
-      "signalStrength": -67
+      "batteryLevel": 86,
+      "signalStrength": -75
     },
-    "timestamp": "2026-04-17T11:30:00Z"
+    "timestamp": "2026-04-17T10:45:00Z"
   },
   {
-    "animalId": "dog_2",
-    "physiology": {
-      "temperature": 37.8,
-      "heartRate": 80,
-      "respiratoryRate": 20,
-      "bloodOxygen": 95
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 222,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 33,
-      "humidity": 75,
-      "aqi": 143
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 100,
-      "signalStrength": -82
-    },
-    "timestamp": "2026-04-17T11:35:00Z"
-  },
-  {
-    "animalId": "cat_1",
-    "physiology": {
-      "temperature": 37.8,
-      "heartRate": 82,
-      "respiratoryRate": 27,
-      "bloodOxygen": 97
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 292,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 37,
-      "humidity": 69,
-      "aqi": 149
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 68,
-      "signalStrength": -85
-    },
-    "timestamp": "2026-04-17T10:00:00Z"
-  },
-  {
-    "animalId": "cat_1",
-    "physiology": {
-      "temperature": 38.0,
-      "heartRate": 84,
-      "respiratoryRate": 21,
-      "bloodOxygen": 97
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 260,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 30,
-      "humidity": 54,
-      "aqi": 110
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 87,
-      "signalStrength": -61
-    },
-    "timestamp": "2026-04-17T10:05:00Z"
-  },
-  {
-    "animalId": "cat_1",
-    "physiology": {
-      "temperature": 38.3,
-      "heartRate": 70,
-      "respiratoryRate": 17,
-      "bloodOxygen": 97
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 279,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 27,
-      "humidity": 65,
-      "aqi": 70
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 20,
-      "signalStrength": -67
-    },
-    "timestamp": "2026-04-17T10:10:00Z"
-  },
-  {
-    "animalId": "cat_1",
+    "animalId": "69f484b7533232bcb34008ca",
     "physiology": {
       "temperature": 38.4,
-      "heartRate": 61,
-      "respiratoryRate": 19,
-      "bloodOxygen": 98
+      "heartRate": 94,
+      "respiratoryRate": 30,
+      "bloodOxygen": 97
     },
     "behavior": {
       "motion": true,
@@ -1260,9 +303,9 @@
       "lyingDown": false
     },
     "environment": {
-      "ambientTemperature": 25,
-      "humidity": 67,
-      "aqi": 46
+      "ambientTemperature": 36,
+      "humidity": 61,
+      "aqi": 95
     },
     "location": {
       "latitude": 12.9716,
@@ -1270,28 +313,28 @@
       "zone": "farm_1"
     },
     "device": {
-      "batteryLevel": 47,
-      "signalStrength": -60
+      "batteryLevel": 49,
+      "signalStrength": -80
     },
-    "timestamp": "2026-04-17T10:15:00Z"
+    "timestamp": "2026-04-17T10:50:00Z"
   },
   {
-    "animalId": "cat_1",
+    "animalId": "69f484b7533232bcb34008ca",
     "physiology": {
-      "temperature": 37.6,
-      "heartRate": 72,
-      "respiratoryRate": 27,
-      "bloodOxygen": 100
+      "temperature": 38.0,
+      "heartRate": 96,
+      "respiratoryRate": 16,
+      "bloodOxygen": 99
     },
     "behavior": {
       "motion": true,
-      "steps": 294,
+      "steps": 160,
       "lyingDown": false
     },
     "environment": {
-      "ambientTemperature": 30,
-      "humidity": 57,
-      "aqi": 32
+      "ambientTemperature": 31,
+      "humidity": 44,
+      "aqi": 114
     },
     "location": {
       "latitude": 12.9716,
@@ -1299,57 +342,28 @@
       "zone": "farm_1"
     },
     "device": {
-      "batteryLevel": 40,
-      "signalStrength": -50
+      "batteryLevel": 76,
+      "signalStrength": -64
     },
-    "timestamp": "2026-04-17T10:20:00Z"
+    "timestamp": "2026-04-17T10:55:00Z"
   },
   {
-    "animalId": "cat_1",
+    "animalId": "69f484b7533232bcb34008ca",
     "physiology": {
-      "temperature": 38.1,
-      "heartRate": 80,
-      "respiratoryRate": 25,
+      "temperature": 38.2,
+      "heartRate": 78,
+      "respiratoryRate": 18,
       "bloodOxygen": 98
     },
     "behavior": {
       "motion": true,
-      "steps": 86,
+      "steps": 225,
       "lyingDown": false
     },
     "environment": {
-      "ambientTemperature": 26,
-      "humidity": 55,
-      "aqi": 111
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 63,
-      "signalStrength": -82
-    },
-    "timestamp": "2026-04-17T10:25:00Z"
-  },
-  {
-    "animalId": "cat_1",
-    "physiology": {
-      "temperature": 37.6,
-      "heartRate": 61,
-      "respiratoryRate": 25,
-      "bloodOxygen": 97
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 275,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 29,
-      "humidity": 56,
-      "aqi": 43
+      "ambientTemperature": 38,
+      "humidity": 43,
+      "aqi": 112
     },
     "location": {
       "latitude": 12.9716,
@@ -1358,201 +372,27 @@
     },
     "device": {
       "batteryLevel": 91,
-      "signalStrength": -64
-    },
-    "timestamp": "2026-04-17T10:30:00Z"
-  },
-  {
-    "animalId": "cat_1",
-    "physiology": {
-      "temperature": 37.7,
-      "heartRate": 73,
-      "respiratoryRate": 28,
-      "bloodOxygen": 98
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 210,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 30,
-      "humidity": 46,
-      "aqi": 57
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 52,
-      "signalStrength": -87
-    },
-    "timestamp": "2026-04-17T10:35:00Z"
-  },
-  {
-    "animalId": "cat_1",
-    "physiology": {
-      "temperature": 37.9,
-      "heartRate": 72,
-      "respiratoryRate": 21,
-      "bloodOxygen": 99
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 187,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 39,
-      "humidity": 71,
-      "aqi": 70
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 52,
-      "signalStrength": -90
-    },
-    "timestamp": "2026-04-17T10:40:00Z"
-  },
-  {
-    "animalId": "cat_1",
-    "physiology": {
-      "temperature": 38.3,
-      "heartRate": 65,
-      "respiratoryRate": 30,
-      "bloodOxygen": 98
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 130,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 37,
-      "humidity": 53,
-      "aqi": 60
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 100,
-      "signalStrength": -73
-    },
-    "timestamp": "2026-04-17T10:45:00Z"
-  },
-  {
-    "animalId": "cat_1",
-    "physiology": {
-      "temperature": 40.5,
-      "heartRate": 108,
-      "respiratoryRate": 41,
-      "bloodOxygen": 90
-    },
-    "behavior": {
-      "motion": false,
-      "steps": 19,
-      "lyingDown": true
-    },
-    "environment": {
-      "ambientTemperature": 37,
-      "humidity": 67,
-      "aqi": 143
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 46,
-      "signalStrength": -57
-    },
-    "timestamp": "2026-04-17T10:50:00Z"
-  },
-  {
-    "animalId": "cat_1",
-    "physiology": {
-      "temperature": 38.1,
-      "heartRate": 65,
-      "respiratoryRate": 17,
-      "bloodOxygen": 98
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 190,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 34,
-      "humidity": 70,
-      "aqi": 35
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 45,
-      "signalStrength": -55
-    },
-    "timestamp": "2026-04-17T10:55:00Z"
-  },
-  {
-    "animalId": "cat_1",
-    "physiology": {
-      "temperature": 38.1,
-      "heartRate": 81,
-      "respiratoryRate": 18,
-      "bloodOxygen": 98
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 213,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 36,
-      "humidity": 51,
-      "aqi": 89
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 39,
-      "signalStrength": -80
+      "signalStrength": -70
     },
     "timestamp": "2026-04-17T11:00:00Z"
   },
   {
-    "animalId": "cat_1",
+    "animalId": "69f484b7533232bcb34008ca",
     "physiology": {
-      "temperature": 38.7,
-      "heartRate": 75,
-      "respiratoryRate": 22,
-      "bloodOxygen": 97
+      "temperature": 38.4,
+      "heartRate": 62,
+      "respiratoryRate": 23,
+      "bloodOxygen": 98
     },
     "behavior": {
       "motion": true,
-      "steps": 290,
+      "steps": 103,
       "lyingDown": false
     },
     "environment": {
-      "ambientTemperature": 31,
-      "humidity": 62,
-      "aqi": 35
+      "ambientTemperature": 25,
+      "humidity": 79,
+      "aqi": 100
     },
     "location": {
       "latitude": 12.9716,
@@ -1560,28 +400,28 @@
       "zone": "farm_1"
     },
     "device": {
-      "batteryLevel": 50,
-      "signalStrength": -61
+      "batteryLevel": 52,
+      "signalStrength": -78
     },
     "timestamp": "2026-04-17T11:05:00Z"
   },
   {
-    "animalId": "cat_1",
+    "animalId": "69f484b7533232bcb34008ca",
     "physiology": {
-      "temperature": 38.5,
-      "heartRate": 97,
-      "respiratoryRate": 16,
-      "bloodOxygen": 98
+      "temperature": 38.0,
+      "heartRate": 73,
+      "respiratoryRate": 18,
+      "bloodOxygen": 96
     },
     "behavior": {
       "motion": true,
-      "steps": 157,
+      "steps": 230,
       "lyingDown": false
     },
     "environment": {
-      "ambientTemperature": 35,
-      "humidity": 51,
-      "aqi": 45
+      "ambientTemperature": 40,
+      "humidity": 69,
+      "aqi": 68
     },
     "location": {
       "latitude": 12.9716,
@@ -1589,173 +429,28 @@
       "zone": "farm_1"
     },
     "device": {
-      "batteryLevel": 93,
-      "signalStrength": -50
+      "batteryLevel": 86,
+      "signalStrength": -64
     },
     "timestamp": "2026-04-17T11:10:00Z"
   },
   {
-    "animalId": "cat_1",
+    "animalId": "69f484b7533232bcb34008ca",
     "physiology": {
       "temperature": 37.9,
-      "heartRate": 91,
-      "respiratoryRate": 28,
-      "bloodOxygen": 100
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 158,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 36,
-      "humidity": 46,
-      "aqi": 34
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 60,
-      "signalStrength": -69
-    },
-    "timestamp": "2026-04-17T11:15:00Z"
-  },
-  {
-    "animalId": "cat_1",
-    "physiology": {
-      "temperature": 39.8,
-      "heartRate": 140,
-      "respiratoryRate": 49,
-      "bloodOxygen": 81
-    },
-    "behavior": {
-      "motion": false,
-      "steps": 16,
-      "lyingDown": true
-    },
-    "environment": {
-      "ambientTemperature": 29,
-      "humidity": 46,
-      "aqi": 143
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 27,
-      "signalStrength": -68
-    },
-    "timestamp": "2026-04-17T11:20:00Z"
-  },
-  {
-    "animalId": "cat_1",
-    "physiology": {
-      "temperature": 38.8,
-      "heartRate": 81,
-      "respiratoryRate": 26,
-      "bloodOxygen": 98
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 156,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 27,
-      "humidity": 54,
-      "aqi": 64
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 98,
-      "signalStrength": -70
-    },
-    "timestamp": "2026-04-17T11:25:00Z"
-  },
-  {
-    "animalId": "cat_1",
-    "physiology": {
-      "temperature": 37.6,
-      "heartRate": 93,
-      "respiratoryRate": 24,
-      "bloodOxygen": 100
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 134,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 29,
-      "humidity": 69,
-      "aqi": 57
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 24,
-      "signalStrength": -72
-    },
-    "timestamp": "2026-04-17T11:30:00Z"
-  },
-  {
-    "animalId": "cat_1",
-    "physiology": {
-      "temperature": 39.8,
-      "heartRate": 132,
-      "respiratoryRate": 34,
-      "bloodOxygen": 85
-    },
-    "behavior": {
-      "motion": false,
-      "steps": 16,
-      "lyingDown": true
-    },
-    "environment": {
-      "ambientTemperature": 36,
-      "humidity": 76,
-      "aqi": 50
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 29,
-      "signalStrength": -81
-    },
-    "timestamp": "2026-04-17T11:35:00Z"
-  },
-  {
-    "animalId": "cat_2",
-    "physiology": {
-      "temperature": 38.6,
-      "heartRate": 72,
+      "heartRate": 99,
       "respiratoryRate": 17,
       "bloodOxygen": 95
     },
     "behavior": {
       "motion": true,
-      "steps": 196,
+      "steps": 59,
       "lyingDown": false
     },
     "environment": {
       "ambientTemperature": 36,
-      "humidity": 71,
-      "aqi": 78
+      "humidity": 43,
+      "aqi": 96
     },
     "location": {
       "latitude": 12.9716,
@@ -1763,28 +458,28 @@
       "zone": "farm_1"
     },
     "device": {
-      "batteryLevel": 62,
-      "signalStrength": -51
+      "batteryLevel": 21,
+      "signalStrength": -67
     },
-    "timestamp": "2026-04-17T10:00:00Z"
+    "timestamp": "2026-04-17T11:15:00Z"
   },
   {
-    "animalId": "cat_2",
+    "animalId": "69f484b7533232bcb34008ca",
     "physiology": {
-      "temperature": 38.3,
-      "heartRate": 68,
-      "respiratoryRate": 15,
-      "bloodOxygen": 100
+      "temperature": 38.6,
+      "heartRate": 99,
+      "respiratoryRate": 18,
+      "bloodOxygen": 97
     },
     "behavior": {
       "motion": true,
-      "steps": 111,
+      "steps": 172,
       "lyingDown": false
     },
     "environment": {
-      "ambientTemperature": 30,
-      "humidity": 49,
-      "aqi": 89
+      "ambientTemperature": 29,
+      "humidity": 41,
+      "aqi": 118
     },
     "location": {
       "latitude": 12.9716,
@@ -1792,86 +487,115 @@
       "zone": "farm_1"
     },
     "device": {
-      "batteryLevel": 92,
-      "signalStrength": -50
+      "batteryLevel": 99,
+      "signalStrength": -77
     },
-    "timestamp": "2026-04-17T10:05:00Z"
+    "timestamp": "2026-04-17T11:20:00Z"
   },
   {
-    "animalId": "cat_2",
-    "physiology": {
-      "temperature": 38.7,
-      "heartRate": 81,
-      "respiratoryRate": 28,
-      "bloodOxygen": 95
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 92,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 28,
-      "humidity": 66,
-      "aqi": 132
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 51,
-      "signalStrength": -89
-    },
-    "timestamp": "2026-04-17T10:10:00Z"
-  },
-  {
-    "animalId": "cat_2",
-    "physiology": {
-      "temperature": 41.0,
-      "heartRate": 124,
-      "respiratoryRate": 48,
-      "bloodOxygen": 89
-    },
-    "behavior": {
-      "motion": false,
-      "steps": 2,
-      "lyingDown": true
-    },
-    "environment": {
-      "ambientTemperature": 34,
-      "humidity": 53,
-      "aqi": 123
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 79,
-      "signalStrength": -53
-    },
-    "timestamp": "2026-04-17T10:15:00Z"
-  },
-  {
-    "animalId": "cat_2",
+    "animalId": "69f484b7533232bcb34008ca",
     "physiology": {
       "temperature": 38.8,
-      "heartRate": 100,
-      "respiratoryRate": 16,
+      "heartRate": 99,
+      "respiratoryRate": 26,
       "bloodOxygen": 95
     },
     "behavior": {
       "motion": true,
-      "steps": 135,
+      "steps": 295,
       "lyingDown": false
     },
     "environment": {
-      "ambientTemperature": 34,
-      "humidity": 47,
-      "aqi": 50
+      "ambientTemperature": 31,
+      "humidity": 48,
+      "aqi": 66
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 91,
+      "signalStrength": -86
+    },
+    "timestamp": "2026-04-17T11:25:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008ca",
+    "physiology": {
+      "temperature": 38.9,
+      "heartRate": 88,
+      "respiratoryRate": 24,
+      "bloodOxygen": 96
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 65,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 27,
+      "humidity": 80,
+      "aqi": 108
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 75,
+      "signalStrength": -70
+    },
+    "timestamp": "2026-04-17T11:30:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008ca",
+    "physiology": {
+      "temperature": 38.0,
+      "heartRate": 67,
+      "respiratoryRate": 25,
+      "bloodOxygen": 97
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 195,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 37,
+      "humidity": 67,
+      "aqi": 129
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 43,
+      "signalStrength": -80
+    },
+    "timestamp": "2026-04-17T11:35:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008cc",
+    "physiology": {
+      "temperature": 37.7,
+      "heartRate": 99,
+      "respiratoryRate": 17,
+      "bloodOxygen": 99
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 122,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 32,
+      "humidity": 56,
+      "aqi": 127
     },
     "location": {
       "latitude": 12.9716,
@@ -1882,25 +606,83 @@
       "batteryLevel": 94,
       "signalStrength": -60
     },
-    "timestamp": "2026-04-17T10:20:00Z"
+    "timestamp": "2026-04-17T10:00:00Z"
   },
   {
-    "animalId": "cat_2",
+    "animalId": "69f484b7533232bcb34008cc",
     "physiology": {
-      "temperature": 38.7,
-      "heartRate": 71,
-      "respiratoryRate": 17,
-      "bloodOxygen": 98
+      "temperature": 38.9,
+      "heartRate": 65,
+      "respiratoryRate": 30,
+      "bloodOxygen": 99
     },
     "behavior": {
       "motion": true,
-      "steps": 133,
+      "steps": 58,
       "lyingDown": false
     },
     "environment": {
       "ambientTemperature": 40,
-      "humidity": 54,
-      "aqi": 114
+      "humidity": 78,
+      "aqi": 83
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 72,
+      "signalStrength": -84
+    },
+    "timestamp": "2026-04-17T10:05:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008cc",
+    "physiology": {
+      "temperature": 38.7,
+      "heartRate": 75,
+      "respiratoryRate": 27,
+      "bloodOxygen": 95
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 192,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 33,
+      "humidity": 48,
+      "aqi": 131
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 39,
+      "signalStrength": -62
+    },
+    "timestamp": "2026-04-17T10:10:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008cc",
+    "physiology": {
+      "temperature": 37.8,
+      "heartRate": 64,
+      "respiratoryRate": 19,
+      "bloodOxygen": 98
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 261,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 30,
+      "humidity": 77,
+      "aqi": 89
     },
     "location": {
       "latitude": 12.9716,
@@ -1909,27 +691,143 @@
     },
     "device": {
       "batteryLevel": 73,
-      "signalStrength": -72
+      "signalStrength": -57
+    },
+    "timestamp": "2026-04-17T10:15:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008cc",
+    "physiology": {
+      "temperature": 40.8,
+      "heartRate": 107,
+      "respiratoryRate": 42,
+      "bloodOxygen": 84
+    },
+    "behavior": {
+      "motion": false,
+      "steps": 9,
+      "lyingDown": true
+    },
+    "environment": {
+      "ambientTemperature": 25,
+      "humidity": 40,
+      "aqi": 53
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 89,
+      "signalStrength": -57
+    },
+    "timestamp": "2026-04-17T10:20:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008cc",
+    "physiology": {
+      "temperature": 38.1,
+      "heartRate": 99,
+      "respiratoryRate": 22,
+      "bloodOxygen": 95
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 79,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 40,
+      "humidity": 52,
+      "aqi": 111
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 69,
+      "signalStrength": -73
     },
     "timestamp": "2026-04-17T10:25:00Z"
   },
   {
-    "animalId": "cat_2",
+    "animalId": "69f484b7533232bcb34008cc",
     "physiology": {
-      "temperature": 37.6,
-      "heartRate": 77,
-      "respiratoryRate": 25,
-      "bloodOxygen": 98
+      "temperature": 38.5,
+      "heartRate": 90,
+      "respiratoryRate": 21,
+      "bloodOxygen": 95
     },
     "behavior": {
       "motion": true,
-      "steps": 136,
+      "steps": 93,
       "lyingDown": false
     },
     "environment": {
-      "ambientTemperature": 29,
-      "humidity": 77,
-      "aqi": 82
+      "ambientTemperature": 33,
+      "humidity": 70,
+      "aqi": 134
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 45,
+      "signalStrength": -62
+    },
+    "timestamp": "2026-04-17T10:30:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008cc",
+    "physiology": {
+      "temperature": 39.9,
+      "heartRate": 121,
+      "respiratoryRate": 41,
+      "bloodOxygen": 88
+    },
+    "behavior": {
+      "motion": false,
+      "steps": 19,
+      "lyingDown": true
+    },
+    "environment": {
+      "ambientTemperature": 37,
+      "humidity": 41,
+      "aqi": 142
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 43,
+      "signalStrength": -82
+    },
+    "timestamp": "2026-04-17T10:35:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008cc",
+    "physiology": {
+      "temperature": 40.3,
+      "heartRate": 111,
+      "respiratoryRate": 34,
+      "bloodOxygen": 89
+    },
+    "behavior": {
+      "motion": false,
+      "steps": 7,
+      "lyingDown": true
+    },
+    "environment": {
+      "ambientTemperature": 35,
+      "humidity": 47,
+      "aqi": 71
     },
     "location": {
       "latitude": 12.9716,
@@ -1938,25 +836,1040 @@
     },
     "device": {
       "batteryLevel": 81,
-      "signalStrength": -84
+      "signalStrength": -51
+    },
+    "timestamp": "2026-04-17T10:40:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008cc",
+    "physiology": {
+      "temperature": 37.9,
+      "heartRate": 70,
+      "respiratoryRate": 20,
+      "bloodOxygen": 98
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 148,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 35,
+      "humidity": 62,
+      "aqi": 122
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 57,
+      "signalStrength": -71
+    },
+    "timestamp": "2026-04-17T10:45:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008cc",
+    "physiology": {
+      "temperature": 40.2,
+      "heartRate": 107,
+      "respiratoryRate": 40,
+      "bloodOxygen": 88
+    },
+    "behavior": {
+      "motion": false,
+      "steps": 0,
+      "lyingDown": true
+    },
+    "environment": {
+      "ambientTemperature": 29,
+      "humidity": 75,
+      "aqi": 142
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 94,
+      "signalStrength": -80
+    },
+    "timestamp": "2026-04-17T10:50:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008cc",
+    "physiology": {
+      "temperature": 37.6,
+      "heartRate": 87,
+      "respiratoryRate": 15,
+      "bloodOxygen": 99
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 209,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 39,
+      "humidity": 58,
+      "aqi": 102
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 41,
+      "signalStrength": -68
+    },
+    "timestamp": "2026-04-17T10:55:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008cc",
+    "physiology": {
+      "temperature": 39.0,
+      "heartRate": 70,
+      "respiratoryRate": 29,
+      "bloodOxygen": 98
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 230,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 36,
+      "humidity": 65,
+      "aqi": 57
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 82,
+      "signalStrength": -74
+    },
+    "timestamp": "2026-04-17T11:00:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008cc",
+    "physiology": {
+      "temperature": 39.8,
+      "heartRate": 105,
+      "respiratoryRate": 49,
+      "bloodOxygen": 87
+    },
+    "behavior": {
+      "motion": false,
+      "steps": 3,
+      "lyingDown": true
+    },
+    "environment": {
+      "ambientTemperature": 25,
+      "humidity": 62,
+      "aqi": 36
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 31,
+      "signalStrength": -51
+    },
+    "timestamp": "2026-04-17T11:05:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008cc",
+    "physiology": {
+      "temperature": 41.5,
+      "heartRate": 140,
+      "respiratoryRate": 39,
+      "bloodOxygen": 84
+    },
+    "behavior": {
+      "motion": false,
+      "steps": 5,
+      "lyingDown": true
+    },
+    "environment": {
+      "ambientTemperature": 28,
+      "humidity": 49,
+      "aqi": 55
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 24,
+      "signalStrength": -68
+    },
+    "timestamp": "2026-04-17T11:10:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008cc",
+    "physiology": {
+      "temperature": 41.0,
+      "heartRate": 103,
+      "respiratoryRate": 42,
+      "bloodOxygen": 86
+    },
+    "behavior": {
+      "motion": false,
+      "steps": 2,
+      "lyingDown": true
+    },
+    "environment": {
+      "ambientTemperature": 37,
+      "humidity": 72,
+      "aqi": 82
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 68,
+      "signalStrength": -52
+    },
+    "timestamp": "2026-04-17T11:15:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008cc",
+    "physiology": {
+      "temperature": 38.2,
+      "heartRate": 81,
+      "respiratoryRate": 27,
+      "bloodOxygen": 95
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 215,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 34,
+      "humidity": 57,
+      "aqi": 43
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 66,
+      "signalStrength": -89
+    },
+    "timestamp": "2026-04-17T11:20:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008cc",
+    "physiology": {
+      "temperature": 38.0,
+      "heartRate": 79,
+      "respiratoryRate": 25,
+      "bloodOxygen": 99
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 284,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 33,
+      "humidity": 52,
+      "aqi": 45
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 46,
+      "signalStrength": -59
+    },
+    "timestamp": "2026-04-17T11:25:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008cc",
+    "physiology": {
+      "temperature": 37.7,
+      "heartRate": 65,
+      "respiratoryRate": 27,
+      "bloodOxygen": 97
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 187,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 40,
+      "humidity": 57,
+      "aqi": 148
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 92,
+      "signalStrength": -68
+    },
+    "timestamp": "2026-04-17T11:30:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008cc",
+    "physiology": {
+      "temperature": 37.7,
+      "heartRate": 91,
+      "respiratoryRate": 16,
+      "bloodOxygen": 96
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 264,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 38,
+      "humidity": 46,
+      "aqi": 45
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 91,
+      "signalStrength": -74
+    },
+    "timestamp": "2026-04-17T11:35:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008ce",
+    "physiology": {
+      "temperature": 37.6,
+      "heartRate": 79,
+      "respiratoryRate": 23,
+      "bloodOxygen": 96
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 260,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 29,
+      "humidity": 57,
+      "aqi": 88
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 76,
+      "signalStrength": -65
+    },
+    "timestamp": "2026-04-17T10:00:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008ce",
+    "physiology": {
+      "temperature": 38.5,
+      "heartRate": 70,
+      "respiratoryRate": 15,
+      "bloodOxygen": 96
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 117,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 29,
+      "humidity": 49,
+      "aqi": 68
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 52,
+      "signalStrength": -85
+    },
+    "timestamp": "2026-04-17T10:05:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008ce",
+    "physiology": {
+      "temperature": 38.3,
+      "heartRate": 81,
+      "respiratoryRate": 15,
+      "bloodOxygen": 98
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 143,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 25,
+      "humidity": 44,
+      "aqi": 113
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 30,
+      "signalStrength": -83
+    },
+    "timestamp": "2026-04-17T10:10:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008ce",
+    "physiology": {
+      "temperature": 38.1,
+      "heartRate": 88,
+      "respiratoryRate": 21,
+      "bloodOxygen": 98
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 283,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 40,
+      "humidity": 44,
+      "aqi": 35
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 51,
+      "signalStrength": -50
+    },
+    "timestamp": "2026-04-17T10:15:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008ce",
+    "physiology": {
+      "temperature": 38.7,
+      "heartRate": 60,
+      "respiratoryRate": 17,
+      "bloodOxygen": 96
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 273,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 36,
+      "humidity": 74,
+      "aqi": 74
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 28,
+      "signalStrength": -72
+    },
+    "timestamp": "2026-04-17T10:20:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008ce",
+    "physiology": {
+      "temperature": 38.6,
+      "heartRate": 100,
+      "respiratoryRate": 16,
+      "bloodOxygen": 97
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 203,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 34,
+      "humidity": 55,
+      "aqi": 142
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 69,
+      "signalStrength": -57
+    },
+    "timestamp": "2026-04-17T10:25:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008ce",
+    "physiology": {
+      "temperature": 38.4,
+      "heartRate": 75,
+      "respiratoryRate": 30,
+      "bloodOxygen": 98
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 166,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 37,
+      "humidity": 63,
+      "aqi": 45
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 84,
+      "signalStrength": -86
     },
     "timestamp": "2026-04-17T10:30:00Z"
   },
   {
-    "animalId": "cat_2",
+    "animalId": "69f484b7533232bcb34008ce",
+    "physiology": {
+      "temperature": 39.0,
+      "heartRate": 61,
+      "respiratoryRate": 16,
+      "bloodOxygen": 97
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 123,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 32,
+      "humidity": 67,
+      "aqi": 104
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 40,
+      "signalStrength": -62
+    },
+    "timestamp": "2026-04-17T10:35:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008ce",
+    "physiology": {
+      "temperature": 37.8,
+      "heartRate": 68,
+      "respiratoryRate": 26,
+      "bloodOxygen": 100
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 190,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 28,
+      "humidity": 79,
+      "aqi": 129
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 72,
+      "signalStrength": -87
+    },
+    "timestamp": "2026-04-17T10:40:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008ce",
+    "physiology": {
+      "temperature": 38.1,
+      "heartRate": 75,
+      "respiratoryRate": 29,
+      "bloodOxygen": 96
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 53,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 33,
+      "humidity": 74,
+      "aqi": 105
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 53,
+      "signalStrength": -51
+    },
+    "timestamp": "2026-04-17T10:45:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008ce",
+    "physiology": {
+      "temperature": 37.5,
+      "heartRate": 79,
+      "respiratoryRate": 19,
+      "bloodOxygen": 96
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 188,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 40,
+      "humidity": 72,
+      "aqi": 58
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 67,
+      "signalStrength": -55
+    },
+    "timestamp": "2026-04-17T10:50:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008ce",
+    "physiology": {
+      "temperature": 38.1,
+      "heartRate": 76,
+      "respiratoryRate": 17,
+      "bloodOxygen": 100
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 224,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 26,
+      "humidity": 73,
+      "aqi": 75
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 73,
+      "signalStrength": -85
+    },
+    "timestamp": "2026-04-17T10:55:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008ce",
+    "physiology": {
+      "temperature": 38.9,
+      "heartRate": 77,
+      "respiratoryRate": 25,
+      "bloodOxygen": 100
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 111,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 35,
+      "humidity": 49,
+      "aqi": 113
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 89,
+      "signalStrength": -55
+    },
+    "timestamp": "2026-04-17T11:00:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008ce",
+    "physiology": {
+      "temperature": 40.6,
+      "heartRate": 130,
+      "respiratoryRate": 48,
+      "bloodOxygen": 87
+    },
+    "behavior": {
+      "motion": false,
+      "steps": 3,
+      "lyingDown": true
+    },
+    "environment": {
+      "ambientTemperature": 35,
+      "humidity": 62,
+      "aqi": 143
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 96,
+      "signalStrength": -67
+    },
+    "timestamp": "2026-04-17T11:05:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008ce",
+    "physiology": {
+      "temperature": 38.0,
+      "heartRate": 68,
+      "respiratoryRate": 15,
+      "bloodOxygen": 95
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 158,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 40,
+      "humidity": 51,
+      "aqi": 68
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 45,
+      "signalStrength": -63
+    },
+    "timestamp": "2026-04-17T11:10:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008ce",
+    "physiology": {
+      "temperature": 38.3,
+      "heartRate": 98,
+      "respiratoryRate": 27,
+      "bloodOxygen": 99
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 161,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 25,
+      "humidity": 75,
+      "aqi": 136
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 56,
+      "signalStrength": -79
+    },
+    "timestamp": "2026-04-17T11:15:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008ce",
+    "physiology": {
+      "temperature": 37.5,
+      "heartRate": 62,
+      "respiratoryRate": 29,
+      "bloodOxygen": 98
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 79,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 30,
+      "humidity": 63,
+      "aqi": 139
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 63,
+      "signalStrength": -90
+    },
+    "timestamp": "2026-04-17T11:20:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008ce",
     "physiology": {
       "temperature": 38.2,
+      "heartRate": 64,
+      "respiratoryRate": 29,
+      "bloodOxygen": 96
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 189,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 29,
+      "humidity": 48,
+      "aqi": 81
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 24,
+      "signalStrength": -77
+    },
+    "timestamp": "2026-04-17T11:25:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008ce",
+    "physiology": {
+      "temperature": 38.0,
       "heartRate": 98,
+      "respiratoryRate": 24,
+      "bloodOxygen": 97
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 236,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 37,
+      "humidity": 58,
+      "aqi": 57
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 56,
+      "signalStrength": -56
+    },
+    "timestamp": "2026-04-17T11:30:00Z"
+  },
+  {
+    "animalId": "69f484b7533232bcb34008ce",
+    "physiology": {
+      "temperature": 38.4,
+      "heartRate": 82,
+      "respiratoryRate": 16,
+      "bloodOxygen": 95
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 221,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 40,
+      "humidity": 80,
+      "aqi": 70
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 92,
+      "signalStrength": -75
+    },
+    "timestamp": "2026-04-17T11:35:00Z"
+  },
+  {
+    "animalId": "69f484b8533232bcb34008d0",
+    "physiology": {
+      "temperature": 38.6,
+      "heartRate": 83,
+      "respiratoryRate": 22,
+      "bloodOxygen": 99
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 131,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 35,
+      "humidity": 59,
+      "aqi": 53
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 29,
+      "signalStrength": -77
+    },
+    "timestamp": "2026-04-17T10:00:00Z"
+  },
+  {
+    "animalId": "69f484b8533232bcb34008d0",
+    "physiology": {
+      "temperature": 38.2,
+      "heartRate": 79,
       "respiratoryRate": 20,
       "bloodOxygen": 96
     },
     "behavior": {
       "motion": true,
-      "steps": 136,
+      "steps": 228,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 35,
+      "humidity": 80,
+      "aqi": 132
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 88,
+      "signalStrength": -89
+    },
+    "timestamp": "2026-04-17T10:05:00Z"
+  },
+  {
+    "animalId": "69f484b8533232bcb34008d0",
+    "physiology": {
+      "temperature": 37.8,
+      "heartRate": 60,
+      "respiratoryRate": 19,
+      "bloodOxygen": 97
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 143,
       "lyingDown": false
     },
     "environment": {
       "ambientTemperature": 32,
+      "humidity": 58,
+      "aqi": 58
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 70,
+      "signalStrength": -51
+    },
+    "timestamp": "2026-04-17T10:10:00Z"
+  },
+  {
+    "animalId": "69f484b8533232bcb34008d0",
+    "physiology": {
+      "temperature": 40.4,
+      "heartRate": 139,
+      "respiratoryRate": 48,
+      "bloodOxygen": 87
+    },
+    "behavior": {
+      "motion": false,
+      "steps": 11,
+      "lyingDown": true
+    },
+    "environment": {
+      "ambientTemperature": 28,
+      "humidity": 79,
+      "aqi": 36
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 94,
+      "signalStrength": -70
+    },
+    "timestamp": "2026-04-17T10:15:00Z"
+  },
+  {
+    "animalId": "69f484b8533232bcb34008d0",
+    "physiology": {
+      "temperature": 41.1,
+      "heartRate": 117,
+      "respiratoryRate": 36,
+      "bloodOxygen": 83
+    },
+    "behavior": {
+      "motion": false,
+      "steps": 17,
+      "lyingDown": true
+    },
+    "environment": {
+      "ambientTemperature": 34,
       "humidity": 53,
       "aqi": 109
     },
@@ -1966,115 +1879,28 @@
       "zone": "farm_1"
     },
     "device": {
-      "batteryLevel": 23,
-      "signalStrength": -75
+      "batteryLevel": 34,
+      "signalStrength": -88
     },
-    "timestamp": "2026-04-17T10:35:00Z"
+    "timestamp": "2026-04-17T10:20:00Z"
   },
   {
-    "animalId": "cat_2",
+    "animalId": "69f484b8533232bcb34008d0",
     "physiology": {
-      "temperature": 40.0,
-      "heartRate": 101,
-      "respiratoryRate": 30,
-      "bloodOxygen": 85
-    },
-    "behavior": {
-      "motion": false,
-      "steps": 1,
-      "lyingDown": true
-    },
-    "environment": {
-      "ambientTemperature": 37,
-      "humidity": 45,
-      "aqi": 145
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 39,
-      "signalStrength": -78
-    },
-    "timestamp": "2026-04-17T10:40:00Z"
-  },
-  {
-    "animalId": "cat_2",
-    "physiology": {
-      "temperature": 37.9,
+      "temperature": 39.0,
       "heartRate": 87,
-      "respiratoryRate": 23,
-      "bloodOxygen": 99
+      "respiratoryRate": 18,
+      "bloodOxygen": 100
     },
     "behavior": {
       "motion": true,
-      "steps": 299,
+      "steps": 264,
       "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 40,
-      "humidity": 62,
-      "aqi": 38
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 65,
-      "signalStrength": -82
-    },
-    "timestamp": "2026-04-17T10:45:00Z"
-  },
-  {
-    "animalId": "cat_2",
-    "physiology": {
-      "temperature": 37.7,
-      "heartRate": 98,
-      "respiratoryRate": 27,
-      "bloodOxygen": 99
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 111,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 38,
-      "humidity": 58,
-      "aqi": 100
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 75,
-      "signalStrength": -84
-    },
-    "timestamp": "2026-04-17T10:50:00Z"
-  },
-  {
-    "animalId": "cat_2",
-    "physiology": {
-      "temperature": 41.0,
-      "heartRate": 119,
-      "respiratoryRate": 48,
-      "bloodOxygen": 86
-    },
-    "behavior": {
-      "motion": false,
-      "steps": 7,
-      "lyingDown": true
     },
     "environment": {
       "ambientTemperature": 28,
-      "humidity": 71,
-      "aqi": 141
+      "humidity": 78,
+      "aqi": 135
     },
     "location": {
       "latitude": 12.9716,
@@ -2082,173 +1908,57 @@
       "zone": "farm_1"
     },
     "device": {
-      "batteryLevel": 60,
-      "signalStrength": -63
+      "batteryLevel": 81,
+      "signalStrength": -89
     },
-    "timestamp": "2026-04-17T10:55:00Z"
+    "timestamp": "2026-04-17T10:25:00Z"
   },
   {
-    "animalId": "cat_2",
+    "animalId": "69f484b8533232bcb34008d0",
     "physiology": {
-      "temperature": 39.0,
-      "heartRate": 70,
-      "respiratoryRate": 30,
-      "bloodOxygen": 98
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 183,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 25,
-      "humidity": 73,
-      "aqi": 132
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 42,
-      "signalStrength": -71
-    },
-    "timestamp": "2026-04-17T11:00:00Z"
-  },
-  {
-    "animalId": "cat_2",
-    "physiology": {
-      "temperature": 40.1,
-      "heartRate": 113,
-      "respiratoryRate": 49,
-      "bloodOxygen": 85
-    },
-    "behavior": {
-      "motion": false,
-      "steps": 16,
-      "lyingDown": true
-    },
-    "environment": {
-      "ambientTemperature": 38,
-      "humidity": 42,
-      "aqi": 142
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 38,
-      "signalStrength": -76
-    },
-    "timestamp": "2026-04-17T11:05:00Z"
-  },
-  {
-    "animalId": "cat_2",
-    "physiology": {
-      "temperature": 37.7,
-      "heartRate": 73,
-      "respiratoryRate": 25,
-      "bloodOxygen": 100
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 201,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 33,
-      "humidity": 64,
-      "aqi": 147
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 42,
-      "signalStrength": -74
-    },
-    "timestamp": "2026-04-17T11:10:00Z"
-  },
-  {
-    "animalId": "cat_2",
-    "physiology": {
-      "temperature": 38.5,
-      "heartRate": 89,
-      "respiratoryRate": 21,
-      "bloodOxygen": 100
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 195,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 34,
-      "humidity": 74,
-      "aqi": 85
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 68,
-      "signalStrength": -85
-    },
-    "timestamp": "2026-04-17T11:15:00Z"
-  },
-  {
-    "animalId": "cat_2",
-    "physiology": {
-      "temperature": 37.5,
-      "heartRate": 91,
-      "respiratoryRate": 25,
-      "bloodOxygen": 98
-    },
-    "behavior": {
-      "motion": true,
-      "steps": 53,
-      "lyingDown": false
-    },
-    "environment": {
-      "ambientTemperature": 34,
-      "humidity": 66,
-      "aqi": 35
-    },
-    "location": {
-      "latitude": 12.9716,
-      "longitude": 77.5946,
-      "zone": "farm_1"
-    },
-    "device": {
-      "batteryLevel": 83,
-      "signalStrength": -52
-    },
-    "timestamp": "2026-04-17T11:20:00Z"
-  },
-  {
-    "animalId": "cat_2",
-    "physiology": {
-      "temperature": 38.6,
-      "heartRate": 69,
-      "respiratoryRate": 23,
+      "temperature": 38.1,
+      "heartRate": 100,
+      "respiratoryRate": 17,
       "bloodOxygen": 95
     },
     "behavior": {
       "motion": true,
-      "steps": 249,
+      "steps": 223,
       "lyingDown": false
     },
     "environment": {
-      "ambientTemperature": 27,
-      "humidity": 80,
-      "aqi": 79
+      "ambientTemperature": 39,
+      "humidity": 41,
+      "aqi": 93
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 26,
+      "signalStrength": -85
+    },
+    "timestamp": "2026-04-17T10:30:00Z"
+  },
+  {
+    "animalId": "69f484b8533232bcb34008d0",
+    "physiology": {
+      "temperature": 38.7,
+      "heartRate": 92,
+      "respiratoryRate": 19,
+      "bloodOxygen": 97
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 74,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 31,
+      "humidity": 40,
+      "aqi": 138
     },
     "location": {
       "latitude": 12.9716,
@@ -2257,27 +1967,317 @@
     },
     "device": {
       "batteryLevel": 93,
-      "signalStrength": -61
+      "signalStrength": -74
+    },
+    "timestamp": "2026-04-17T10:35:00Z"
+  },
+  {
+    "animalId": "69f484b8533232bcb34008d0",
+    "physiology": {
+      "temperature": 38.0,
+      "heartRate": 70,
+      "respiratoryRate": 26,
+      "bloodOxygen": 98
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 296,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 27,
+      "humidity": 57,
+      "aqi": 111
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 53,
+      "signalStrength": -88
+    },
+    "timestamp": "2026-04-17T10:40:00Z"
+  },
+  {
+    "animalId": "69f484b8533232bcb34008d0",
+    "physiology": {
+      "temperature": 37.7,
+      "heartRate": 95,
+      "respiratoryRate": 26,
+      "bloodOxygen": 98
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 178,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 38,
+      "humidity": 50,
+      "aqi": 79
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 30,
+      "signalStrength": -67
+    },
+    "timestamp": "2026-04-17T10:45:00Z"
+  },
+  {
+    "animalId": "69f484b8533232bcb34008d0",
+    "physiology": {
+      "temperature": 37.7,
+      "heartRate": 93,
+      "respiratoryRate": 21,
+      "bloodOxygen": 99
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 129,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 33,
+      "humidity": 53,
+      "aqi": 50
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 91,
+      "signalStrength": -55
+    },
+    "timestamp": "2026-04-17T10:50:00Z"
+  },
+  {
+    "animalId": "69f484b8533232bcb34008d0",
+    "physiology": {
+      "temperature": 38.4,
+      "heartRate": 74,
+      "respiratoryRate": 29,
+      "bloodOxygen": 99
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 97,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 33,
+      "humidity": 40,
+      "aqi": 102
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 43,
+      "signalStrength": -67
+    },
+    "timestamp": "2026-04-17T10:55:00Z"
+  },
+  {
+    "animalId": "69f484b8533232bcb34008d0",
+    "physiology": {
+      "temperature": 39.7,
+      "heartRate": 138,
+      "respiratoryRate": 31,
+      "bloodOxygen": 83
+    },
+    "behavior": {
+      "motion": false,
+      "steps": 20,
+      "lyingDown": true
+    },
+    "environment": {
+      "ambientTemperature": 37,
+      "humidity": 47,
+      "aqi": 65
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 30,
+      "signalStrength": -54
+    },
+    "timestamp": "2026-04-17T11:00:00Z"
+  },
+  {
+    "animalId": "69f484b8533232bcb34008d0",
+    "physiology": {
+      "temperature": 38.0,
+      "heartRate": 98,
+      "respiratoryRate": 17,
+      "bloodOxygen": 96
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 109,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 31,
+      "humidity": 51,
+      "aqi": 100
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 56,
+      "signalStrength": -62
+    },
+    "timestamp": "2026-04-17T11:05:00Z"
+  },
+  {
+    "animalId": "69f484b8533232bcb34008d0",
+    "physiology": {
+      "temperature": 37.8,
+      "heartRate": 87,
+      "respiratoryRate": 19,
+      "bloodOxygen": 96
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 191,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 39,
+      "humidity": 77,
+      "aqi": 101
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 21,
+      "signalStrength": -77
+    },
+    "timestamp": "2026-04-17T11:10:00Z"
+  },
+  {
+    "animalId": "69f484b8533232bcb34008d0",
+    "physiology": {
+      "temperature": 38.9,
+      "heartRate": 82,
+      "respiratoryRate": 29,
+      "bloodOxygen": 95
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 206,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 39,
+      "humidity": 79,
+      "aqi": 76
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 53,
+      "signalStrength": -87
+    },
+    "timestamp": "2026-04-17T11:15:00Z"
+  },
+  {
+    "animalId": "69f484b8533232bcb34008d0",
+    "physiology": {
+      "temperature": 38.2,
+      "heartRate": 97,
+      "respiratoryRate": 17,
+      "bloodOxygen": 99
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 217,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 36,
+      "humidity": 58,
+      "aqi": 116
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 33,
+      "signalStrength": -75
+    },
+    "timestamp": "2026-04-17T11:20:00Z"
+  },
+  {
+    "animalId": "69f484b8533232bcb34008d0",
+    "physiology": {
+      "temperature": 38.6,
+      "heartRate": 100,
+      "respiratoryRate": 17,
+      "bloodOxygen": 97
+    },
+    "behavior": {
+      "motion": true,
+      "steps": 250,
+      "lyingDown": false
+    },
+    "environment": {
+      "ambientTemperature": 32,
+      "humidity": 74,
+      "aqi": 46
+    },
+    "location": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "zone": "farm_1"
+    },
+    "device": {
+      "batteryLevel": 97,
+      "signalStrength": -69
     },
     "timestamp": "2026-04-17T11:25:00Z"
   },
   {
-    "animalId": "cat_2",
+    "animalId": "69f484b8533232bcb34008d0",
     "physiology": {
-      "temperature": 40.4,
-      "heartRate": 115,
-      "respiratoryRate": 39,
-      "bloodOxygen": 87
+      "temperature": 38.0,
+      "heartRate": 85,
+      "respiratoryRate": 22,
+      "bloodOxygen": 96
     },
     "behavior": {
-      "motion": false,
-      "steps": 15,
-      "lyingDown": true
+      "motion": true,
+      "steps": 168,
+      "lyingDown": false
     },
     "environment": {
-      "ambientTemperature": 30,
-      "humidity": 71,
-      "aqi": 103
+      "ambientTemperature": 27,
+      "humidity": 52,
+      "aqi": 57
     },
     "location": {
       "latitude": 12.9716,
@@ -2285,28 +2285,28 @@
       "zone": "farm_1"
     },
     "device": {
-      "batteryLevel": 32,
-      "signalStrength": -66
+      "batteryLevel": 81,
+      "signalStrength": -73
     },
     "timestamp": "2026-04-17T11:30:00Z"
   },
   {
-    "animalId": "cat_2",
+    "animalId": "69f484b8533232bcb34008d0",
     "physiology": {
-      "temperature": 40.9,
-      "heartRate": 140,
-      "respiratoryRate": 46,
-      "bloodOxygen": 80
+      "temperature": 38.8,
+      "heartRate": 87,
+      "respiratoryRate": 18,
+      "bloodOxygen": 100
     },
     "behavior": {
-      "motion": false,
-      "steps": 19,
-      "lyingDown": true
+      "motion": true,
+      "steps": 56,
+      "lyingDown": false
     },
     "environment": {
-      "ambientTemperature": 30,
-      "humidity": 68,
-      "aqi": 126
+      "ambientTemperature": 36,
+      "humidity": 74,
+      "aqi": 95
     },
     "location": {
       "latitude": 12.9716,
@@ -2314,8 +2314,8 @@
       "zone": "farm_1"
     },
     "device": {
-      "batteryLevel": 41,
-      "signalStrength": -72
+      "batteryLevel": 96,
+      "signalStrength": -88
     },
     "timestamp": "2026-04-17T11:35:00Z"
   }

@@ -7,7 +7,8 @@ import mongoose from "mongoose";
 const sensorSchema = new mongoose.Schema(
     {
         animalId: {
-            type: String,
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Animal",
             required: true,
             index: true,
         },
@@ -51,6 +52,6 @@ sensorSchema.index({ animalId: 1, timestamp: -1 });
 /**
  * @type {mongoose.Model}
  */
-const SensorData = mongoose.model("SensorData", sensorSchema);
+const SensorData = mongoose.model("Sensor_Data", sensorSchema);
 
 export default SensorData;

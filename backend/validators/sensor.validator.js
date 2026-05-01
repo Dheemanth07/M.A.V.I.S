@@ -6,9 +6,11 @@ import Joi from "joi";
 
 class SensorValidator {
   constructor() {
-    // We put your exact schema inside the constructor!
     this.schema = Joi.object({
-      animalId: Joi.string().required(),
+      animalId: Joi.string().hex().length(24).required().messages({
+        "string.hex": "animalId must be a valid MongoDB ObjectId",
+        "string.length": "animalId must be a valid MongoDB ObjectId",
+      }),
 
       physiology: Joi.object({
         temperature: Joi.number().min(30).max(45).required(),
