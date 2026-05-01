@@ -35,7 +35,7 @@ class AnimalRepository {
      * @returns {Promise<Object|null>} Matching animal, if found.
      */
     async findById(id) {
-        return await this.#model.findById(id);
+        return await this.#model.findOne({ _id: { $eq: id } });
     }
 
     /**

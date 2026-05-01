@@ -48,14 +48,34 @@ class AnimalService {
         return animal;
     }
 
+<<<<<<< docs/backend-jsdoc
     /**
      * @param {string} id - Animal ObjectId.
      * @param {Object} data - Fields to update.
      * @returns {Promise<Object>} Updated animal.
      * @throws {AppError} When the animal is not found.
      */
+=======
+    #sanitizeUpdateData(data) {
+        if (!data || typeof data !== "object" || Array.isArray(data)) {
+            throw new AppError("Invalid update payload", 400);
+        }
+
+        const sanitized = {};
+        for (const [key, value] of Object.entries(data)) {
+            if (key.startsWith("$") || key.includes(".")) {
+                continue;
+            }
+            sanitized[key] = value;
+        }
+
+        return sanitized;
+    }
+
+>>>>>>> main
     async updateAnimal(id, data) {
-        const updatedAnimal = await this.#animalRepository.update(id, data);
+        const sanitizedData = this.#sanitizeUpdateData(data);
+        const updatedAnimal = await this.#animalRepository.update(id, sanitizedData);
 
         if (!updatedAnimal)
             throw new AppError(`Animal with ID ${id} not found`, 404);
