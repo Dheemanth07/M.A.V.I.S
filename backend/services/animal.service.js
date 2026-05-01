@@ -1,10 +1,10 @@
-import AppError from "../utils/appError";
+import AppError from "../utils/AppError.js";
 
 class AnimalService {
     #animalRepository;
 
     constructor(animalRepository) {
-        this.#animalanimalRepository = animalRepository;
+        this.#animalRepository = animalRepository;
     }
 
     async createAnimal(data) {
@@ -43,3 +43,5 @@ class AnimalService {
 
     }
 }
+
+export default AnimalService;

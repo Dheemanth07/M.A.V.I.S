@@ -1,4 +1,4 @@
-import AppError from "../utils/appError";
+import AppError from "../utils/AppError.js";
 
 class AnimalController {
     #service;

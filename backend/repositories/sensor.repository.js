@@ -42,4 +42,4 @@ class SensorRepository {
     }
 }
 
-export default new SensorRepository();
+export default SensorRepository;
