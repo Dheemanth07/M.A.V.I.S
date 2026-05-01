@@ -15,6 +15,7 @@ class AnimalRoutes {
         this.router.get('/:id', this.animalController.getAnimal);
         this.router.put('/:id', this.animalValidator.validate, this.animalController.updateAnimal);
         this.router.delete('/:id', this.animalController.deleteAnimal);
+        this.router.get('/:id/health', this.animalController.getHealthStatus);
     }
 
     getRouter() {

@@ -7,6 +7,7 @@ class AnimalController {
         this.#service = service;
     }
 
+
     createAnimal = async (req, res, next) => {
         const service = this.#service;
 
@@ -60,6 +61,17 @@ class AnimalController {
             const { id } = req.params;
             const deletedAnimal = await service.deleteAnimal(id);
             res.status(200).json(deletedAnimal);
+        } catch (err) {
+            next(err);
+        }
+    };
+
+    getHealthStatus = async (req, res, next) => {
+        const service = this.#service;
+
+        try {
+            const animal = await service.getHealthStatus(req.params.id);
+            res.status(200).json(animal);
         } catch (err) {
             next(err);
         }

@@ -15,7 +15,7 @@ import connectDB from "./config/db.js";
 import globalErrorHandler from "./middlewares/error.middleware.js";
 
 // --- Domain Imports ---
-import Animal from "./models/animal.model.js";
+import AnimalData from "./models/animal.model.js";
 import AnimalRepository from "./repositories/animal.repository.js";
 import AnimalService from "./services/animal.service.js";
 import AnimalController from "./controllers/animal.controller.js";
@@ -58,14 +58,14 @@ io.on("connection", (socket) => {
 /* -------------------- Domain Wiring (Dependency Injection) -------------------- */
 
 // 1. Animal Domain Wiring
-const animalRepository = new AnimalRepository(Animal);
-const animalService = new AnimalService(animalRepository);
-const animalController = new AnimalController(animalService);
-const animalValidator = new AnimalValidator();
-const animalRoutes = new AnimalRoutes(animalController, animalValidator);
+const animalRepository = new AnimalRepository(AnimalData);
 
 // 2. Sensor Domain Wiring
 const sensorRepository = new SensorRepository(SensorData);
+const animalService = new AnimalService(animalRepository, sensorRepository); // Inject sensorRepository for cross-domain validation
+const animalController = new AnimalController(animalService);
+const animalValidator = new AnimalValidator();
+const animalRoutes = new AnimalRoutes(animalController, animalValidator);
 // Inject BOTH repositories into SensorService so it can verify the animal exists!
 const sensorService = new SensorService(sensorRepository, animalRepository);
 const sensorController = new SensorController(sensorService);
