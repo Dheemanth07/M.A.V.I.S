@@ -1,10 +1,15 @@
 /**
- * SensorValidator Class
- * Validates incoming HTTP requests for animal sensor data.
+ * @file Joi validation for sensor request bodies.
  */
 import Joi from "joi";
 
+/**
+ * Validates sensor readings before they are stored.
+ */
 class SensorValidator {
+  /**
+   * Builds the reusable Joi schema.
+   */
   constructor() {
     this.schema = Joi.object({
       animalId: Joi.string().hex().length(24).required().messages({
@@ -47,7 +52,12 @@ class SensorValidator {
   }
 
   /**
-   * Express middleware to validate req.body against the schema
+   * Express middleware for sensor create payloads.
+   *
+   * @param {import("express").Request} req - Express request.
+   * @param {import("express").Response} res - Express response.
+   * @param {import("express").NextFunction} next - Next middleware callback.
+   * @returns {void}
    */
   validate = (req, res, next) => {
     const { error } = this.schema.validate(req.body, { abortEarly: false });

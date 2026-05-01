@@ -1,9 +1,11 @@
 /**
- * Mongoose Schema: SensorData
- * Defines the structure and indexing for animal vitality metrics.
+ * @file Mongoose model for animal sensor readings.
  */
 import mongoose from "mongoose";
 
+/**
+ * Stores time-series sensor readings for a real animal document.
+ */
 const sensorSchema = new mongoose.Schema(
     {
         animalId: {
@@ -46,10 +48,12 @@ const sensorSchema = new mongoose.Schema(
     { timestamps: true },
 );
 
-// Compound index for optimized filtering and temporal sorting
+// Keeps latest/history lookups quick for each animal.
 sensorSchema.index({ animalId: 1, timestamp: -1 });
 
 /**
+ * Sensor reading collection model.
+ *
  * @type {mongoose.Model}
  */
 const SensorData = mongoose.model("Sensor_Data", sensorSchema);
