@@ -14,7 +14,7 @@ class AnimalRepository {
     }
 
     async findById(id) {
-        return await this.#model.findById(id);
+        return await this.#model.findOne({ _id: { $eq: id } });
     }
 
     async update(id, data) {
