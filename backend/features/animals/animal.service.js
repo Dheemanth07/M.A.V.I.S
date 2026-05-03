@@ -1,7 +1,7 @@
 /**
  * @file Business logic for animal profiles and health summaries.
  */
-import AppError from "../utils/AppError.js";
+import AppError from "../../utils/AppError.js";
 
 /**
  * Coordinates animal persistence and sensor-backed health checks.
@@ -11,8 +11,8 @@ class AnimalService {
     #sensorRepository;
 
     /**
-     * @param {import("../repositories/animal.repository.js").default} animalRepository - Animal data access.
-     * @param {import("../repositories/sensor.repository.js").default} sensorRepository - Sensor data access.
+     * @param {import("./animal.repository.js").default} animalRepository - Animal data access.
+     * @param {import("../sensors/sensor.repository.js").default} sensorRepository - Sensor data access.
      */
     constructor(animalRepository, sensorRepository) {
         this.#animalRepository = animalRepository;
@@ -108,7 +108,7 @@ class AnimalService {
             throw new AppError(`Animal with ID ${animalId} not found`, 404);
         }
 
-        const latestSensor = await this.#sensorRepository.findLatestByAnimalId(animalId);
+        const latestSensor = await this.#sensorRepository.findLatestByAnimal(animalId);
 
         if (!latestSensor) {
             return {

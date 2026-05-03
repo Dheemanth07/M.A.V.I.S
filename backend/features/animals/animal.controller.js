@@ -1,7 +1,6 @@
 /**
  * @file Express handlers for animal endpoints.
  */
-import AppError from "../utils/AppError.js";
 
 /**
  * Turns animal HTTP requests into service calls and JSON responses.
@@ -10,7 +9,7 @@ class AnimalController {
     #service;
 
     /**
-     * @param {import("../services/animal.service.js").default} service - Animal service.
+     * @param {import("./animal.service.js").default} service - Animal service.
      */
     constructor(service) {
         this.#service = service;

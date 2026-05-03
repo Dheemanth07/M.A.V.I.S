@@ -8,8 +8,8 @@ import express from "express";
  */
 class SensorRoutes {
     /**
-     * @param {import("../controllers/sensor.controller.js").default} sensorController - Sensor controller.
-     * @param {import("../validators/sensor.validator.js").default} sensorValidator - Sensor request validator.
+     * @param {import("./sensor.controller.js").default} sensorController - Sensor controller.
+     * @param {import("./sensor.validator.js").default} sensorValidator - Sensor request validator.
      */
     constructor(sensorController, sensorValidator) {
         this.router = express.Router();

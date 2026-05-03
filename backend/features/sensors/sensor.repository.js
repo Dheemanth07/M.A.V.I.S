@@ -1,7 +1,6 @@
 /**
  * @file Data access wrapper for sensor readings.
  */
-import SensorData from "../models/sensor.model.js";
 
 /**
  * Keeps sensor queries small and reusable across services.

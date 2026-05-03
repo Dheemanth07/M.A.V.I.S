@@ -2,7 +2,7 @@
  * @file Business logic for sensor readings and realtime alerts.
  */
 import mongoose from "mongoose";
-import AppError from "../utils/AppError.js";
+import AppError from "../../utils/AppError.js";
 
 /**
  * Validates animal ownership, stores sensor data, and fetches readings.
