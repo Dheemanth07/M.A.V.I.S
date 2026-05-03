@@ -22,6 +22,7 @@ class SensorValidator {
         temperature: Joi.number().min(30).max(SENSOR_TEMPERATURE_MAX).required(),
         respiratoryRate: Joi.number().min(5).max(60).required(),
         bloodOxygen: Joi.number().min(70).max(100).required(),
+        heartRate: Joi.number().min(20).max(240).required(),
       }).required(),
 
       behavior: Joi.object({
