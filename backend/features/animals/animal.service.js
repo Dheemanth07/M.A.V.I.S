@@ -2,7 +2,11 @@
  * @file Business logic for animal profiles and health summaries.
  */
 import AppError from "../../utils/AppError.js";
-import { BATTERY_WARNING_THRESHOLD, FEVER_TEMPERATURE_THRESHOLD } from "../../config/constants.js";
+import {
+    BATTERY_WARNING_THRESHOLD,
+    FEVER_TEMPERATURE_THRESHOLD,
+    FEVER_WARNING_TEMPERATURE_THRESHOLD,
+} from "../../config/constants.js";
 
 /**
  * Coordinates animal persistence and sensor-backed health checks.
@@ -127,7 +131,7 @@ class AnimalService {
         if (temperature > FEVER_TEMPERATURE_THRESHOLD) {
             computedHealth = "critical";
             activeAlerts.push(`Fever detected: Body temperature is ${temperature}°C.`);
-        } else if (temperature > 40) {
+        } else if (temperature > FEVER_WARNING_TEMPERATURE_THRESHOLD) {
             computedHealth = "warning";
             activeAlerts.push(`Elevated body temperature detected (${temperature}°C).`);
         }

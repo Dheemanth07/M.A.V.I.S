@@ -2,6 +2,7 @@
  * @file Joi validation for sensor request bodies.
  */
 import Joi from "joi";
+import { SENSOR_TEMPERATURE_MAX } from "../../config/constants.js";
 
 /**
  * Validates sensor readings before they are stored.
@@ -18,7 +19,7 @@ class SensorValidator {
       }),
 
       physiology: Joi.object({
-        temperature: Joi.number().min(30).max(50).required(),
+        temperature: Joi.number().min(30).max(SENSOR_TEMPERATURE_MAX).required(),
         respiratoryRate: Joi.number().min(5).max(60).required(),
         bloodOxygen: Joi.number().min(70).max(100).required(),
       }).required(),
