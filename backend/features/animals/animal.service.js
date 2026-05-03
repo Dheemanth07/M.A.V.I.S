@@ -1,7 +1,12 @@
 /**
  * @file Business logic for animal profiles and health summaries.
  */
-import AppError from "../utils/AppError.js";
+import AppError from "../../utils/AppError.js";
+import {
+    BATTERY_WARNING_THRESHOLD,
+    FEVER_TEMPERATURE_THRESHOLD,
+    FEVER_WARNING_TEMPERATURE_THRESHOLD,
+} from "../../config/constants.js";
 
 /**
  * Coordinates animal persistence and sensor-backed health checks.
@@ -11,8 +16,8 @@ class AnimalService {
     #sensorRepository;
 
     /**
-     * @param {import("../repositories/animal.repository.js").default} animalRepository - Animal data access.
-     * @param {import("../repositories/sensor.repository.js").default} sensorRepository - Sensor data access.
+     * @param {import("./animal.repository.js").default} animalRepository - Animal data access.
+     * @param {import("../sensors/sensor.repository.js").default} sensorRepository - Sensor data access.
      */
     constructor(animalRepository, sensorRepository) {
         this.#animalRepository = animalRepository;
@@ -108,7 +113,7 @@ class AnimalService {
             throw new AppError(`Animal with ID ${animalId} not found`, 404);
         }
 
-        const latestSensor = await this.#sensorRepository.findLatestByAnimalId(animalId);
+        const latestSensor = await this.#sensorRepository.findLatestByAnimal(animalId);
 
         if (!latestSensor) {
             return {
@@ -123,10 +128,10 @@ class AnimalService {
         let activeAlerts = [];
 
         const { temperature, heartRate } = latestSensor.physiology;
-        if (temperature > 40) {
+        if (temperature > FEVER_TEMPERATURE_THRESHOLD) {
             computedHealth = "critical";
             activeAlerts.push(`Fever detected: Body temperature is ${temperature}°C.`);
-        } else if (temperature > 39) {
+        } else if (temperature > FEVER_WARNING_TEMPERATURE_THRESHOLD) {
             computedHealth = "warning";
             activeAlerts.push(`Elevated body temperature detected (${temperature}°C).`);
         }
@@ -143,7 +148,7 @@ class AnimalService {
             }
         }
 
-        if (latestSensor.device && latestSensor.device.batteryLevel < 15) {
+        if (latestSensor.device && latestSensor.device.batteryLevel < BATTERY_WARNING_THRESHOLD) {
             activeAlerts.push(`DEVICE WARNING: Collar battery is critically low (${latestSensor.device.batteryLevel}%).`);
         }
 

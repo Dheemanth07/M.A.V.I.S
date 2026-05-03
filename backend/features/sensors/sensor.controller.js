@@ -1,7 +1,6 @@
 /**
  * @file Express handlers for sensor reading endpoints.
  */
-import AppError from "../utils/AppError.js";
 
 /**
  * Turns sensor HTTP requests into service calls and realtime events.
@@ -10,7 +9,7 @@ class SensorController {
     #service;
 
     /**
-     * @param {import("../services/sensor.service.js").default} service - Sensor service.
+     * @param {import("./sensor.service.js").default} service - Sensor service.
      */
     constructor(service) {
         this.#service = service;

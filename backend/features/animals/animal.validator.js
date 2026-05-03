@@ -16,7 +16,7 @@ class AnimalValidator {
             species: Joi.string().required(),
             breed: Joi.string().optional(),
             age: Joi.number().min(0).optional(),
-            weight: Joi.number().optional(),
+            weight: Joi.number().min(0).optional(),
             healthStatus: Joi.string().valid('healthy', 'warning', 'critical'),
             location: Joi.object({
                 lat: Joi.number(),

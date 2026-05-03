@@ -15,20 +15,20 @@ import corsOptions from "./middlewares/cors.js";
 import connectDB from "./config/db.js";
 import globalErrorHandler from "./middlewares/error.middleware.js";
 
-// --- Domain Imports ---
-import AnimalData from "./models/animal.model.js";
-import AnimalRepository from "./repositories/animal.repository.js";
-import AnimalService from "./services/animal.service.js";
-import AnimalController from "./controllers/animal.controller.js";
-import AnimalValidator from "./validators/animal.validator.js";
-import AnimalRoutes from "./routes/animal.routes.js";
+// --- Feature Imports ---
+import AnimalData from "./features/animals/animal.model.js";
+import AnimalRepository from "./features/animals/animal.repository.js";
+import AnimalService from "./features/animals/animal.service.js";
+import AnimalController from "./features/animals/animal.controller.js";
+import AnimalValidator from "./features/animals/animal.validator.js";
+import AnimalRoutes from "./features/animals/animal.routes.js";
 
-import SensorData from "./models/sensor.model.js";
-import SensorRepository from "./repositories/sensor.repository.js";
-import SensorService from "./services/sensor.service.js";
-import SensorController from "./controllers/sensor.controller.js";
-import SensorValidator from "./validators/sensor.validator.js";
-import SensorRoutes from "./routes/sensor.routes.js";
+import SensorData from "./features/sensors/sensor.model.js";
+import SensorRepository from "./features/sensors/sensor.repository.js";
+import SensorService from "./features/sensors/sensor.service.js";
+import SensorController from "./features/sensors/sensor.controller.js";
+import SensorValidator from "./features/sensors/sensor.validator.js";
+import SensorRoutes from "./features/sensors/sensor.routes.js";
 
 dotenv.config();
 

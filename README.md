@@ -4,7 +4,7 @@
 
 MAVIS is a backend system for tracking animal health from sensor readings. It stores animal profiles, records physiological and environmental sensor data, exposes REST APIs for latest/history lookups, and emits realtime updates with Socket.IO.
 
-The project is still evolving, but the backend is organized around a clean Controller -> Service -> Repository flow so new features can be added without crowding the route layer.
+The project is still evolving, but the backend is organized by feature. Each feature keeps its routes, controller, service, repository, model, and validator together while still following a clean Controller -> Service -> Repository flow.
 
 ## Tech Stack
 
@@ -17,7 +17,7 @@ The project is still evolving, but the backend is organized around a clean Contr
 
 ## Architecture
 
-The backend follows a layered structure:
+The backend follows a feature-first layered structure:
 
 * **Routes**: define endpoint paths and attach middleware
 * **Controllers**: handle HTTP request/response flow
@@ -25,6 +25,8 @@ The backend follows a layered structure:
 * **Repositories**: wrap database queries
 * **Models**: define MongoDB document shape with Mongoose
 * **Validators**: validate incoming request bodies with Joi
+
+Controllers stay thin, routes do not hold business logic, services do not handle HTTP response details, and repositories only talk to the database.
 
 Sensor records now use the real MongoDB animal ObjectId. That means sensor routes should be called with the same ID returned by `/api/animals`, not mock IDs like `dog_1`.
 
@@ -34,14 +36,23 @@ Sensor records now use the real MongoDB animal ObjectId. That means sensor route
 MAVIS/
 |-- backend/
 |   |-- config/
-|   |-- controllers/
+|   |-- features/
+|   |   |-- animals/
+|   |   |   |-- animal.controller.js
+|   |   |   |-- animal.model.js
+|   |   |   |-- animal.repository.js
+|   |   |   |-- animal.routes.js
+|   |   |   |-- animal.service.js
+|   |   |   `-- animal.validator.js
+|   |   `-- sensors/
+|   |       |-- sensor.controller.js
+|   |       |-- sensor.model.js
+|   |       |-- sensor.repository.js
+|   |       |-- sensor.routes.js
+|   |       |-- sensor.service.js
+|   |       `-- sensor.validator.js
 |   |-- middlewares/
-|   |-- models/
-|   |-- repositories/
-|   |-- routes/
-|   |-- services/
 |   |-- utils/
-|   |-- validators/
 |   |-- GenerateSample.py
 |   |-- UploadDataset.py
 |   |-- seed_animals.py

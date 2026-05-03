@@ -2,7 +2,8 @@
  * @file Business logic for sensor readings and realtime alerts.
  */
 import mongoose from "mongoose";
-import AppError from "../utils/AppError.js";
+import AppError from "../../utils/AppError.js";
+import { BATTERY_WARNING_THRESHOLD, FEVER_TEMPERATURE_THRESHOLD } from "../../config/constants.js";
 
 /**
  * Validates animal ownership, stores sensor data, and fetches readings.
@@ -58,7 +59,7 @@ class SensorService {
         }
 
         // Fever Detection
-        if (sensorData.physiology.temperature > 45) {
+        if (sensorData.physiology.temperature > FEVER_TEMPERATURE_THRESHOLD) {
             io.emit("alert", {
                 animalId: sensorData.animalId,
                 type: "FEVER",
@@ -68,7 +69,7 @@ class SensorService {
         }
 
         // Hardware Maintenance
-        if (sensorData.device?.batteryLevel < 20) {
+        if (sensorData.device?.batteryLevel < BATTERY_WARNING_THRESHOLD) {
             io.emit("alert", {
                 animalId: sensorData.animalId,
                 type: "BATTERY",

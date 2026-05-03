@@ -8,8 +8,8 @@ import express from 'express';
  */
 class AnimalRoutes {
     /**
-     * @param {import("../controllers/animal.controller.js").default} animalController - Animal controller.
-     * @param {import("../validators/animal.validator.js").default} animalValidator - Animal request validator.
+     * @param {import("./animal.controller.js").default} animalController - Animal controller.
+     * @param {import("./animal.validator.js").default} animalValidator - Animal request validator.
      */
     constructor(animalController, animalValidator) {
         this.router = express.Router();
