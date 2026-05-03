@@ -2,6 +2,7 @@
  * @file Business logic for animal profiles and health summaries.
  */
 import AppError from "../../utils/AppError.js";
+import { BATTERY_WARNING_THRESHOLD, FEVER_TEMPERATURE_THRESHOLD } from "../../config/constants.js";
 
 /**
  * Coordinates animal persistence and sensor-backed health checks.
@@ -123,10 +124,10 @@ class AnimalService {
         let activeAlerts = [];
 
         const { temperature, heartRate } = latestSensor.physiology;
-        if (temperature > 40) {
+        if (temperature > FEVER_TEMPERATURE_THRESHOLD) {
             computedHealth = "critical";
             activeAlerts.push(`Fever detected: Body temperature is ${temperature}°C.`);
-        } else if (temperature > 39) {
+        } else if (temperature > 40) {
             computedHealth = "warning";
             activeAlerts.push(`Elevated body temperature detected (${temperature}°C).`);
         }
@@ -143,7 +144,7 @@ class AnimalService {
             }
         }
 
-        if (latestSensor.device && latestSensor.device.batteryLevel < 15) {
+        if (latestSensor.device && latestSensor.device.batteryLevel < BATTERY_WARNING_THRESHOLD) {
             activeAlerts.push(`DEVICE WARNING: Collar battery is critically low (${latestSensor.device.batteryLevel}%).`);
         }
 

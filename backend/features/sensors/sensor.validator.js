@@ -18,8 +18,7 @@ class SensorValidator {
       }),
 
       physiology: Joi.object({
-        temperature: Joi.number().min(30).max(45).required(),
-        heartRate: Joi.number().min(30).max(200).required(),
+        temperature: Joi.number().min(30).max(50).required(),
         respiratoryRate: Joi.number().min(5).max(60).required(),
         bloodOxygen: Joi.number().min(70).max(100).required(),
       }).required(),
