@@ -3,6 +3,7 @@
  */
 import Joi from "joi";
 import { SENSOR_TEMPERATURE_MAX } from "../../config/constants.js";
+import AppError from "../../utils/AppError.js";
 
 /**
  * Validates sensor readings before they are stored.
@@ -20,6 +21,7 @@ class SensorValidator {
 
       physiology: Joi.object({
         temperature: Joi.number().min(30).max(SENSOR_TEMPERATURE_MAX).required(),
+        heartRate: Joi.number().min(30).max(240).required(),
         respiratoryRate: Joi.number().min(5).max(60).required(),
         bloodOxygen: Joi.number().min(70).max(100).required(),
         heartRate: Joi.number().min(20).max(240).required(),
@@ -68,9 +70,57 @@ class SensorValidator {
         .map((detail) => detail.message.replace(/"/g, ""))
         .join(", ");
 
-      return res.status(400).json({ error: errorMessage });
+      return next(new AppError(errorMessage, 400));
     }
 
+    next();
+  };
+
+  /**
+   * Express middleware for sensor history query parameters.
+   *
+   * @param {import("express").Request & {validatedQuery?: Object}} req - Express request.
+   * @param {import("express").Response} res - Express response.
+   * @param {import("express").NextFunction} next - Next middleware callback.
+   * @returns {void}
+   */
+  validateHistoryQuery = (req, res, next) => {
+    const { from, to } = req.query;
+
+    if (!from || !to) {
+      return next(
+        new AppError("Missing required query parameters: 'from' and 'to'", 400),
+      );
+    }
+
+    const fromDate = new Date(from);
+    const toDate = new Date(to);
+
+    if (Number.isNaN(fromDate.getTime())) {
+      return next(
+        new AppError(
+          `Invalid 'from' date format: ${from}. Use ISO format (e.g., 2026-04-17T10:00:00Z)`,
+          400,
+        ),
+      );
+    }
+
+    if (Number.isNaN(toDate.getTime())) {
+      return next(
+        new AppError(
+          `Invalid 'to' date format: ${to}. Use ISO format (e.g., 2026-04-17T10:00:00Z)`,
+          400,
+        ),
+      );
+    }
+
+    if (fromDate > toDate) {
+      return next(
+        new AppError("'from' must be earlier than or equal to 'to'", 400),
+      );
+    }
+
+    req.validatedQuery = { fromDate, toDate };
     next();
   };
 }

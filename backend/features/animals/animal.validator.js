@@ -1,7 +1,8 @@
 /**
  * @file Joi validation for animal request bodies.
  */
-import Joi from 'joi';
+import Joi from "joi";
+import AppError from "../../utils/AppError.js";
 
 /**
  * Validates payloads before they reach the animal controller.
@@ -17,7 +18,7 @@ class AnimalValidator {
             breed: Joi.string().optional(),
             age: Joi.number().min(0).optional(),
             weight: Joi.number().min(0).optional(),
-            healthStatus: Joi.string().valid('healthy', 'warning', 'critical'),
+            healthStatus: Joi.string().valid("healthy", "warning", "critical"),
             location: Joi.object({
                 lat: Joi.number(),
                 lng: Joi.number()
@@ -35,9 +36,13 @@ class AnimalValidator {
      * @returns {void}
      */
     validate = (req, res, next) => {
-        const { error } = this.schema.validate(req.body);
+        const { error } = this.schema.validate(req.body, { abortEarly: false });
         if (error) {
-            return res.status(400).json({ error: error.message });
+            const errorMessage = error.details
+                .map((detail) => detail.message.replace(/"/g, ""))
+                .join(", ");
+
+            return next(new AppError(errorMessage, 400));
         }
         next();
     };

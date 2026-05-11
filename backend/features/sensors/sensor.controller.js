@@ -72,28 +72,7 @@ class SensorController {
 
         try {
             const { animalId } = req.params;
-            const { from, to } = req.query;
-
-            if (!from || !to) {
-                return res.status(400).json({
-                    error: "Missing required query parameters: 'from' and 'to'",
-                });
-            }
-
-            const fromDate = new Date(from);
-            const toDate = new Date(to);
-
-            if (isNaN(fromDate.getTime())) {
-                return res.status(400).json({
-                    error: `Invalid 'from' date format: ${from}. Use ISO format (e.g., 2026-04-17T10:00:00Z)`,
-                });
-            }
-
-            if (isNaN(toDate.getTime())) {
-                return res.status(400).json({
-                    error: `Invalid 'to' date format: ${to}. Use ISO format (e.g., 2026-04-17T10:00:00Z)`,
-                });
-            }
+            const { fromDate, toDate } = req.validatedQuery;
 
             const history = await service.getLatestByRange(
                 animalId,
