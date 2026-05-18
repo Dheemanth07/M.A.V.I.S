@@ -53,9 +53,14 @@ MAVIS/
 |   |       `-- sensor.validator.js
 |   |-- middlewares/
 |   |-- utils/
-|   |-- GenerateSample.py
-|   |-- UploadDataset.py
-|   |-- seed_animals.py
+|   |-- scripts/
+|   |   |-- GenerateSample.py
+|   |   |-- UploadDataset.py
+|   |   `-- seed_animals.py
+|   |-- data/
+|   |   |-- animal_ids.json
+|   |   |-- animal_mapping.json
+|   |   `-- sensor_data.json
 |   `-- server.js
 |-- frontend/ (planned)
 |-- docker-compose.yml
@@ -152,19 +157,19 @@ The dev script ignores generated JSON data files so uploading sample data does n
 Run these from the `backend` directory:
 
 ```bash
-python seed_animals.py
-python GenerateSample.py
-python UploadDataset.py
+python scripts/seed_animals.py
+python scripts/GenerateSample.py
+python scripts/UploadDataset.py
 ```
 
 The expected flow is:
 
-1. `seed_animals.py` creates animal documents through the Animal API.
-2. It writes the created ObjectIds to `animal_ids.json` and `animal_mapping.json`.
-3. `GenerateSample.py` builds `sensor_data.json` using those real animal ObjectIds.
-4. `UploadDataset.py` uploads readings to `/api/sensor`.
+1. `scripts/seed_animals.py` creates animal documents through the Animal API.
+2. It writes the created ObjectIds to `data/animal_ids.json` and `data/animal_mapping.json`.
+3. `scripts/GenerateSample.py` builds `data/sensor_data.json` using those real animal ObjectIds.
+4. `scripts/UploadDataset.py` uploads readings to `/api/sensor`.
 
-After upload, use an animal `_id` from `/api/animals` or `animal_mapping.json` when calling sensor routes.
+After upload, use an animal `_id` from `/api/animals` or `data/animal_mapping.json` when calling sensor routes.
 
 ## Notes
 
