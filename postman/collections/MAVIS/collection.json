@@ -1,9 +1,290 @@
 {
-  "postman_collection_v3": {
-    "info": {
-      "name": "MAVIS",
-      "description": "Collection for testing MAVIS HTTP API routes"
+  "info": {
+    "_postman_id": "6bce0a25-c1b7-4f26-9141-mavis-api",
+    "name": "MAVIS API",
+    "description": "Professional API collection for MAVIS backend validation. Run `POST /api/animals` first to create an animal and auto-store `animalId` for sensor requests.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "GET /",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": ["{{baseUrl}}"],
+              "path": [""]
+            },
+            "description": "Checks whether the MAVIS backend is running and reports database connection state."
+          },
+          "response": [
+            {
+              "name": "200 - Backend running",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": "{{baseUrl}}/"
+              },
+              "status": "OK",
+              "code": 200,
+              "body": "{\n  \"status\": \"success\",\n  \"message\": \"MAVIS backend running\",\n  \"data\": {\n    \"service\": \"MAVIS backend\",\n    \"database\": \"connected\",\n    \"connectedDatabase\": \"mavis\"\n  }\n}"
+            }
+          ]
+        }
+      ]
     },
-    "item": []
-  }
+    {
+      "name": "Animals",
+      "item": [
+        {
+          "name": "POST /api/animals",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const body = pm.response.json();",
+                  "  if (body.data && body.data._id) pm.environment.set('animalId', body.data._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dog 1\",\n  \"species\": \"Dog\",\n  \"breed\": \"Labrador\",\n  \"age\": 3,\n  \"weight\": 22,\n  \"location\": {\n    \"lat\": 12.9716,\n    \"lng\": 77.5946\n  },\n  \"isActive\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/animals",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "animals"]
+            },
+            "description": "Creates an animal profile. The test script stores the returned `_id` in `animalId`."
+          }
+        },
+        {
+          "name": "GET /api/animals",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/animals",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "animals"]
+            },
+            "description": "Lists all animal profiles."
+          }
+        },
+        {
+          "name": "GET /api/animals/:id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/animals/{{animalId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "animals", "{{animalId}}"]
+            },
+            "description": "Fetches one animal by MongoDB ObjectId."
+          }
+        },
+        {
+          "name": "PUT /api/animals/:id",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"healthStatus\": \"warning\",\n  \"weight\": 23,\n  \"location\": {\n    \"lat\": 12.972,\n    \"lng\": 77.595\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/animals/{{animalId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "animals", "{{animalId}}"]
+            },
+            "description": "Updates one animal profile. Only changed fields are required."
+          }
+        },
+        {
+          "name": "DELETE /api/animals/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/animals/{{animalId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "animals", "{{animalId}}"]
+            },
+            "description": "Deletes one animal by MongoDB ObjectId. Use carefully during demos."
+          }
+        },
+        {
+          "name": "GET /api/animals/:id/health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/animals/{{animalId}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "animals", "{{animalId}}", "health"]
+            },
+            "description": "Returns the latest computed health status for one animal."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Sensor",
+      "item": [
+        {
+          "name": "POST /api/sensor",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"animalId\": \"{{animalId}}\",\n  \"physiology\": {\n    \"temperature\": 38.7,\n    \"heartRate\": 92,\n    \"respiratoryRate\": 24,\n    \"bloodOxygen\": 97\n  },\n  \"behavior\": {\n    \"motion\": true,\n    \"steps\": 125,\n    \"lyingDown\": false\n  },\n  \"environment\": {\n    \"ambientTemperature\": 29,\n    \"humidity\": 62,\n    \"aqi\": 45\n  },\n  \"location\": {\n    \"latitude\": 12.9716,\n    \"longitude\": 77.5946,\n    \"zone\": \"farm-1\"\n  },\n  \"device\": {\n    \"batteryLevel\": 82,\n    \"signalStrength\": -67\n  },\n  \"timestamp\": \"2026-04-17T10:30:00.000Z\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/sensor",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "sensor"]
+            },
+            "description": "Creates a sensor reading for an existing animal ObjectId."
+          }
+        },
+        {
+          "name": "GET /api/sensor/latest/:animalId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/sensor/latest/{{animalId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "sensor", "latest", "{{animalId}}"]
+            },
+            "description": "Gets the most recent sensor reading for one animal."
+          }
+        },
+        {
+          "name": "GET /api/sensor/history/:animalId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/sensor/history/{{animalId}}?from={{from}}&to={{to}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "sensor", "history", "{{animalId}}"],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "{{from}}",
+                  "description": "Start datetime in ISO format"
+                },
+                {
+                  "key": "to",
+                  "value": "{{to}}",
+                  "description": "End datetime in ISO format"
+                }
+              ]
+            },
+            "description": "Gets historical sensor readings for one animal between two ISO date values."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Negative Cases",
+      "item": [
+        {
+          "name": "GET /api/animals/:id - Invalid ObjectId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/animals/not-a-valid-id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "animals", "not-a-valid-id"]
+            },
+            "description": "Expected 400 response using the global error format."
+          }
+        },
+        {
+          "name": "GET /api/sensor/history/:animalId - Missing Dates",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/sensor/history/{{animalId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "sensor", "history", "{{animalId}}"]
+            },
+            "description": "Expected 400 because `from` and `to` are required."
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "pm.test('response is JSON', function () {",
+          "  pm.response.to.have.header('Content-Type');",
+          "});"
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000"
+    },
+    {
+      "key": "animalId",
+      "value": "64f47f8923ec0eba198f80d2"
+    }
+  ]
 }
