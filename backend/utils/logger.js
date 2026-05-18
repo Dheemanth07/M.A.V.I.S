@@ -10,7 +10,11 @@ const formatMeta = (meta) => {
     }
 
     if (typeof meta === "object") {
-        return ` ${JSON.stringify(meta)}`;
+        try {
+            return ` ${JSON.stringify(meta)}`;
+        } catch {
+            return " [unserializable meta]";
+        }
     }
 
     return ` ${meta}`;
