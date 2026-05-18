@@ -14,6 +14,7 @@ import mongoose from "mongoose";
 import corsOptions from "./middlewares/cors.js";
 import connectDB from "./config/db.js";
 import globalErrorHandler from "./middlewares/error.middleware.js";
+import logger from "./utils/logger.js";
 
 // --- Feature Imports ---
 import AnimalData from "./features/animals/animal.model.js";
@@ -30,7 +31,7 @@ import SensorController from "./features/sensors/sensor.controller.js";
 import SensorValidator from "./features/sensors/sensor.validator.js";
 import SensorRoutes from "./features/sensors/sensor.routes.js";
 
-dotenv.config();
+dotenv.config({ quiet: true });
 
 const PORT = process.env.PORT || 5000;
 const app = express();
@@ -45,10 +46,10 @@ const io = new Server(httpServer, { cors: corsOptions });
 app.set("io", io);
 
 io.on("connection", (socket) => {
-    console.log(`\n--- NEW CONNECTION: ${socket.id} ---`);
+    logger.info("Socket connected", { socketId: socket.id });
 
     socket.on("disconnect", (reason) => {
-        console.log(`--- CLIENT DISCONNECTED: ${socket.id} (${reason}) ---`);
+        logger.info("Socket disconnected", { socketId: socket.id, reason });
     });
 });
 
@@ -69,10 +70,13 @@ const sensorRoutes = new SensorRoutes(sensorController, sensorValidator);
  */
 app.get("/", (req, res) => {
     res.json({
-        status: "active",
+        status: "success",
         message: "MAVIS backend running",
-        database: mongoose.connection.readyState === 1 ? "connected" : "disconnected",
-        connected_DB: mongoose.connection.name,
+        data: {
+            service: "MAVIS backend",
+            database: mongoose.connection.readyState === 1 ? "connected" : "disconnected",
+            connectedDatabase: mongoose.connection.name,
+        },
     });
 });
 
@@ -91,11 +95,11 @@ const startServer = async () => {
         await connectDB();
 
         httpServer.listen(PORT, () => {
-            console.log(`Server running on port ${PORT}`);
+            logger.info(`Server running on port ${PORT}`);
         });
 
     } catch (err) {
-        console.error("Failed to start server:", err.message);
+        logger.error("Failed to start server", err);
         process.exit(1);
     }
 };

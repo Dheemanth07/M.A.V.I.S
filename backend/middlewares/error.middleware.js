@@ -1,6 +1,7 @@
 /**
  * @file Global Express error middleware.
  */
+import logger from "../utils/logger.js";
 
 /**
  * Sends a consistent error response and logs enough context for debugging.
@@ -17,11 +18,11 @@ const globalErrorHandler = (err, req, res, next) => {
     err.statusCode = err.statusCode || 500;
     err.status = err.status || "error";
 
-    console.error(`\n--- [${err.status.toUpperCase()}] ERROR LOG ---`);
-    console.error(`Method: ${req.method} | URL: ${req.originalUrl}`);
-    console.error(`Message: ${err.message}`);
-    if (isDev) console.error(`Stack: ${err.stack}`);
-    console.error("-------------------------------\n");
+    logger.error(`${req.method} ${req.originalUrl} - ${err.message}`, {
+        status: err.status,
+        statusCode: err.statusCode,
+        ...(isDev && { stack: err.stack }),
+    });
 
     res.status(err.statusCode).json({
         status: err.status,

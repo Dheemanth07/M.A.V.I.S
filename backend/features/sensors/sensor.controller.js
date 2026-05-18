@@ -1,6 +1,7 @@
 /**
  * @file Express handlers for sensor reading endpoints.
  */
+import { sendSuccess } from "../../utils/httpResponse.js";
 
 /**
  * Turns sensor HTTP requests into service calls and realtime events.
@@ -32,7 +33,7 @@ class SensorController {
 
             io.emit("sensorUpdate", result);
 
-            res.status(201).json(result);
+            sendSuccess(res, 201, result, "Sensor reading created successfully");
         } catch (err) {
             next(err);
         }
@@ -53,7 +54,7 @@ class SensorController {
             const { animalId } = req.params;
             const latest = await service.getLatest(animalId);
 
-            res.status(200).json(latest);
+            sendSuccess(res, 200, latest, "Latest sensor reading fetched successfully");
         } catch (err) {
             next(err);
         }
@@ -72,28 +73,7 @@ class SensorController {
 
         try {
             const { animalId } = req.params;
-            const { from, to } = req.query;
-
-            if (!from || !to) {
-                return res.status(400).json({
-                    error: "Missing required query parameters: 'from' and 'to'",
-                });
-            }
-
-            const fromDate = new Date(from);
-            const toDate = new Date(to);
-
-            if (isNaN(fromDate.getTime())) {
-                return res.status(400).json({
-                    error: `Invalid 'from' date format: ${from}. Use ISO format (e.g., 2026-04-17T10:00:00Z)`,
-                });
-            }
-
-            if (isNaN(toDate.getTime())) {
-                return res.status(400).json({
-                    error: `Invalid 'to' date format: ${to}. Use ISO format (e.g., 2026-04-17T10:00:00Z)`,
-                });
-            }
+            const { fromDate, toDate } = req.validatedQuery;
 
             const history = await service.getLatestByRange(
                 animalId,
@@ -101,7 +81,7 @@ class SensorController {
                 toDate,
             );
 
-            res.status(200).json(history);
+            sendSuccess(res, 200, history, "Sensor history fetched successfully");
         } catch (err) {
             next(err);
         }
