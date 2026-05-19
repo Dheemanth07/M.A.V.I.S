@@ -45,14 +45,7 @@ const sensorSchema = new mongoose.Schema(
             index: true,
         },
     },
-    {
-        timestamps: true,
-        timeseries: {
-            timeField: "timestamp",
-            metaField: "animalId",
-            granularity: "minutes",
-        },
-    },
+    { timestamps: true },
 );
 
 // Keeps latest/history lookups quick for each animal.
@@ -64,34 +57,5 @@ sensorSchema.index({ animalId: 1, timestamp: -1 });
  * @type {mongoose.Model}
  */
 const SensorData = mongoose.model("Sensor_Data", sensorSchema);
-
-/**
- * Ensures MongoDB creates the sensor collection as a native time-series collection.
- *
- * MongoDB cannot convert an existing normal collection to time-series in place.
- *
- * @returns {Promise<void>}
- */
-export const ensureSensorTimeSeriesCollection = async () => {
-    const collectionName = SensorData.collection.name;
-    const collectionInfo = await mongoose.connection.db
-        .listCollections({ name: collectionName })
-        .next();
-
-    if (!collectionInfo) {
-        await SensorData.createCollection();
-        await SensorData.createIndexes();
-        return;
-    }
-
-    if (collectionInfo.type !== "timeseries") {
-        throw new Error(
-            `Collection "${collectionName}" already exists as "${collectionInfo.type}". ` +
-                "Create a migration or drop/rename the existing collection before using MongoDB time-series storage.",
-        );
-    }
-
-    await SensorData.createIndexes();
-};
 
 export default SensorData;
