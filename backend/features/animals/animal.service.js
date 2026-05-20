@@ -2,6 +2,7 @@
  * @file Business logic for animal profiles and health summaries.
  */
 import AppError from "../../utils/AppError.js";
+import { ensureValidObjectId } from "../../utils/validateObjectId.js";
 import {
     BATTERY_WARNING_THRESHOLD,
     FEVER_TEMPERATURE_THRESHOLD,
@@ -45,6 +46,8 @@ class AnimalService {
      * @throws {AppError} When the animal is not found.
      */
     async getAnimal(id) {
+        ensureValidObjectId(id, "animal ID");
+
         const animal = await this.#animalRepository.findById(id);
 
         if (!animal)
@@ -76,6 +79,8 @@ class AnimalService {
     }
 
     async updateAnimal(id, data) {
+        ensureValidObjectId(id, "animal ID");
+
         const sanitizedData = this.#sanitizeUpdateData(data);
         const updatedAnimal = await this.#animalRepository.update(id, sanitizedData);
 
@@ -91,6 +96,8 @@ class AnimalService {
      * @throws {AppError} When the animal is not found.
      */
     async deleteAnimal(id) {
+        ensureValidObjectId(id, "animal ID");
+
         const deletedAnimal = await this.#animalRepository.delete(id);
 
         if (!deletedAnimal)
@@ -108,6 +115,8 @@ class AnimalService {
      * @throws {AppError} When the animal is not found.
      */
     async getHealthStatus(animalId) {
+        ensureValidObjectId(animalId, "animal ID");
+
         const animal = await this.#animalRepository.findById(animalId);
         if (!animal) {
             throw new AppError(`Animal with ID ${animalId} not found`, 404);
@@ -119,8 +128,9 @@ class AnimalService {
             return {
                 animalId: animal._id,
                 name: animal.name,
-                healthStatus: "unknown",
-                message: "No sensor data available"
+                status: "unknown",
+                alerts: [],
+                message: "No sensor data available",
             };
         }
 

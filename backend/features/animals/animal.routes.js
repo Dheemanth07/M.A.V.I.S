@@ -1,7 +1,7 @@
 /**
  * @file Animal route registration.
  */
-import express from 'express';
+import express from "express";
 
 /**
  * Owns the Express router for animal profile endpoints.
@@ -25,12 +25,33 @@ class AnimalRoutes {
      * @returns {void}
      */
     initializeRoutes() {
-        this.router.post('/', this.animalValidator.validate, this.animalController.createAnimal);
-        this.router.get('/', this.animalController.getAnimals);
-        this.router.get('/:id', this.animalController.getAnimal);
-        this.router.put('/:id', this.animalValidator.validate, this.animalController.updateAnimal);
-        this.router.delete('/:id', this.animalController.deleteAnimal);
-        this.router.get('/:id/health', this.animalController.getHealthStatus);
+        this.router.post(
+            "/",
+            this.animalValidator.validateCreate,
+            this.animalController.createAnimal,
+        );
+        this.router.get("/", this.animalController.getAnimals);
+        this.router.get(
+            "/:id",
+            this.animalValidator.validateIdParam,
+            this.animalController.getAnimal,
+        );
+        this.router.put(
+            "/:id",
+            this.animalValidator.validateIdParam,
+            this.animalValidator.validateUpdate,
+            this.animalController.updateAnimal,
+        );
+        this.router.delete(
+            "/:id",
+            this.animalValidator.validateIdParam,
+            this.animalController.deleteAnimal,
+        );
+        this.router.get(
+            "/:id/health",
+            this.animalValidator.validateIdParam,
+            this.animalController.getHealthStatus,
+        );
     }
 
     /**
