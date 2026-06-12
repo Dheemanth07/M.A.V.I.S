@@ -38,6 +38,16 @@ class AnimalValidator {
         });
     }
 
+    /**
+     * Express middleware for animal create/update payloads.
+     *
+     * @param {import("express").Request} req - Express request.
+     * @param {import("express").Response} res - Express response.
+     * @param {import("express").NextFunction} next - Next middleware callback.
+     * @returns {void}
+     */
+    validate = (req, res, next) => {
+        const { error } = this.schema.validate(req.body, { abortEarly: false });
     #validateSchema(schema, source, next) {
         const { error } = schema.validate(source, { abortEarly: false });
 

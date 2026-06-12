@@ -39,6 +39,10 @@ const connectDB = async ({
     maxRetries = DEFAULT_MAX_RETRIES,
     retryDelayMs = DEFAULT_RETRY_DELAY_MS,
 } = {}) => {
+    let attempt = 1;
+    let lastError;
+
+    while (attempt <= maxRetries) {
     const retryOptions = normalizeRetryOptions(maxRetries, retryDelayMs);
     let attempt = 1;
     let lastError;
@@ -55,6 +59,12 @@ const connectDB = async ({
             lastError = error;
             logger.warn("Database connection failed", {
                 attempt,
+                maxRetries,
+                message: error.message,
+            });
+
+            if (attempt < maxRetries) {
+                await delay(retryDelayMs);
                 maxRetries: retryOptions.maxRetries,
                 message: error.message,
             });

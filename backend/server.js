@@ -1,17 +1,11 @@
 /**
  * @file Application entry point.
  *
- * Wires Express, Socket.IO, MongoDB, and the domain layers together.
+ * Connects dependencies and starts the HTTP listener.
  */
 
-import express from "express";
-import cors from "cors";
-import { createServer } from "http";
-import { Server } from "socket.io";
 import dotenv from "dotenv";
-import mongoose from "mongoose";
 
-import corsOptions from "./middlewares/cors.js";
 import connectDB from "./config/db.js";
 import globalErrorHandler from "./middlewares/error.middleware.js";
 import logger from "./utils/logger.js";
