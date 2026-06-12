@@ -25,19 +25,21 @@ class SensorRoutes {
      * @returns {void}
      */
     initializeRoutes() {
+        // 1. Ingest new sensor data
         this.router.post(
             "/",
             this.sensorValidator.validate,
             this.sensorController.createSensorData,
         );
-        this.router.get("/latest/:animalId", this.sensorController.getLatest);
-        this.router.get(
-            "/history/:animalId",
+
+        // 2. Get the most recent reading for a specific animal
         this.router.get(
             "/latest/:animalId",
             this.sensorValidator.validateAnimalIdParam,
             this.sensorController.getLatest,
         );
+
+        // 3. Get historical data for charts
         this.router.get(
             "/history/:animalId",
             this.sensorValidator.validateAnimalIdParam,
