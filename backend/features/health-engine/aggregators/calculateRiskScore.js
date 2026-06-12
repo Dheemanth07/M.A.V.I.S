@@ -20,7 +20,7 @@ export function calculateRiskScore(allMetricEvaluations = {}) {
   }
 
   // Keep behavior stable even if thresholds change elsewhere.
-  return clampRisk(score, RISK_LEVELS.healthy, 100);
+  return clampRisk(score, RISK_THRESHOLDS.WARNING, RISK_THRESHOLDS.MAXIMUM);
 }
 
 

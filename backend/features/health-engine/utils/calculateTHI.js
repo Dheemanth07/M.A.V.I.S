@@ -1,9 +1,19 @@
-// Placeholder helper for THI-based aggregation logic (if needed later).
-// Currently returns the input as THI normalization is handled in evaluators.
 
-export function calculateTHI(thiValue) {
-  const n = Number(thiValue);
-  if (!Number.isFinite(n)) return null;
-  return n;
+/**
+ * Calculates the Temperature Humidity Index (THI) for environmental stress.
+ * * @param {number} tempCelsius - Ambient temperature in Celsius.
+ * @param {number} relativeHumidity - Relative humidity percentage.
+ * @returns {number|null} The calculated THI rounded to 2 decimal places.
+ */
+export function calculateTHI(tempCelsius, relativeHumidity) {
+    if (typeof tempCelsius !== "number" || typeof relativeHumidity !== "number") {
+        return null;
+    }
+
+    const t = tempCelsius;
+    const rh = relativeHumidity;
+
+    const thi = (1.8 * t + 32) - ((0.55 - 0.0055 * rh) * (1.8 * t - 26));
+    
+    return Math.round(thi * 100) / 100;
 }
-
