@@ -1,3 +1,5 @@
+// Kept for backward compatibility with existing aggregator modules.
+
 export function formatAlert(alert, metric) {
   return {
     type: alert.type,
@@ -7,4 +9,6 @@ export function formatAlert(alert, metric) {
     metric,
   };
 }
+
+
 
