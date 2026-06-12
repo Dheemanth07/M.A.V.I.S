@@ -1,6 +1,7 @@
 /**
  * @file Express handlers for animal endpoints.
  */
+import { sendMessage, sendSuccess } from "../../utils/httpResponse.js";
 
 /**
  * Turns animal HTTP requests into service calls and JSON responses.
@@ -28,7 +29,7 @@ class AnimalController {
 
         try {
             const animal = await service.createAnimal(req.body);
-            res.status(201).json(animal);
+            sendSuccess(res, 201, animal, "Animal created successfully");
         } catch (err) {
             next(err);
         }
@@ -47,7 +48,7 @@ class AnimalController {
 
         try {
             const animals = await service.getAnimals();
-            res.status(200).json(animals);
+            sendSuccess(res, 200, animals, "Animals fetched successfully");
         } catch (err) {
             next(err);
         }
@@ -67,7 +68,7 @@ class AnimalController {
         try {
             const { id } = req.params;
             const animal = await service.getAnimal(id);
-            res.status(200).json(animal);
+            sendSuccess(res, 200, animal, "Animal fetched successfully");
         } catch (err) {
             next(err);
         }
@@ -87,7 +88,7 @@ class AnimalController {
         try {
             const { id } = req.params;
             const updatedAnimal = await service.updateAnimal(id, req.body);
-            res.status(200).json(updatedAnimal);
+            sendSuccess(res, 200, updatedAnimal, "Animal updated successfully");
         } catch (err) {
             next(err);
         }
@@ -107,7 +108,7 @@ class AnimalController {
         try {
             const { id } = req.params;
             const deletedAnimal = await service.deleteAnimal(id);
-            res.status(200).json(deletedAnimal);
+            sendMessage(res, 200, "Animal deleted successfully", deletedAnimal);
         } catch (err) {
             next(err);
         }
@@ -126,7 +127,7 @@ class AnimalController {
 
         try {
             const animal = await service.getHealthStatus(req.params.id);
-            res.status(200).json(animal);
+            sendSuccess(res, 200, animal, "Animal health status fetched successfully");
         } catch (err) {
             next(err);
         }

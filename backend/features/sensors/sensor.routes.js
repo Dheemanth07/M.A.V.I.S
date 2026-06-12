@@ -33,6 +33,14 @@ class SensorRoutes {
         this.router.get("/latest/:animalId", this.sensorController.getLatest);
         this.router.get(
             "/history/:animalId",
+        this.router.get(
+            "/latest/:animalId",
+            this.sensorValidator.validateAnimalIdParam,
+            this.sensorController.getLatest,
+        );
+        this.router.get(
+            "/history/:animalId",
+            this.sensorValidator.validateAnimalIdParam,
             this.sensorValidator.validateHistoryQuery,
             this.sensorController.history,
         );

@@ -18,9 +18,10 @@ const globalErrorHandler = (err, req, res, next) => {
     err.statusCode = err.statusCode || 500;
     err.status = err.status || "error";
 
-    logger.error(`${req.method} ${req.originalUrl} - ${err.message}`, {
+    logger.error(`${req.method} ${req.path} - ${err.message}`, {
         status: err.status,
         statusCode: err.statusCode,
+        queryKeys: Object.keys(req.query || {}),
         ...(isDev && { stack: err.stack }),
     });
 

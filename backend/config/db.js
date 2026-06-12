@@ -9,6 +9,24 @@ const DEFAULT_RETRY_DELAY_MS = 5000;
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
+const normalizeRetryOptions = (maxRetries, retryDelayMs) => {
+    const normalizedMaxRetries = Math.max(1, Math.floor(Number(maxRetries)));
+    const normalizedRetryDelayMs = Number(retryDelayMs);
+
+    if (!Number.isFinite(normalizedMaxRetries)) {
+        throw new Error("connectDB option maxRetries must be a positive number");
+    }
+
+    if (!Number.isFinite(normalizedRetryDelayMs) || normalizedRetryDelayMs < 0) {
+        throw new Error("connectDB option retryDelayMs must be a non-negative number");
+    }
+
+    return {
+        maxRetries: normalizedMaxRetries,
+        retryDelayMs: normalizedRetryDelayMs,
+    };
+};
+
 /**
  * Connects Mongoose to the configured MongoDB database.
  *
@@ -25,6 +43,11 @@ const connectDB = async ({
     let lastError;
 
     while (attempt <= maxRetries) {
+    const retryOptions = normalizeRetryOptions(maxRetries, retryDelayMs);
+    let attempt = 1;
+    let lastError;
+
+    while (attempt <= retryOptions.maxRetries) {
         try {
             const conn = await mongoose.connect(process.env.MONGO_URI, {
                 serverSelectionTimeoutMS: 5000,
@@ -42,6 +65,12 @@ const connectDB = async ({
 
             if (attempt < maxRetries) {
                 await delay(retryDelayMs);
+                maxRetries: retryOptions.maxRetries,
+                message: error.message,
+            });
+
+            if (attempt < retryOptions.maxRetries) {
+                await delay(retryOptions.retryDelayMs);
             }
 
             attempt += 1;
