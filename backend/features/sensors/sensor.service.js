@@ -120,6 +120,20 @@ class SensorService {
 
         return data;
     }
+
+    async ingestData(animalId, payload) {
+        // 1. Save the raw IoT data to MongoDB
+        const savedData = await this.sensorRepository.create({ animalId, ...payload });
+
+        // 2. Fire the event in the background! 
+        mavisEvents.emit(EVENTS.SENSOR_DATA_RECEIVED, {
+            animalId,
+            payload: savedData
+        });
+
+        // 3. Return immediately so the controller can respond to the hardware
+        return savedData;
+    }
 }
 
 export default SensorService;
