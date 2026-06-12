@@ -42,10 +42,17 @@ const sensorSchema = new mongoose.Schema(
         timestamp: {
             type: Date,
             default: Date.now,
-            index: true,
         },
     },
-    { timestamps: true },
+    {
+        timestamps: true,
+
+        timeseries: {
+            timeField: 'timestamp',
+            metaField: 'animalId',
+            granularity: 'seconds'
+        }
+    }
 );
 
 // Keeps latest/history lookups quick for each animal.

@@ -28,6 +28,7 @@ import SensorData from "./features/sensors/sensor.model.js";
 import SensorRepository from "./features/sensors/sensor.repository.js";
 import SensorService from "./features/sensors/sensor.service.js";
 import SensorController from "./features/sensors/sensor.controller.js";
+import SensorData from "./features/sensors/sensor.model.js";
 import SensorValidator from "./features/sensors/sensor.validator.js";
 import SensorRoutes from "./features/sensors/sensor.routes.js";
 
