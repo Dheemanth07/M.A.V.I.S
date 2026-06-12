@@ -29,13 +29,13 @@ export function createEvaluator(metric, matrix) {
 
     const alerts = matchedRule.severity !== "none"
       ? [
-          {
-            type: matchedRule.alertType,
-            severity: matchedRule.severity,
-            message: `${matchedRule.state} detected`,
-            value,
-          },
-        ]
+        {
+          type: matchedRule.alertType,
+          severity: matchedRule.severity,
+          message: `${matchedRule.state} detected`,
+          value,
+        },
+      ]
       : [];
 
     return {

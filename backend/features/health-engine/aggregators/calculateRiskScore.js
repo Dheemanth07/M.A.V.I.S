@@ -1,9 +1,5 @@
 import { clampRisk } from '../utils/clampRisk.js';
 
-import { RISK_LEVELS } from '../constants/riskLevels.js';
-
-
-
 // Computes a single overall risk score from per-metric evaluations.
 // Strategy:
 // - Sum `riskContribution` across metrics.
@@ -20,8 +16,5 @@ export function calculateRiskScore(allMetricEvaluations = {}) {
   }
 
   // Keep behavior stable even if thresholds change elsewhere.
-  return clampRisk(score, RISK_THRESHOLDS.WARNING, RISK_THRESHOLDS.MAXIMUM);
+  return clampRisk(score, 0, 100);
 }
-
-
-

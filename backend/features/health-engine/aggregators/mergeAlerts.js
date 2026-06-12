@@ -1,7 +1,5 @@
 import { formatAlert } from './utils.js';
-import { HEALTH_STATUSES } from '../constants/healthStatuses.js';
-
-
+import { SEVERITY_LEVELS } from '../constants/riskLevels.js';
 
 // Merges alerts from multiple metric evaluations.
 // - Deduplicates by `type`.
@@ -9,9 +7,9 @@ import { HEALTH_STATUSES } from '../constants/healthStatuses.js';
 // - Produces a stable, UI-friendly merged list.
 
 const severityRank = {
-  [HEALTH_STATUSES.critical]: 3,
-  [HEALTH_STATUSES.warning]: 2,
-  none: 1,
+  [SEVERITY_LEVELS.CRITICAL]: 3,
+  [SEVERITY_LEVELS.WARNING]: 2,
+  [SEVERITY_LEVELS.NONE]: 1,
 };
 
 function compareSeverity(a, b) {
@@ -51,6 +49,3 @@ export function mergeAlerts(allMetricEvaluations = {}) {
     return String(a.type).localeCompare(String(b.type));
   });
 }
-
-
-
