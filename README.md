@@ -204,4 +204,4 @@ The core processing platform, architecture flow layers, and internal relational 
 
 ## License
 
-This system architecture is distributed openly under the provisions of the **ISC License**.
+This system architecture is distributed openly under the provisions of the **MIT License**.
