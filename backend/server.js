@@ -3,7 +3,13 @@
  *
  * Connects dependencies and starts the HTTP listener.
  */
+import express from "express";
+import cors from "cors";
+import { createServer } from "http";
+import { Server } from "socket.io";
+import mongoose from "mongoose";
 
+import corsOptions from "./middlewares/cors.js";
 import dotenv from "dotenv";
 
 import connectDB from "./config/db.js";
@@ -18,9 +24,7 @@ import AnimalController from "./features/animals/animal.controller.js";
 import AnimalValidator from "./features/animals/animal.validator.js";
 import AnimalRoutes from "./features/animals/animal.routes.js";
 
-import SensorData, {
-    ensureSensorTimeSeriesCollection,
-} from "./features/sensors/sensor.model.js";
+import SensorData from "./features/sensors/sensor.model.js";
 import SensorRepository from "./features/sensors/sensor.repository.js";
 import SensorService from "./features/sensors/sensor.service.js";
 import SensorController from "./features/sensors/sensor.controller.js";
@@ -89,7 +93,6 @@ app.use(globalErrorHandler);
 const startServer = async () => {
     try {
         await connectDB();
-        await ensureSensorTimeSeriesCollection();
 
         httpServer.listen(PORT, () => {
             logger.info(`Server running on port ${PORT}`);

@@ -39,14 +39,12 @@ const connectDB = async ({
     maxRetries = DEFAULT_MAX_RETRIES,
     retryDelayMs = DEFAULT_RETRY_DELAY_MS,
 } = {}) => {
-    let attempt = 1;
-    let lastError;
-
-    while (attempt <= maxRetries) {
+    // 1. Normalize options once at the top
     const retryOptions = normalizeRetryOptions(maxRetries, retryDelayMs);
     let attempt = 1;
     let lastError;
 
+    // 2. Single, clean retry loop
     while (attempt <= retryOptions.maxRetries) {
         try {
             const conn = await mongoose.connect(process.env.MONGO_URI, {
@@ -55,20 +53,17 @@ const connectDB = async ({
 
             logger.info("MongoDB connected", { host: conn.connection.host });
             return;
+
         } catch (error) {
             lastError = error;
+
             logger.warn("Database connection failed", {
                 attempt,
-                maxRetries,
-                message: error.message,
-            });
-
-            if (attempt < maxRetries) {
-                await delay(retryDelayMs);
                 maxRetries: retryOptions.maxRetries,
                 message: error.message,
             });
 
+            // 3. Wait before trying again (if not on the last attempt)
             if (attempt < retryOptions.maxRetries) {
                 await delay(retryOptions.retryDelayMs);
             }
@@ -77,6 +72,7 @@ const connectDB = async ({
         }
     }
 
+    // 4. If all retries fail, throw the final error
     throw lastError;
 };
 
