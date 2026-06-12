@@ -1,9 +1,9 @@
 /**
  * @file Business logic for sensor readings and realtime alerts.
  */
-import mongoose from "mongoose";
 import AppError from "../../utils/AppError.js";
 import { BATTERY_WARNING_THRESHOLD, FEVER_TEMPERATURE_THRESHOLD } from "../../config/constants.js";
+import { ensureValidObjectId } from "../../utils/validateObjectId.js";
 
 /**
  * Validates animal ownership, stores sensor data, and fetches readings.
@@ -29,9 +29,7 @@ class SensorService {
      * @throws {AppError} When the id is invalid or missing.
      */
     async #ensureAnimalExists(animalId) {
-        if (!mongoose.isValidObjectId(animalId)) {
-            throw new AppError(`Invalid animal ID: ${animalId}`, 400);
-        }
+        ensureValidObjectId(animalId, "animal ID");
 
         const animal = await this.#animalRepository.findById(animalId);
 
