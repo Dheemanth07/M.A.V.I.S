@@ -48,6 +48,25 @@ const animalSchema = new mongoose.Schema(
         isActive: {
             type: Boolean,
             default: true
+        },
+
+        baselines: {
+            temperature: { type: Number, default: 0 },
+            heartRate: { type: Number, default: 0 },
+            respiratoryRate: { type: Number, default: 0 },
+            bloodOxygen: { type: Number, default: 0 }
+        },
+
+        baselineReadingsCount: {
+            type: Number,
+            default: 0
+        },
+
+        baselineAccumulator: {
+            temperature: { type: Number, default: 0 },
+            heartRate: { type: Number, default: 0 },
+            respiratoryRate: { type: Number, default: 0 },
+            bloodOxygen: { type: Number, default: 0 }
         }
     },
     {
