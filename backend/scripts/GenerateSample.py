@@ -71,6 +71,66 @@ for animal in animal_ids:
 
         current_time += timedelta(minutes=5)
 
+    # Intentionally append 3 invalid payloads for negative testing
+    if len(animal_ids) > 0:
+        sample_animal_id = animal_ids[0]
+        # 1. Missing animalId
+        data.append({
+            "physiology": {
+                "temperature": 38.5,
+                "heartRate": 80,
+                "respiratoryRate": 20,
+                "bloodOxygen": 98,
+            },
+            "behavior": {
+                "motion": True,
+            },
+            "environment": {
+                "ambientTemperature": 25,
+                "humidity": 50,
+                "aqi": 50,
+            },
+            "timestamp": start_time.isoformat() + "Z",
+        })
+        # 2. String value for temperature
+        data.append({
+            "animalId": sample_animal_id,
+            "physiology": {
+                "temperature": "hot",
+                "heartRate": 80,
+                "respiratoryRate": 20,
+                "bloodOxygen": 98,
+            },
+            "behavior": {
+                "motion": True,
+            },
+            "environment": {
+                "ambientTemperature": 25,
+                "humidity": 50,
+                "aqi": 50,
+            },
+            "timestamp": start_time.isoformat() + "Z",
+        })
+        # 3. Invalid negative heart rate
+        data.append({
+            "animalId": sample_animal_id,
+            "physiology": {
+                "temperature": 38.5,
+                "heartRate": -50,
+                "respiratoryRate": 20,
+                "bloodOxygen": 98,
+            },
+            "behavior": {
+                "motion": True,
+            },
+            "environment": {
+                "ambientTemperature": 25,
+                "humidity": 50,
+                "aqi": 50,
+            },
+            "timestamp": start_time.isoformat() + "Z",
+        })
+
 DATA_DIR.mkdir(exist_ok=True)
 with open(SENSOR_DATA_PATH, "w") as f:
     json.dump(data, f, indent=2)

@@ -19,6 +19,7 @@ print(f"Loaded {total} records\n")
 
 success = 0
 fail = 0
+validation_rejected = 0
 
 print("Uploading to backend...\n")
 
@@ -32,6 +33,10 @@ for i, record in enumerate(data, start=1):
             if response.status_code in [200, 201]:
                 success += 1
                 print(f"[{i}/{total}] Uploaded")
+                break
+            elif response.status_code == 400:
+                validation_rejected += 1
+                print(f"[{i}/{total}] Rejected by validation (400 Bad Request) - Expected failure. Response: {response.text.strip()}")
                 break
 
             retries += 1
@@ -47,4 +52,5 @@ for i, record in enumerate(data, start=1):
 
 print("\nUpload Summary:")
 print(f"Success: {success}")
+print(f"Validation Rejected (Expected): {validation_rejected}")
 print(f"Failed: {fail}")
