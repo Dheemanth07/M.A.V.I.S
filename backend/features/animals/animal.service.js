@@ -138,28 +138,49 @@ class AnimalService {
         let activeAlerts = [];
 
         const { temperature, heartRate } = latestSensor.physiology;
-        if (temperature > FEVER_TEMPERATURE_THRESHOLD) {
-            computedHealth = "critical";
-            activeAlerts.push(`Fever detected: Body temperature is ${temperature}°C.`);
-        } else if (temperature > FEVER_WARNING_TEMPERATURE_THRESHOLD) {
-            computedHealth = "warning";
-            activeAlerts.push(`Elevated body temperature detected (${temperature}°C).`);
-        }
-
         const { ambientTemperature, humidity } = latestSensor.environment || {};
-        if (ambientTemperature && ambientTemperature > 35) {
-            if (heartRate > 100) {
+
+        if (animal.baselineReadingsCount < 10) {
+            computedHealth = "healthy";
+            activeAlerts.push(`Baseline initializing (${animal.baselineReadingsCount}/10 readings received).`);
+        } else {
+            const tempBaseline = animal.baselines.temperature;
+            const hrBaseline = animal.baselines.heartRate;
+            const rrBaseline = animal.baselines.respiratoryRate;
+            const boBaseline = animal.baselines.bloodOxygen;
+
+            const tempDev = Math.abs(temperature - tempBaseline);
+            const hrDev = Math.abs(heartRate - hrBaseline);
+            const rrDev = Math.abs(latestSensor.physiology.respiratoryRate - rrBaseline);
+            const boDev = Math.abs(latestSensor.physiology.bloodOxygen - boBaseline);
+
+            // Classification
+            if (tempDev > 1.0 || hrDev > 20 || rrDev > 5 || boDev > 5) {
                 computedHealth = "critical";
-                activeAlerts.push(`DANGER: Potential heat exhaustion. Ambient temp is ${ambientTemperature}°C with elevated heart rate.`);
-            } else if (humidity && humidity > 80) {
-                // High heat + High humidity is dangerous even if HR is normal
-                if (computedHealth !== "critical") computedHealth = "warning";
-                activeAlerts.push(`WARNING: High heat index. Ambient temp is ${ambientTemperature}°C with ${humidity}% humidity. Ensure access to water/shade.`);
+                if (tempDev > 1.0) activeAlerts.push(`CRITICAL: Temperature deviated by ${tempDev.toFixed(1)}°C (current: ${temperature}°C, baseline: ${tempBaseline}°C)`);
+                if (hrDev > 20) activeAlerts.push(`CRITICAL: Heart Rate deviated by ${hrDev} BPM (current: ${heartRate} BPM, baseline: ${hrBaseline} BPM)`);
+                if (rrDev > 5) activeAlerts.push(`CRITICAL: Respiratory Rate deviated by ${rrDev} (current: ${latestSensor.physiology.respiratoryRate}, baseline: ${rrBaseline})`);
+                if (boDev > 5) activeAlerts.push(`CRITICAL: Blood Oxygen deviated by ${boDev}% (current: ${latestSensor.physiology.bloodOxygen}%, baseline: ${boBaseline}%)`);
+            } else if (tempDev > 0.5 || hrDev > 10) {
+                computedHealth = "warning";
+                if (tempDev > 0.5) activeAlerts.push(`WARNING: Temperature elevated by ${tempDev.toFixed(1)}°C from baseline.`);
+                if (hrDev > 10) activeAlerts.push(`WARNING: Heart Rate elevated by ${hrDev} BPM from baseline.`);
+            }
+
+            // Environmental warning correlations
+            if (ambientTemperature && ambientTemperature > 35) {
+                if (heartRate > (hrBaseline + 15)) {
+                    computedHealth = "critical";
+                    activeAlerts.push(`DANGER: Potential heat exhaustion. Ambient temperature is ${ambientTemperature}°C with elevated heart rate.`);
+                } else if (humidity && humidity > 80) {
+                    if (computedHealth !== "critical") computedHealth = "warning";
+                    activeAlerts.push(`WARNING: High heat index. Ambient temp is ${ambientTemperature}°C with ${humidity}% humidity.`);
+                }
             }
         }
 
         if (latestSensor.device && latestSensor.device.batteryLevel < BATTERY_WARNING_THRESHOLD) {
-            activeAlerts.push(`DEVICE WARNING: Collar battery is critically low (${latestSensor.device.batteryLevel}%).`);
+            activeAlerts.push(`DEVICE WARNING: Collar battery is low (${latestSensor.device.batteryLevel}%).`);
         }
 
         if (animal.healthStatus !== computedHealth) {
@@ -172,16 +193,30 @@ class AnimalService {
             status: computedHealth,
             alerts: activeAlerts,
             lastReading: latestSensor.timestamp,
-            metrics: {
-                bodyTemperature: temperature,
+            baselineReadingsCount: animal.baselineReadingsCount,
+            baselines: animal.baselines,
+            currentMetrics: {
+                temperature,
                 heartRate,
+                respiratoryRate: latestSensor.physiology.respiratoryRate,
+                bloodOxygen: latestSensor.physiology.bloodOxygen,
                 motion: latestSensor.behavior.motion,
                 ambientTemperature: ambientTemperature || "N/A",
                 battery: latestSensor.device?.batteryLevel || "N/A"
+            },
+            deviations: animal.baselineReadingsCount >= 10 ? {
+                temperature: Math.round(Math.abs(temperature - animal.baselines.temperature) * 10) / 10,
+                heartRate: Math.abs(heartRate - animal.baselines.heartRate),
+                respiratoryRate: Math.abs(latestSensor.physiology.respiratoryRate - animal.baselines.respiratoryRate),
+                bloodOxygen: Math.abs(latestSensor.physiology.bloodOxygen - animal.baselines.bloodOxygen)
+            } : {
+                temperature: 0,
+                heartRate: 0,
+                respiratoryRate: 0,
+                bloodOxygen: 0
             }
         };
-
-    };
+    }
 }
 
 export default AnimalService;

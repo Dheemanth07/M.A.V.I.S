@@ -48,7 +48,7 @@ class SensorService {
      * @returns {Promise<Object>} Saved sensor reading.
      */
     async createSensorData(data, io) {
-        await this.#ensureAnimalExists(data.animalId);
+        const animal = await this.#ensureAnimalExists(data.animalId);
 
         const sensorData = await this.#sensorRepository.create(data);
 
@@ -56,14 +56,86 @@ class SensorService {
             throw new AppError("Failed to save sensor data", 500);
         }
 
-        // Fever Detection
-        if (sensorData.physiology.temperature > FEVER_TEMPERATURE_THRESHOLD) {
-            io.emit("alert", {
-                animalId: sensorData.animalId,
-                type: "FEVER",
-                message: "Critical: High temperature detected!",
-                timestamp: sensorData.timestamp,
+        const { temperature, heartRate, respiratoryRate, bloodOxygen } = sensorData.physiology;
+
+        if (animal.baselineReadingsCount < 10) {
+            // Baseline Initialization Phase: Accumulate first 10 readings
+            const count = animal.baselineReadingsCount + 1;
+            const currentAccumulator = animal.baselineAccumulator || { temperature: 0, heartRate: 0, respiratoryRate: 0, bloodOxygen: 0 };
+            const newAccumulator = {
+                temperature: currentAccumulator.temperature + temperature,
+                heartRate: currentAccumulator.heartRate + heartRate,
+                respiratoryRate: currentAccumulator.respiratoryRate + respiratoryRate,
+                bloodOxygen: currentAccumulator.bloodOxygen + bloodOxygen
+            };
+
+            let newBaselines = animal.baselines || { temperature: 0, heartRate: 0, respiratoryRate: 0, bloodOxygen: 0 };
+            if (count === 10) {
+                newBaselines = {
+                    temperature: Math.round((newAccumulator.temperature / 10) * 10) / 10,
+                    heartRate: Math.round(newAccumulator.heartRate / 10),
+                    respiratoryRate: Math.round(newAccumulator.respiratoryRate / 10),
+                    bloodOxygen: Math.round(newAccumulator.bloodOxygen / 10)
+                };
+            }
+
+            await this.#animalRepository.update(animal._id, {
+                baselineReadingsCount: count,
+                baselineAccumulator: newAccumulator,
+                baselines: newBaselines
             });
+        } else {
+            // Anomaly/Deviation Detection Phase
+            const tempBaseline = animal.baselines.temperature;
+            const hrBaseline = animal.baselines.heartRate;
+            const rrBaseline = animal.baselines.respiratoryRate;
+            const boBaseline = animal.baselines.bloodOxygen;
+
+            const tempDev = Math.abs(temperature - tempBaseline);
+            const hrDev = Math.abs(heartRate - hrBaseline);
+            const rrDev = Math.abs(respiratoryRate - rrBaseline);
+            const boDev = Math.abs(bloodOxygen - boBaseline);
+
+            let hasAnomaly = false;
+            let anomalyDetails = [];
+
+            if (tempDev > 1.0) {
+                hasAnomaly = true;
+                anomalyDetails.push(`Temperature deviated by ${tempDev.toFixed(1)}°C (current: ${temperature}°C, baseline: ${tempBaseline}°C)`);
+            }
+            if (hrDev > 20) {
+                hasAnomaly = true;
+                anomalyDetails.push(`Heart Rate deviated by ${hrDev} BPM (current: ${heartRate} BPM, baseline: ${hrBaseline} BPM)`);
+            }
+            if (rrDev > 5) {
+                hasAnomaly = true;
+                anomalyDetails.push(`Respiratory Rate deviated by ${rrDev} (current: ${respiratoryRate}, baseline: ${rrBaseline})`);
+            }
+            if (boDev > 5) {
+                hasAnomaly = true;
+                anomalyDetails.push(`Blood Oxygen deviated by ${boDev}% (current: ${bloodOxygen}%, baseline: ${boBaseline}%)`);
+            }
+
+            if (hasAnomaly) {
+                // Emit Socket.IO alert, do NOT update baseline
+                io.emit("alert", {
+                    animalId: sensorData.animalId,
+                    type: "ANOMALY",
+                    message: `Deviation detected: ${anomalyDetails.join("; ")}`,
+                    timestamp: sensorData.timestamp
+                });
+            } else {
+                // Happy path: Update baseline using EMA (learning rate alpha = 0.1)
+                const alpha = 0.1;
+                const newBaselines = {
+                    temperature: Math.round((alpha * temperature + (1 - alpha) * tempBaseline) * 10) / 10,
+                    heartRate: Math.round(alpha * heartRate + (1 - alpha) * hrBaseline),
+                    respiratoryRate: Math.round(alpha * respiratoryRate + (1 - alpha) * rrBaseline),
+                    bloodOxygen: Math.round(alpha * bloodOxygen + (1 - alpha) * boBaseline)
+                };
+
+                await this.#animalRepository.update(animal._id, { baselines: newBaselines });
+            }
         }
 
         // Hardware Maintenance
@@ -71,7 +143,7 @@ class SensorService {
             io.emit("alert", {
                 animalId: sensorData.animalId,
                 type: "BATTERY",
-                message: "Warning: Low battery level detected!",
+                message: `Warning: Low battery level detected! (${sensorData.device.batteryLevel}%)`,
                 timestamp: sensorData.timestamp,
             });
         }
