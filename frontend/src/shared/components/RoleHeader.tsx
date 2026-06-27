@@ -3,37 +3,44 @@ import { UserCheck, Shield, Radio } from 'lucide-react';
 
 interface RoleHeaderProps {
     role: 'user' | 'admin';
+    accountRole: 'user' | 'admin';
     setRole: (role: 'user' | 'admin') => void;
     connected: boolean;
 }
 
-export const RoleHeader: React.FC<RoleHeaderProps> = ({ role, setRole, connected }) => {
+export const RoleHeader: React.FC<RoleHeaderProps> = ({ role, accountRole, setRole, connected }) => {
     return (
-        <div className="bg-slate-900 text-slate-100 px-4 sm:px-8 py-2.5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+        <div className="bg-slate-900 text-slate-100 px-4 sm:px-8 py-2 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
             <div className="flex items-center gap-2">
-                <span className="font-semibold text-slate-400">Testing Environment Control:</span>
-                <div className="flex items-center bg-slate-800 p-1 rounded-lg border border-slate-700">
-                    <button
-                        onClick={() => setRole('user')}
-                        className={`flex items-center gap-1.5 px-3 py-1 rounded-md font-bold transition ${
-                            role === 'user'
-                                ? 'bg-emerald-500 text-white shadow-sm'
-                                : 'text-slate-400 hover:text-white'
-                        }`}
-                    >
-                        <UserCheck className="h-3.5 w-3.5" /> Farmer / Owner View
-                    </button>
-                    <button
-                        onClick={() => setRole('admin')}
-                        className={`flex items-center gap-1.5 px-3 py-1 rounded-md font-bold transition ${
-                            role === 'admin'
-                                ? 'bg-indigo-600 text-white shadow-sm'
-                                : 'text-slate-400 hover:text-white'
-                        }`}
-                    >
-                        <Shield className="h-3.5 w-3.5" /> Admin / Vet Control
-                    </button>
-                </div>
+                <span className="font-semibold text-slate-400">Workspace Level:</span>
+                {accountRole === 'admin' ? (
+                    <div className="flex items-center bg-slate-800 p-1 rounded-lg border border-slate-700">
+                        <button
+                            onClick={() => setRole('user')}
+                            className={`flex items-center gap-1.5 px-3 py-1 rounded-md font-bold transition cursor-pointer ${
+                                role === 'user'
+                                    ? 'bg-emerald-500 text-white shadow-sm'
+                                    : 'text-slate-400 hover:text-white'
+                            }`}
+                        >
+                            <UserCheck className="h-3.5 w-3.5" /> Preview Owner View
+                        </button>
+                        <button
+                            onClick={() => setRole('admin')}
+                            className={`flex items-center gap-1.5 px-3 py-1 rounded-md font-bold transition cursor-pointer ${
+                                role === 'admin'
+                                    ? 'bg-indigo-600 text-white shadow-sm'
+                                    : 'text-slate-400 hover:text-white'
+                            }`}
+                        >
+                            <Shield className="h-3.5 w-3.5" /> Admin Command Center
+                        </button>
+                    </div>
+                ) : (
+                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-800 border border-slate-700 text-emerald-400 font-bold">
+                        <UserCheck className="h-3.5 w-3.5 text-emerald-400" /> Authorized Pet Care & Herd Workspace
+                    </div>
+                )}
             </div>
 
             <div className="flex items-center gap-2 text-slate-300">

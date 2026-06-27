@@ -23,10 +23,18 @@ function AppContent() {
     const [connected, setConnected] = useState(false);
     const [activeToastAlert, setActiveToastAlert] = useState<AlertItem | null>(null);
 
-    const role = user?.role || 'user';
+    const accountRole = user?.role || 'user';
+    const [activeRole, setActiveRole] = useState<'user' | 'admin'>(accountRole);
+
+    useEffect(() => {
+        setActiveRole(user?.role || 'user');
+    }, [user?.role]);
 
     const handleSetRole = (newRole: 'user' | 'admin') => {
-        syncAuthRole(newRole);
+        if (accountRole === 'admin') {
+            setActiveRole(newRole);
+            syncAuthRole(newRole);
+        }
     };
 
     const loadInitialData = async () => {
@@ -94,17 +102,20 @@ function AppContent() {
         );
     }
 
+    const currentRole = accountRole === 'admin' ? activeRole : 'user';
+
     return (
         <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-emerald-500/20 selection:text-emerald-900">
             <RoleHeader
-                role={role}
+                role={currentRole}
+                accountRole={accountRole}
                 setRole={handleSetRole}
                 connected={connected}
             />
 
             <Navbar
                 activeAlertCount={alerts.filter(a => a && a.status === 'active').length}
-                role={role}
+                role={currentRole}
             />
 
             <AlertBanner
@@ -118,7 +129,7 @@ function AppContent() {
                     <Route
                         path="/dashboard"
                         element={
-                            role === 'admin' ? (
+                            currentRole === 'admin' ? (
                                 <AdminOverview animals={animals} onRefresh={loadInitialData} />
                             ) : (
                                 <UserDashboardOverview animals={animals} alerts={alerts} />
@@ -128,7 +139,7 @@ function AppContent() {
                     <Route
                         path="/animals"
                         element={
-                            role === 'admin' ? (
+                            currentRole === 'admin' ? (
                                 <AdminSubjectRegistry animals={animals} onRefresh={loadInitialData} />
                             ) : (
                                 <UserAnimalsView animals={animals} />
@@ -136,14 +147,14 @@ function AppContent() {
                         }
                     />
                     <Route path="/analytics" element={<AnalyticsSection animals={animals} />} />
-                    <Route path="/twin" element={<DigitalTwinMonitor animals={animals} role={role} />} />
+                    <Route path="/twin" element={<DigitalTwinMonitor animals={animals} role={currentRole} />} />
                     <Route path="/alerts" element={<AlertCenter alerts={alerts} onRefresh={loadInitialData} />} />
                     <Route path="*" element={<Navigate to="/dashboard" replace />} />
                 </Routes>
             </main>
 
             <footer className="border-t border-slate-200 bg-white py-6 px-4 text-center text-xs text-slate-500 font-medium">
-                <p className="m-0">M.A.V.I.S Multi Model Animal Vitality Intelligence System • Protected User Workspace</p>
+                <p className="m-0">M.A.V.I.S Multi Model Animal Vitality Intelligence System • Role-Protected Workspace</p>
             </footer>
         </div>
     );
