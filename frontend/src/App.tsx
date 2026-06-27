@@ -13,13 +13,21 @@ import { AdminSubjectRegistry } from './features/admin/components/AdminSubjectRe
 import { AnalyticsSection } from './features/analytics/components/AnalyticsSection';
 import { DigitalTwinMonitor } from './features/digital-twin/components/DigitalTwinMonitor';
 import { AlertCenter } from './features/alerts/components/AlertCenter';
+import { AuthProvider, useAuth } from './features/auth/context/AuthContext';
+import { AuthPage } from './features/auth/pages/AuthPage';
 
-export function App() {
-    const [role, setRole] = useState<'user' | 'admin'>('user');
+function AppContent() {
+    const { user, isAuthenticated, setRole: syncAuthRole } = useAuth();
     const [animals, setAnimals] = useState<Animal[]>([]);
     const [alerts, setAlerts] = useState<AlertItem[]>([]);
     const [connected, setConnected] = useState(false);
     const [activeToastAlert, setActiveToastAlert] = useState<AlertItem | null>(null);
+
+    const role = user?.role || 'user';
+
+    const handleSetRole = (newRole: 'user' | 'admin') => {
+        syncAuthRole(newRole);
+    };
 
     const loadInitialData = async () => {
         try {
@@ -33,6 +41,8 @@ export function App() {
     };
 
     useEffect(() => {
+        if (!isAuthenticated) return;
+
         loadInitialData();
 
         const socket: Socket = io('http://localhost:5000', {
@@ -73,61 +83,78 @@ export function App() {
             socket.removeAllListeners();
             socket.disconnect();
         };
-    }, []);
+    }, [isAuthenticated]);
+
+    if (!isAuthenticated) {
+        return (
+            <Routes>
+                <Route path="/login" element={<AuthPage />} />
+                <Route path="*" element={<Navigate to="/login" replace />} />
+            </Routes>
+        );
+    }
 
     return (
+        <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-emerald-500/20 selection:text-emerald-900">
+            <RoleHeader
+                role={role}
+                setRole={handleSetRole}
+                connected={connected}
+            />
+
+            <Navbar
+                activeAlertCount={alerts.filter(a => a && a.status === 'active').length}
+                role={role}
+            />
+
+            <AlertBanner
+                alert={activeToastAlert}
+                onDismiss={() => setActiveToastAlert(null)}
+            />
+
+            <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-8">
+                <Routes>
+                    <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                    <Route
+                        path="/dashboard"
+                        element={
+                            role === 'admin' ? (
+                                <AdminOverview animals={animals} onRefresh={loadInitialData} />
+                            ) : (
+                                <UserDashboardOverview animals={animals} alerts={alerts} />
+                            )
+                        }
+                    />
+                    <Route
+                        path="/animals"
+                        element={
+                            role === 'admin' ? (
+                                <AdminSubjectRegistry animals={animals} onRefresh={loadInitialData} />
+                            ) : (
+                                <UserAnimalsView animals={animals} />
+                            )
+                        }
+                    />
+                    <Route path="/analytics" element={<AnalyticsSection animals={animals} />} />
+                    <Route path="/twin" element={<DigitalTwinMonitor animals={animals} role={role} />} />
+                    <Route path="/alerts" element={<AlertCenter alerts={alerts} onRefresh={loadInitialData} />} />
+                    <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                </Routes>
+            </main>
+
+            <footer className="border-t border-slate-200 bg-white py-6 px-4 text-center text-xs text-slate-500 font-medium">
+                <p className="m-0">M.A.V.I.S Multi Model Animal Vitality Intelligence System • Protected User Workspace</p>
+            </footer>
+        </div>
+    );
+}
+
+export function App() {
+    return (
         <BrowserRouter>
-            <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-emerald-500/20 selection:text-emerald-900">
-                <RoleHeader
-                    role={role}
-                    setRole={setRole}
-                    connected={connected}
-                />
-
-                <Navbar
-                    activeAlertCount={alerts.filter(a => a && a.status === 'active').length}
-                    role={role}
-                />
-
-                <AlertBanner
-                    alert={activeToastAlert}
-                    onDismiss={() => setActiveToastAlert(null)}
-                />
-
-                <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-8">
-                    <Routes>
-                        <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                        <Route
-                            path="/dashboard"
-                            element={
-                                role === 'admin' ? (
-                                    <AdminOverview animals={animals} onRefresh={loadInitialData} />
-                                ) : (
-                                    <UserDashboardOverview animals={animals} alerts={alerts} />
-                                )
-                            }
-                        />
-                        <Route
-                            path="/animals"
-                            element={
-                                role === 'admin' ? (
-                                    <AdminSubjectRegistry animals={animals} onRefresh={loadInitialData} />
-                                ) : (
-                                    <UserAnimalsView animals={animals} />
-                                )
-                            }
-                        />
-                        <Route path="/analytics" element={<AnalyticsSection animals={animals} />} />
-                        <Route path="/twin" element={<DigitalTwinMonitor animals={animals} role={role} />} />
-                        <Route path="/alerts" element={<AlertCenter alerts={alerts} onRefresh={loadInitialData} />} />
-                        <Route path="*" element={<Navigate to="/dashboard" replace />} />
-                    </Routes>
-                </main>
-
-                <footer className="border-t border-slate-200 bg-white py-6 px-4 text-center text-xs text-slate-500 font-medium">
-                    <p className="m-0">M.A.V.I.S Multi Model Animal Vitality Intelligence System • Modular Architecture</p>
-                </footer>
-            </div>
+            <AuthProvider>
+                <AppContent />
+            </AuthProvider>
         </BrowserRouter>
     );
 }

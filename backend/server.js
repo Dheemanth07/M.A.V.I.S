@@ -38,6 +38,8 @@ import AlertController from "./features/alerts/alert.controller.js";
 import AlertValidator from "./features/alerts/alert.validator.js";
 import AlertRoutes from "./features/alerts/alert.routes.js";
 
+import authRoutes from "./features/auth/auth.routes.js";
+
 dotenv.config({ quiet: true });
 
 const PORT = process.env.PORT || 5000;
@@ -97,6 +99,7 @@ app.get("/", (req, res) => {
 app.use("/api/animals", animalRoutes.getRouter());
 app.use("/api/sensor", sensorRoutes.getRouter());
 app.use("/api/alerts", alertRoutes.getRouter());
+app.use("/api/auth", authRoutes);
 
 app.use(globalErrorHandler);
 
