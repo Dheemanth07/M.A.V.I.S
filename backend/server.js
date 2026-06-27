@@ -1,6 +1,5 @@
 /**
  * @file Application entry point.
- *
  * Connects dependencies and starts the HTTP listener.
  */
 import express from "express";
@@ -8,10 +7,10 @@ import cors from "cors";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import mongoose from "mongoose";
-
-import corsOptions from "./middlewares/cors.js";
 import dotenv from "dotenv";
 
+import corsOptions from "./middlewares/cors.js";
+import { extractUser } from "./middlewares/auth.middleware.js";
 import connectDB from "./config/db.js";
 import globalErrorHandler from "./middlewares/error.middleware.js";
 import logger from "./utils/logger.js";
@@ -39,6 +38,7 @@ import AlertValidator from "./features/alerts/alert.validator.js";
 import AlertRoutes from "./features/alerts/alert.routes.js";
 
 import authRoutes from "./features/auth/auth.routes.js";
+import aiRoutes from "./features/ai-insights/ai.routes.js";
 
 dotenv.config({ quiet: true });
 
@@ -47,6 +47,7 @@ const app = express();
 
 app.use(cors(corsOptions));
 app.use(express.json());
+app.use(extractUser);
 
 const httpServer = createServer(app);
 const io = new Server(httpServer, { cors: corsOptions });
@@ -100,6 +101,7 @@ app.use("/api/animals", animalRoutes.getRouter());
 app.use("/api/sensor", sensorRoutes.getRouter());
 app.use("/api/alerts", alertRoutes.getRouter());
 app.use("/api/auth", authRoutes);
+app.use("/api/ai", aiRoutes);
 
 app.use(globalErrorHandler);
 
