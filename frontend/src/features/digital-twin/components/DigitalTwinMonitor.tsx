@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import type { Animal, HealthStatusResponse } from '../../../shared/types';
 import { fetchHealthStatus } from '../../../shared/services/api';
 import { Cpu, RefreshCw, Thermometer, Heart, Wind, Battery, Zap, Sparkles } from 'lucide-react';
+import { AICopilotCard } from './AICopilotCard';
 
 interface DigitalTwinMonitorProps {
     animals: Animal[];
@@ -136,6 +137,8 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals,
                                 </div>
                             </div>
                         </div>
+
+                        <AICopilotCard animalId={selectedAnimal._id} animalName={selectedAnimal.name} />
                     </div>
 
                     <div className="lg:col-span-8 space-y-6">

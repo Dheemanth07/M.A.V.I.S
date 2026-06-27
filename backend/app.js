@@ -31,6 +31,8 @@ import SensorController from "./features/sensors/sensor.controller.js";
 import SensorValidator from "./features/sensors/sensor.validator.js";
 import SensorRoutes from "./features/sensors/sensor.routes.js";
 
+import aiRoutes from "./features/ai-insights/ai.routes.js";
+
 dotenv.config({ quiet: true });
 
 /**
@@ -82,6 +84,7 @@ export const createApp = () => {
 
     app.use("/api/animals", animalRoutes.getRouter());
     app.use("/api/sensor", sensorRoutes.getRouter());
+    app.use("/api/ai", aiRoutes);
 
     app.use(globalErrorHandler);
 
