@@ -20,7 +20,7 @@ export const UserDashboardOverview: React.FC<UserDashboardOverviewProps> = ({
 
     return (
         <div className="space-y-8 animate-in fade-in duration-300">
-            <div className="bento-card p-6 sm:p-8 bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-none shadow-md">
+            <div className="bento-card p-6 sm:p-8 bg-linear-to-r from-emerald-600 to-teal-600 text-white border-none shadow-md">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                     <div className="space-y-2">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-bold text-white">
