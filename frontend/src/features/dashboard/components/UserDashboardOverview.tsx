@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { Animal, AlertItem } from '../../../shared/types';
 import { AnalyticsSection } from '../../analytics/components/AnalyticsSection';
-import { ShieldCheck, Activity, AlertTriangle, Cpu, ArrowRight, Smile, Heart } from 'lucide-react';
+import { ShieldCheck, Activity, AlertTriangle, Cpu, ArrowRight, Smile, Heart, Sparkles } from 'lucide-react';
 import { useAuth } from '../../auth/context/AuthContext';
 
 interface UserDashboardOverviewProps {
@@ -20,13 +20,22 @@ export const UserDashboardOverview: React.FC<UserDashboardOverviewProps> = ({
     const warningCount = animals.filter(a => a.healthStatus === 'warning').length;
     const criticalCount = animals.filter(a => a.healthStatus === 'critical').length;
 
+    const dynamicInsightText = criticalCount > 0 
+        ? `${criticalCount} subject(s) displaying critical temperature or heart rate deviations. Review alerts immediately.`
+        : warningCount > 0 
+        ? `${warningCount} subject(s) showing minor baseline shifts. Monitor hydration during afternoon peak heat.`
+        : `All ${animals.length || 1} tracked animals are operating within optimal baseline physiological parameters. Collar mesh connection is 100% active.`;
+
     return (
-        <div className="space-y-8 animate-in fade-in duration-300">
-            <div className="bento-card p-6 sm:p-8 bg-linear-to-r from-emerald-600 to-teal-600 text-white border-none shadow-md">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+        <div className="space-y-6 animate-in fade-in duration-300">
+            {/* Top Banner */}
+            <div className="bento-card p-8 bg-linear-to-r from-emerald-800 via-teal-800 to-slate-900 text-white relative overflow-hidden">
+                <div className="absolute -right-10 -bottom-10 w-60 h-60 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
                     <div className="space-y-2">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-semibold text-white">
-                            <Smile className="h-4 w-4" /> Everyday Care Dashboard
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-200 text-xs font-semibold">
+                            <Smile className="h-3.5 w-3.5" />
+                            <span>Pet Care & Herd Overview</span>
                         </div>
                         <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white m-0">
                             Welcome back, {user?.name ? user.name.split(' ')[0] : 'Caregiver'}!
@@ -44,6 +53,19 @@ export const UserDashboardOverview: React.FC<UserDashboardOverviewProps> = ({
                             <div className="text-2xl font-bold">{healthyCount} / {animals.length || 1}</div>
                             <div className="text-xs text-emerald-100 font-semibold">Doing Great Today</div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Clean Insight Banner matching InsightPay styling */}
+            <div className="bento-card p-4 sm:p-4.5 bg-white border border-slate-200/90 shadow-2xs flex items-center justify-between gap-3 text-xs">
+                <div className="flex items-center gap-3 min-w-0">
+                    <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100/80 shrink-0">
+                        <Sparkles className="h-4 w-4" />
+                    </div>
+                    <div className="min-w-0 leading-relaxed">
+                        <strong className="text-emerald-800 font-bold mr-1.5 whitespace-nowrap">Daily Care Insight:</strong>
+                        <span className="text-slate-700 font-semibold">{dynamicInsightText}</span>
                     </div>
                 </div>
             </div>

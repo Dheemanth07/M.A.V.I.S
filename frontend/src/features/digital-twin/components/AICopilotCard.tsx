@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sparkles, Bot, RefreshCw } from 'lucide-react';
+import { Sparkles, RefreshCw } from 'lucide-react';
 
 interface AICopilotCardProps {
     animalId?: string;
@@ -39,52 +39,25 @@ export const AICopilotCard: React.FC<AICopilotCardProps> = ({ animalId, animalNa
     if (!animalId) return null;
 
     return (
-        <div className="bento-card p-6 bg-linear-to-br from-slate-900 to-indigo-950 text-white border-none shadow-lg space-y-4">
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                    <div className="p-2.5 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 shadow-xs">
-                        <Sparkles className="h-5 w-5 animate-pulse text-indigo-300" />
-                    </div>
-                    <div>
-                        <h3 className="text-base font-bold text-white m-0 flex items-center gap-2">
-                            <span>MAVIS AI Veterinary Copilot</span>
-                            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-indigo-500/30 text-indigo-300 border border-indigo-400/30">
-                                GenAI Synthesis
-                            </span>
-                        </h3>
-                        <p className="text-xs text-slate-400 m-0 font-medium">Real-time physiological telemetry analysis for {animalName || 'Subject'}</p>
-                    </div>
+        <div className="bento-card p-4 sm:p-4.5 bg-white border border-slate-200/90 shadow-2xs flex items-center justify-between gap-3 text-xs">
+            <div className="flex items-center gap-3 min-w-0">
+                <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-100/80 shrink-0">
+                    <Sparkles className="h-4 w-4" />
                 </div>
-
-                <button
-                    onClick={fetchInsight}
-                    disabled={loading}
-                    className="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white transition cursor-pointer disabled:opacity-50"
-                    title="Refresh AI Synthesis"
-                >
-                    <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-                </button>
+                <div className="min-w-0 leading-relaxed">
+                    <strong className="text-emerald-800 font-bold mr-1.5 whitespace-nowrap">Vital Insight:</strong>
+                    <span className="text-slate-700 font-semibold">{insight?.summary || `Analyzing telemetry stream for ${animalName || 'subject'}...`}</span>
+                </div>
             </div>
 
-            {insight && (
-                <div className="space-y-3 pt-2">
-                    <div className="p-3.5 rounded-xl bg-white/5 border border-white/10 text-xs text-slate-200 leading-relaxed font-medium">
-                        {insight.summary}
-                    </div>
-
-                    <div className="space-y-1.5">
-                        <span className="text-xs font-bold text-indigo-300 uppercase tracking-wider block">AI Care Recommendations:</span>
-                        <ul className="space-y-1 pl-0 list-none m-0">
-                            {insight.recommendations.map((rec, i) => (
-                                <li key={i} className="flex items-start gap-2 text-xs text-slate-300 font-medium">
-                                    <Bot className="h-3.5 w-3.5 text-indigo-400 shrink-0 mt-0.5" />
-                                    <span>{rec}</span>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                </div>
-            )}
+            <button
+                onClick={fetchInsight}
+                disabled={loading}
+                className="p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition cursor-pointer shrink-0 ml-2"
+                title="Refresh Telemetry Insight"
+            >
+                <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin text-emerald-600' : ''}`} />
+            </button>
         </div>
     );
 };
