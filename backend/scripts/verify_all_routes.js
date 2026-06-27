@@ -156,7 +156,7 @@ async function verifyAllRoutes() {
         const postHealthSummary = await postHealthStatusRes.json();
         const postHealthSummaryData = postHealthSummary.data || postHealthSummary;
         assertEqual(postHealthSummaryData.status, "healthy", "Updated health status");
-        assertEqual(postHealthSummaryData.metrics.bodyTemperature, 38.0, "Health status metrics body temperature");
+        assertEqual(postHealthSummaryData.currentMetrics.temperature, 38.0, "Health status metrics body temperature");
         console.log("    ✓ Received health status 'healthy' with the matching sensor metrics.\n");
 
         // 11. DELETE /api/animals/:id (Delete Animal)
