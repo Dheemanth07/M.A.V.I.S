@@ -95,7 +95,11 @@ function AppContent() {
 
         return () => {
             socket.removeAllListeners();
-            socket.disconnect();
+            setTimeout(() => {
+                if (socket.connected) {
+                    socket.disconnect();
+                }
+            }, 100);
         };
     }, [isAuthenticated]);
 
