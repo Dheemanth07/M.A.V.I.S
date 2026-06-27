@@ -138,29 +138,55 @@ class AnimalService {
         let activeAlerts = [];
 
         const { temperature, heartRate } = latestSensor.physiology;
-        if (temperature > FEVER_TEMPERATURE_THRESHOLD) {
-            computedHealth = "critical";
-            activeAlerts.push(`Fever detected: Body temperature is ${temperature}°C.`);
-        } else if (temperature > FEVER_WARNING_TEMPERATURE_THRESHOLD) {
-            computedHealth = "warning";
-            activeAlerts.push(`Elevated body temperature detected (${temperature}°C).`);
+
+        const temperatureRule = (() => {
+            if (temperature > FEVER_TEMPERATURE_THRESHOLD) {
+                return {
+                    health: "critical",
+                    alert: `Fever detected: Body temperature is ${temperature}°C.`,
+                };
+            }
+            if (temperature > FEVER_WARNING_TEMPERATURE_THRESHOLD) {
+                return {
+                    health: "warning",
+                    alert: `Elevated body temperature detected (${temperature}°C).`,
+                };
+            }
+            return null;
+        })();
+
+        if (temperatureRule) {
+            computedHealth = temperatureRule.health;
+            activeAlerts.push(temperatureRule.alert);
         }
 
         const { ambientTemperature, humidity } = latestSensor.environment || {};
-        if (ambientTemperature && ambientTemperature > 35) {
-            if (heartRate > 100) {
+        const isHighAmbient = Boolean(ambientTemperature) && ambientTemperature > 35;
+        if (isHighAmbient) {
+            const isHighHr = heartRate > 100;
+            const isHighHumidity = Boolean(humidity) && humidity > 80;
+
+            if (isHighHr) {
                 computedHealth = "critical";
-                activeAlerts.push(`DANGER: Potential heat exhaustion. Ambient temp is ${ambientTemperature}°C with elevated heart rate.`);
-            } else if (humidity && humidity > 80) {
+                activeAlerts.push(
+                    `DANGER: Potential heat exhaustion. Ambient temp is ${ambientTemperature}°C with elevated heart rate.`,
+                );
+            } else if (isHighHumidity) {
                 // High heat + High humidity is dangerous even if HR is normal
                 if (computedHealth !== "critical") computedHealth = "warning";
-                activeAlerts.push(`WARNING: High heat index. Ambient temp is ${ambientTemperature}°C with ${humidity}% humidity. Ensure access to water/shade.`);
+                activeAlerts.push(
+                    `WARNING: High heat index. Ambient temp is ${ambientTemperature}°C with ${humidity}% humidity. Ensure access to water/shade.`,
+                );
             }
         }
 
-        if (latestSensor.device && latestSensor.device.batteryLevel < BATTERY_WARNING_THRESHOLD) {
-            activeAlerts.push(`DEVICE WARNING: Collar battery is critically low (${latestSensor.device.batteryLevel}%).`);
+        const batteryLevel = latestSensor.device?.batteryLevel;
+        if (batteryLevel < BATTERY_WARNING_THRESHOLD) {
+            activeAlerts.push(
+                `DEVICE WARNING: Collar battery is critically low (${batteryLevel}%).`,
+            );
         }
+
 
         if (animal.healthStatus !== computedHealth) {
             await this.#animalRepository.update(animalId, { healthStatus: computedHealth });
