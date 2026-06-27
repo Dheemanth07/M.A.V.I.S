@@ -46,8 +46,8 @@ export const Navbar: React.FC<NavbarProps> = ({ activeAlertCount, role }) => {
                         <div>
                             <div className="flex items-center gap-2">
                                 <h1 className="text-xl font-bold tracking-tight text-slate-900 m-0">M.A.V.I.S</h1>
-                                <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
-                                    {role === 'admin' ? 'Admin Mode' : 'Pet Care View'}
+                                <span className="text-[10px] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                                    {role === 'admin' ? 'System Control' : 'Pet Care View'}
                                 </span>
                             </div>
                             <p className="text-xs text-slate-500 font-medium m-0">Multi Model Animal Vitality Intelligence System</p>
