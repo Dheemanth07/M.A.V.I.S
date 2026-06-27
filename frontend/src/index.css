@@ -9,6 +9,11 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Global Smooth Interactive Transitions */
+button, a, input, select {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 /* Hide scrollbar utility for clean navigation bars */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
@@ -34,13 +39,13 @@ body {
   background: #94a3b8;
 }
 
-/* Crisp Light Bento Box Card System */
+/* Crisp Light Bento Box Card System with Smooth Scale Micro-Animations */
 .bento-card {
   background-color: #ffffff;
   border-radius: 20px;
   border: 1px solid #e2e8f0;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease;
 }
 
 .bento-card:hover {
@@ -53,16 +58,19 @@ body {
   background-color: #ecfdf5;
   color: #047857;
   border: 1px solid #a7f3d0;
+  transition: all 0.2s ease;
 }
 
 .status-pill-warning {
   background-color: #fffbeb;
   color: #b45309;
   border: 1px solid #fde68a;
+  transition: all 0.2s ease;
 }
 
 .status-pill-critical {
   background-color: #fff1f2;
   color: #be123c;
   border: 1px solid #fecdd3;
+  transition: all 0.2s ease;
 }
