@@ -35,13 +35,13 @@ export const AdminSubjectRegistry: React.FC<AdminSubjectRegistryProps> = ({ anim
     };
 
     return (
-        <div className="space-y-8 animate-in fade-in duration-300">
+        <div className="space-y-6 animate-in fade-in duration-300">
             <div className="bento-card p-6 bg-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
-                    <h2 className="text-xl font-black text-slate-900 m-0">Admin Subject Registry & Hardware Binding</h2>
-                    <p className="text-xs text-slate-500 font-medium m-0">System-wide registration, hardware node pairing, and profile management</p>
+                    <h2 className="text-xl font-bold tracking-tight text-slate-900 m-0">Admin Subject Registry & Hardware Binding</h2>
+                    <p className="text-xs text-slate-500 font-normal m-0">System-wide registration, hardware node pairing, and profile management</p>
                 </div>
-                <span className="text-xs font-bold bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-xl border border-indigo-200">
+                <span className="text-xs font-semibold bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-xl border border-indigo-200">
                     {animals.length} Profiles Registered
                 </span>
             </div>
@@ -54,8 +54,8 @@ export const AdminSubjectRegistry: React.FC<AdminSubjectRegistryProps> = ({ anim
                                 <Plus className="h-5 w-5" />
                             </div>
                             <div>
-                                <h3 className="text-lg font-bold text-slate-900 m-0">Register New Subject Profile</h3>
-                                <p className="text-xs text-slate-500 font-medium m-0">Add animal to global database</p>
+                                <h3 className="text-lg font-semibold tracking-tight text-slate-900 m-0">Register New Subject Profile</h3>
+                                <p className="text-xs text-slate-500 font-normal m-0">Add animal to global database</p>
                             </div>
                         </div>
 
@@ -68,7 +68,7 @@ export const AdminSubjectRegistry: React.FC<AdminSubjectRegistryProps> = ({ anim
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                     placeholder="e.g. Dairy Cow #402"
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:border-indigo-600"
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm font-medium text-slate-900 focus:outline-none focus:border-indigo-600"
                                 />
                             </div>
                             <div className="grid grid-cols-2 gap-3">
@@ -79,7 +79,7 @@ export const AdminSubjectRegistry: React.FC<AdminSubjectRegistryProps> = ({ anim
                                         required
                                         value={formData.species}
                                         onChange={(e) => setFormData({ ...formData, species: e.target.value })}
-                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:border-indigo-600"
+                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm font-medium text-slate-900 focus:outline-none focus:border-indigo-600"
                                     />
                                 </div>
                                 <div>
@@ -88,14 +88,14 @@ export const AdminSubjectRegistry: React.FC<AdminSubjectRegistryProps> = ({ anim
                                         type="text"
                                         value={formData.breed}
                                         onChange={(e) => setFormData({ ...formData, breed: e.target.value })}
-                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:border-indigo-600"
+                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm font-medium text-slate-900 focus:outline-none focus:border-indigo-600"
                                     />
                                 </div>
                             </div>
                             <button
                                 type="submit"
                                 disabled={submitting}
-                                className="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition shadow-sm cursor-pointer"
+                                className="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition shadow-xs cursor-pointer"
                             >
                                 {submitting ? 'Registering...' : 'Add Subject Profile'}
                             </button>
@@ -108,15 +108,15 @@ export const AdminSubjectRegistry: React.FC<AdminSubjectRegistryProps> = ({ anim
                                 <Cpu className="h-5 w-5" />
                             </div>
                             <div>
-                                <h3 className="text-lg font-bold text-slate-900 m-0">Hardware Node Pairing</h3>
-                                <p className="text-xs text-slate-500 font-medium m-0">Bind physical ESP32 collar to subject</p>
+                                <h3 className="text-lg font-semibold tracking-tight text-slate-900 m-0">Hardware Node Pairing</h3>
+                                <p className="text-xs text-slate-500 font-normal m-0">Bind physical ESP32 collar to subject</p>
                             </div>
                         </div>
 
                         <form onSubmit={handlePairNode} className="space-y-3.5">
                             <div>
                                 <label className="text-xs font-semibold text-slate-600 mb-1 block">Select Target Subject</label>
-                                <select className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:border-indigo-600 cursor-pointer">
+                                <select className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm font-medium text-slate-900 focus:outline-none focus:border-indigo-600 cursor-pointer">
                                     {animals.map(a => (
                                         <option key={a._id} value={a._id}>{a.name} ({a.species})</option>
                                     ))}
@@ -128,17 +128,17 @@ export const AdminSubjectRegistry: React.FC<AdminSubjectRegistryProps> = ({ anim
                                     type="text"
                                     value={pairedNodeId}
                                     onChange={(e) => setPairedNodeId(e.target.value)}
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm font-bold text-slate-900 focus:outline-none focus:border-indigo-600 font-mono"
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:border-indigo-600 font-mono"
                                 />
                             </div>
                             <button
                                 type="submit"
-                                className="w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition shadow-sm cursor-pointer"
+                                className="w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold transition shadow-xs cursor-pointer"
                             >
                                 Bind Hardware Collar Node
                             </button>
                             {pairSuccess && (
-                                <p className="text-xs text-emerald-600 font-bold text-center m-0">✓ Hardware node paired successfully!</p>
+                                <p className="text-xs text-emerald-600 font-semibold text-center m-0">✓ Hardware node paired successfully!</p>
                             )}
                         </form>
                     </div>
@@ -149,7 +149,7 @@ export const AdminSubjectRegistry: React.FC<AdminSubjectRegistryProps> = ({ anim
                         <div className="p-6 border-b border-slate-100 flex items-center justify-between">
                             <div className="flex items-center gap-2.5">
                                 <ShieldCheck className="h-5 w-5 text-indigo-600" />
-                                <h3 className="text-lg font-bold text-slate-900 m-0">System-Wide Subject Registry</h3>
+                                <h3 className="text-lg font-semibold tracking-tight text-slate-900 m-0">System-Wide Subject Registry</h3>
                             </div>
                         </div>
 
@@ -163,17 +163,17 @@ export const AdminSubjectRegistry: React.FC<AdminSubjectRegistryProps> = ({ anim
                                         <th className="py-3.5 px-4">Baseline Progress</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-slate-100 text-xs text-slate-700 font-medium">
+                                <tbody className="divide-y divide-slate-100 text-xs text-slate-700 font-normal">
                                     {animals.map((animal) => (
                                         <tr key={animal._id} className="hover:bg-slate-50 transition">
-                                            <td className="py-3.5 px-4 font-bold text-slate-900">{animal.name}</td>
+                                            <td className="py-3.5 px-4 font-semibold text-slate-900">{animal.name}</td>
                                             <td className="py-3.5 px-4">{animal.species}</td>
                                             <td className="py-3.5 px-4">
-                                                <span className={`status-pill-${animal.healthStatus || 'healthy'} px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase`}>
+                                                <span className={`status-pill-${animal.healthStatus || 'healthy'} px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider`}>
                                                     {animal.healthStatus || 'healthy'}
                                                 </span>
                                             </td>
-                                            <td className="py-3.5 px-4 font-bold text-slate-600">
+                                            <td className="py-3.5 px-4 font-semibold text-slate-600">
                                                 {animal.baselineReadingsCount || 0}/10 Readings
                                             </td>
                                         </tr>

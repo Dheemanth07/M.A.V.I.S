@@ -51,13 +51,13 @@ export const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ animals }) =
                         <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600">
                             <Sparkles className="h-5 w-5" />
                         </div>
-                        <h2 className="text-xl font-black tracking-tight text-slate-900 m-0">Herd Health & Baseline Analytics</h2>
+                        <h2 className="text-xl font-bold tracking-tight text-slate-900 m-0">Herd Health & Baseline Analytics</h2>
                     </div>
-                    <p className="text-xs text-slate-500 font-medium mt-1 mb-0">Biometric telemetry trends and digital twin health risk distributions</p>
+                    <p className="text-xs text-slate-500 font-normal mt-1 mb-0">Biometric telemetry trends and digital twin health risk distributions</p>
                 </div>
                 <div className="flex items-center gap-3">
-                    <div className="px-3.5 py-2 rounded-xl bg-slate-100 text-xs font-bold text-slate-700 border border-slate-200">
-                        Total Subjects: <span className="text-emerald-600 font-black">{animals.length || 11}</span>
+                    <div className="px-3.5 py-2 rounded-xl bg-slate-100 text-xs font-medium text-slate-700 border border-slate-200">
+                        Total Subjects: <span className="text-emerald-600 font-bold">{animals.length || 11}</span>
                     </div>
                 </div>
             </div>
@@ -71,12 +71,12 @@ export const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ animals }) =
                                     <BarChart3 className="h-5 w-5" />
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-bold text-slate-900 m-0">Baseline Vitals Comparison</h3>
-                                    <p className="text-xs text-slate-500 font-medium m-0">Learned Digital Twin baselines per subject</p>
+                                    <h3 className="text-lg font-semibold tracking-tight text-slate-900 m-0">Baseline Vitals Comparison</h3>
+                                    <p className="text-xs text-slate-500 font-normal m-0">Learned Digital Twin baselines per subject</p>
                                 </div>
                             </div>
-                            <span className="text-xs font-bold text-teal-600 flex items-center gap-1 bg-teal-50 px-2.5 py-1 rounded-full border border-teal-100">
-                                <TrendingUp className="h-3.5 w-3.5" /> Live Dynamic
+                            <span className="text-[11px] font-semibold text-teal-600 flex items-center gap-1 bg-teal-50 px-2.5 py-1 rounded-full border border-teal-100 tracking-wider uppercase">
+                                <TrendingUp className="h-3 w-3" /> Live Dynamic
                             </span>
                         </div>
                     </div>
@@ -85,13 +85,13 @@ export const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ animals }) =
                         <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={barData} margin={{ top: 20, right: 30, left: -10, bottom: 5 }}>
                                 <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
-                                <XAxis dataKey="name" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} fontWeight={600} />
-                                <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} fontWeight={600} />
+                                <XAxis dataKey="name" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} fontWeight={500} />
+                                <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} fontWeight={500} />
                                 <Tooltip
                                     contentStyle={{ backgroundColor: '#ffffff', borderColor: '#cbd5e1', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', color: '#0f172a' }}
-                                    itemStyle={{ fontSize: '12px', fontWeight: 'bold' }}
+                                    itemStyle={{ fontSize: '12px', fontWeight: '600' }}
                                 />
-                                <Legend wrapperStyle={{ paddingTop: '15px', fontSize: '12px', fontWeight: 'bold' }} />
+                                <Legend wrapperStyle={{ paddingTop: '15px', fontSize: '12px', fontWeight: '500' }} />
                                 <Bar dataKey="Temperature" fill="#0d6b5f" radius={[6, 6, 0, 0]} name="Temp (°C)" />
                                 <Bar dataKey="HeartRate" fill="#3b82f6" radius={[6, 6, 0, 0]} name="Heart Rate (BPM)" />
                                 <Bar dataKey="RespiratoryRate" fill="#a855f7" radius={[6, 6, 0, 0]} name="Resp Rate" />
@@ -107,8 +107,8 @@ export const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ animals }) =
                                 <PieIcon className="h-5 w-5" />
                             </div>
                             <div>
-                                <h3 className="text-lg font-bold text-slate-900 m-0">Herd Health Distribution</h3>
-                                <p className="text-xs text-slate-500 font-medium m-0">Categorical risk segmentation across herd</p>
+                                <h3 className="text-lg font-semibold tracking-tight text-slate-900 m-0">Herd Health Distribution</h3>
+                                <p className="text-xs text-slate-500 font-normal m-0">Categorical risk segmentation across herd</p>
                             </div>
                         </div>
                     </div>
@@ -141,9 +141,9 @@ export const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ animals }) =
                             <div key={item.name} className="bg-slate-50 p-3 rounded-2xl border border-slate-200 text-center">
                                 <div className="flex items-center justify-center gap-1.5 mb-1">
                                     <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: item.color }} />
-                                    <span className="text-xs font-bold text-slate-700">{item.name}</span>
+                                    <span className="text-xs font-semibold text-slate-700">{item.name}</span>
                                 </div>
-                                <span className="text-xl font-black text-slate-900">{item.value}</span>
+                                <span className="text-xl font-bold tracking-tight text-slate-900">{item.value}</span>
                             </div>
                         ))}
                     </div>

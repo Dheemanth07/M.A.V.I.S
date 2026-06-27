@@ -9,21 +9,21 @@ interface AdminOverviewProps {
 
 export const AdminOverview: React.FC<AdminOverviewProps> = ({ animals, onRefresh }) => {
     return (
-        <div className="space-y-8 animate-in fade-in duration-300">
+        <div className="space-y-6 animate-in fade-in duration-300">
             <div className="bento-card p-6 bg-slate-900 text-white border-none shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                     <div className="p-3 rounded-2xl bg-indigo-600/30 text-indigo-400 border border-indigo-500/30">
                         <Shield className="h-6 w-6" />
                     </div>
                     <div>
-                        <h2 className="text-2xl font-black text-black m-0">Admin Command Overview</h2>
-                        <p className="text-xs text-slate-400 font-medium m-0">Global telemetry stream health, database stats, and baseline override controls</p>
+                        <h2 className="text-2xl font-bold tracking-tight text-white m-0">Admin Command Overview</h2>
+                        <p className="text-xs text-slate-400 font-normal m-0">Global telemetry stream health, database stats, and baseline override controls</p>
                     </div>
                 </div>
 
                 <button
                     onClick={onRefresh}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition border border-slate-700 cursor-pointer"
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition border border-slate-700 cursor-pointer"
                 >
                     <RefreshCw className="h-4 w-4" /> Sync Stream Data
                 </button>
@@ -32,8 +32,8 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({ animals, onRefresh
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 <div className="bento-card p-5 bg-white flex items-center justify-between">
                     <div>
-                        <span className="text-xs font-bold text-slate-500 block">Total Active Mesh Nodes</span>
-                        <span className="text-3xl font-black text-slate-900 mt-1 block">{animals.length}</span>
+                        <span className="text-xs font-semibold tracking-wider uppercase text-slate-500 block">Total Active Mesh Nodes</span>
+                        <span className="text-3xl font-bold tracking-tight text-slate-900 mt-1 block">{animals.length}</span>
                     </div>
                     <div className="p-3 rounded-2xl bg-indigo-50 text-indigo-600 border border-indigo-100">
                         <Cpu className="h-6 w-6" />
@@ -42,8 +42,8 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({ animals, onRefresh
 
                 <div className="bento-card p-5 bg-white flex items-center justify-between">
                     <div>
-                        <span className="text-xs font-bold text-slate-500 block">HTTP Ingestion Status</span>
-                        <span className="text-sm font-black text-emerald-600 mt-1 block">POST /api/sensor (201 OK)</span>
+                        <span className="text-xs font-semibold tracking-wider uppercase text-slate-500 block">HTTP Ingestion Status</span>
+                        <span className="text-sm font-semibold text-emerald-600 mt-1 block">POST /api/sensor (201 OK)</span>
                     </div>
                     <div className="p-3 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100">
                         <Server className="h-6 w-6" />
@@ -52,8 +52,8 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({ animals, onRefresh
 
                 <div className="bento-card p-5 bg-white flex items-center justify-between">
                     <div>
-                        <span className="text-xs font-bold text-slate-500 block">WebSocket Gateway</span>
-                        <span className="text-sm font-black text-blue-600 mt-1 block">ws://localhost:5000</span>
+                        <span className="text-xs font-semibold tracking-wider uppercase text-slate-500 block">WebSocket Gateway</span>
+                        <span className="text-sm font-semibold text-blue-600 mt-1 block">ws://localhost:5000</span>
                     </div>
                     <div className="p-3 rounded-2xl bg-blue-50 text-blue-600 border border-blue-100">
                         <Activity className="h-6 w-6" />
@@ -68,11 +68,11 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({ animals, onRefresh
                             <Database className="h-5 w-5" />
                         </div>
                         <div>
-                            <h3 className="text-lg font-bold text-slate-900 m-0">Raw Telemetry Input Stream</h3>
-                            <p className="text-xs text-slate-500 font-medium m-0">Live time-series data inspection directly from MongoDB</p>
+                            <h3 className="text-lg font-semibold tracking-tight text-slate-900 m-0">Raw Telemetry Input Stream</h3>
+                            <p className="text-xs text-slate-500 font-normal m-0">Live time-series data inspection directly from MongoDB</p>
                         </div>
                     </div>
-                    <span className="text-xs font-mono bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full border border-emerald-200 font-bold">
+                    <span className="text-[11px] font-mono bg-emerald-50 text-emerald-700 px-2.5 py-1 rounded-full border border-emerald-200 font-semibold tracking-wider uppercase">
                         Live Ingestion
                     </span>
                 </div>
@@ -88,14 +88,14 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({ animals, onRefresh
                                 <th className="py-3 px-4">Battery</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-100 text-xs text-slate-700 font-medium">
+                        <tbody className="divide-y divide-slate-100 text-xs text-slate-700 font-normal">
                             {animals.slice(0, 8).map((a) => (
                                 <tr key={a._id} className="hover:bg-slate-50 transition">
-                                    <td className="py-3.5 px-4 font-bold text-slate-900">{a.name}</td>
+                                    <td className="py-3.5 px-4 font-semibold text-slate-900">{a.name}</td>
                                     <td className="py-3.5 px-4">{a.baselines?.temperature || 38.2}°C</td>
                                     <td className="py-3.5 px-4">{a.baselines?.heartRate || 72} BPM</td>
                                     <td className="py-3.5 px-4">{a.baselines?.respiratoryRate || 22}</td>
-                                    <td className="py-3.5 px-4 font-bold text-emerald-600">88%</td>
+                                    <td className="py-3.5 px-4 font-semibold text-emerald-600">88%</td>
                                 </tr>
                             ))}
                         </tbody>

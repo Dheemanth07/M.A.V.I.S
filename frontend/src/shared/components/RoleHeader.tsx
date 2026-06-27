@@ -12,12 +12,12 @@ export const RoleHeader: React.FC<RoleHeaderProps> = ({ role, accountRole, setRo
     return (
         <div className="bg-slate-900 text-slate-100 px-4 sm:px-8 py-2 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
             <div className="flex items-center gap-2">
-                <span className="font-semibold text-slate-400">Workspace Level:</span>
+                <span className="font-medium text-slate-400">Workspace Level:</span>
                 {accountRole === 'admin' ? (
                     <div className="flex items-center bg-slate-800 p-1 rounded-lg border border-slate-700">
                         <button
                             onClick={() => setRole('user')}
-                            className={`flex items-center gap-1.5 px-3 py-1 rounded-md font-bold transition cursor-pointer ${
+                            className={`flex items-center gap-1.5 px-3 py-1 rounded-md font-semibold transition cursor-pointer ${
                                 role === 'user'
                                     ? 'bg-emerald-500 text-white shadow-sm'
                                     : 'text-slate-400 hover:text-white'
@@ -27,7 +27,7 @@ export const RoleHeader: React.FC<RoleHeaderProps> = ({ role, accountRole, setRo
                         </button>
                         <button
                             onClick={() => setRole('admin')}
-                            className={`flex items-center gap-1.5 px-3 py-1 rounded-md font-bold transition cursor-pointer ${
+                            className={`flex items-center gap-1.5 px-3 py-1 rounded-md font-semibold transition cursor-pointer ${
                                 role === 'admin'
                                     ? 'bg-indigo-600 text-white shadow-sm'
                                     : 'text-slate-400 hover:text-white'
@@ -37,7 +37,7 @@ export const RoleHeader: React.FC<RoleHeaderProps> = ({ role, accountRole, setRo
                         </button>
                     </div>
                 ) : (
-                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-800 border border-slate-700 text-emerald-400 font-bold">
+                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-800 border border-slate-700 text-emerald-400 font-semibold">
                         <UserCheck className="h-3.5 w-3.5 text-emerald-400" /> Authorized Pet Care & Herd Workspace
                     </div>
                 )}
