@@ -10,7 +10,7 @@ import cors from "cors";
  */
 const corsOptions = {
     origin: "*",
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
 };
 
