@@ -8,6 +8,7 @@ import {
     FEVER_TEMPERATURE_THRESHOLD,
     FEVER_WARNING_TEMPERATURE_THRESHOLD,
 } from "../../config/constants.js";
+import { calculateHerdGraphRisk } from "../health-engine/herdGraph.service.js";
 
 /**
  * Coordinates animal persistence and sensor-backed health checks.
@@ -175,6 +176,16 @@ class AnimalService {
                     if (computedHealth !== "critical") computedHealth = "warning";
                     activeAlerts.push(`WARNING: High heat index. Ambient temp is ${ambientTemperature}°C with ${humidity}% humidity.`);
                 }
+            }
+        }
+
+        // Section 6 & 7 Compliance: Herd Interaction Graph Engine R(i) = sum_j (R(j) * W(i,j))
+        const allAnimals = await this.#animalRepository.findAll();
+        const { herdRiskScore, warnings: herdWarnings } = calculateHerdGraphRisk(animal, allAnimals);
+        if (herdWarnings.length > 0) {
+            activeAlerts.push(...herdWarnings);
+            if (computedHealth === "healthy" && herdRiskScore > 30) {
+                computedHealth = "warning";
             }
         }
 

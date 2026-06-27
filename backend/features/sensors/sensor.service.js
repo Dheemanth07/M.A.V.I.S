@@ -87,17 +87,17 @@ class SensorService {
                 baselineAccumulator: newAccumulator,
                 baselines: newBaselines
             });
-        } else {
-            // Anomaly/Deviation Detection Phase
-            const tempBaseline = animal.baselines.temperature;
-            const hrBaseline = animal.baselines.heartRate;
-            const rrBaseline = animal.baselines.respiratoryRate;
-            const boBaseline = animal.baselines.bloodOxygen;
+            // Section 3 Compliance: Adaptive Moving Baseline Engine B(t) = alpha * X(t) + (1 - alpha) * B(t-1)
+            const alpha = 0.05; // Adaptive learning rate (0 < alpha < 1)
+            const updatedBaselines = {
+                temperature: Math.round((alpha * temperature + (1 - alpha) * tempBaseline) * 10) / 10,
+                heartRate: Math.round(alpha * heartRate + (1 - alpha) * hrBaseline),
+                respiratoryRate: Math.round(alpha * respiratoryRate + (1 - alpha) * rrBaseline),
+                bloodOxygen: Math.round(alpha * bloodOxygen + (1 - alpha) * boBaseline)
+            };
 
-            const tempDev = Math.abs(temperature - tempBaseline);
-            const hrDev = Math.abs(heartRate - hrBaseline);
-            const rrDev = Math.abs(respiratoryRate - rrBaseline);
-            const boDev = Math.abs(bloodOxygen - boBaseline);
+            // Update digital twin baseline state in MongoDB
+            await this.#animalRepository.update(animal._id, { baselines: updatedBaselines });
 
             let hasAnomaly = false;
             let anomalyDetails = [];
