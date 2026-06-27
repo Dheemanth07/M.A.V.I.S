@@ -142,7 +142,7 @@ function AppContent() {
                             currentRole === 'admin' ? (
                                 <AdminSubjectRegistry animals={animals} onRefresh={loadInitialData} />
                             ) : (
-                                <UserAnimalsView animals={animals} />
+                                <UserAnimalsView animals={animals} onRefresh={loadInitialData} />
                             )
                         }
                     />

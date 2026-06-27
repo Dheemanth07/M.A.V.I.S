@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import type { Animal } from '../../../shared/types';
+import { createAnimal } from '../../../shared/services/api';
 import { AnimalCard } from './AnimalCard';
 import { VitalsModal } from './VitalsModal';
-import { ShieldCheck, Search, Filter, ChevronLeft, ChevronRight, LayoutGrid, Tag } from 'lucide-react';
+import { ShieldCheck, Search, Filter, ChevronLeft, ChevronRight, LayoutGrid, Tag, Plus, X, Sparkles } from 'lucide-react';
 
 interface UserAnimalsViewProps {
     animals: Animal[];
+    onRefresh?: () => void;
 }
 
-export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals }) => {
+export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals, onRefresh }) => {
     const [selectedAnimal, setSelectedAnimal] = useState<Animal | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState<string>('all');
@@ -16,6 +18,26 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals }) => 
     const [selectedBreed, setSelectedBreed] = useState<string>('all');
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [pageSize, setPageSize] = useState<number>(6);
+
+    // Modal state for adding a new pet/animal
+    const [showAddModal, setShowAddModal] = useState(false);
+    const [formData, setFormData] = useState({ name: '', species: 'Dog', breed: 'Labrador', age: 2, weight: 15 });
+    const [submitting, setSubmitting] = useState(false);
+
+    const handleAddAnimal = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setSubmitting(true);
+        try {
+            await createAnimal(formData);
+            setFormData({ name: '', species: 'Dog', breed: 'Labrador', age: 2, weight: 15 });
+            setShowAddModal(false);
+            if (onRefresh) onRefresh();
+        } catch (err) {
+            console.error('Failed to add animal:', err);
+        } finally {
+            setSubmitting(false);
+        }
+    };
 
     const uniqueSpecies = Array.from(
         new Set(animals.map(a => a.species).filter(Boolean))
@@ -56,19 +78,29 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals }) => 
             <div className="bento-card p-6 flex flex-col space-y-4 bg-white">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
-                        <h2 className="text-xl font-black text-slate-900 m-0">My Animals & Vitals Glance</h2>
-                        <p className="text-xs text-slate-500 font-medium m-0">Filter subjects by species, breed, or current health status</p>
+                        <h2 className="text-xl font-bold text-slate-900 m-0">My Animals & Care Glance</h2>
+                        <p className="text-xs text-slate-500 font-medium m-0">Manage your pets or herd, track live vitals, and add new animals</p>
                     </div>
 
-                    <div className="relative w-full sm:w-72">
-                        <Search className="absolute left-3.5 top-3 h-4 w-4 text-slate-400" />
-                        <input
-                            type="text"
-                            placeholder="Search by name or breed..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl pl-10 pr-4 py-2 text-sm font-semibold focus:outline-none focus:border-emerald-600"
-                        />
+                    <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                        <div className="relative flex-1 sm:w-64">
+                            <Search className="absolute left-3.5 top-3 h-4 w-4 text-slate-400" />
+                            <input
+                                type="text"
+                                placeholder="Search by name or breed..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl pl-10 pr-4 py-2 text-sm font-semibold focus:outline-none focus:border-emerald-600"
+                            />
+                        </div>
+
+                        {/* Add Animal Button for Owners & Farmers */}
+                        <button
+                            onClick={() => setShowAddModal(true)}
+                            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-sm cursor-pointer whitespace-nowrap"
+                        >
+                            <Plus className="h-4 w-4" /> Add New Animal
+                        </button>
                     </div>
                 </div>
 
@@ -189,11 +221,95 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals }) => 
                 </div>
             )}
 
+            {/* Vitals Trend Modal */}
             {selectedAnimal && (
                 <VitalsModal
                     animal={selectedAnimal}
                     onClose={() => setSelectedAnimal(null)}
                 />
+            )}
+
+            {/* Add New Animal Modal for Pet Owners & Farmers */}
+            {showAddModal && (
+                <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+                    <div className="bento-card w-full max-w-lg bg-white p-6 sm:p-8 space-y-6 animate-in fade-in zoom-in duration-200">
+                        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                            <div className="flex items-center gap-3">
+                                <div className="p-3 rounded-2xl bg-emerald-50 text-emerald-600">
+                                    <Sparkles className="h-6 w-6" />
+                                </div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-slate-900 m-0">Register New Animal</h3>
+                                    <p className="text-xs text-slate-500 font-medium m-0">Add a pet or livestock subject to your care profile</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setShowAddModal(false)}
+                                className="p-2 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition cursor-pointer"
+                            >
+                                <X className="h-5 w-5" />
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleAddAnimal} className="space-y-4">
+                            <div>
+                                <label className="text-xs font-bold text-slate-700 mb-1 block">Animal Name / Tag</label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={formData.name}
+                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                    placeholder="e.g. Buddy, Cooper, or Cow #402"
+                                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 text-sm font-semibold focus:outline-none focus:border-emerald-600"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="text-xs font-bold text-slate-700 mb-1 block">Species / Type</label>
+                                    <select
+                                        value={formData.species}
+                                        onChange={(e) => setFormData({ ...formData, species: e.target.value })}
+                                        className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-600 cursor-pointer"
+                                    >
+                                        <option value="Dog">Dog</option>
+                                        <option value="Cat">Cat</option>
+                                        <option value="Cow">Cow</option>
+                                        <option value="Horse">Horse</option>
+                                        <option value="Sheep">Sheep</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="text-xs font-bold text-slate-700 mb-1 block">Breed</label>
+                                    <input
+                                        type="text"
+                                        value={formData.breed}
+                                        onChange={(e) => setFormData({ ...formData, breed: e.target.value })}
+                                        placeholder="e.g. Golden Retriever"
+                                        className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:border-emerald-600"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowAddModal(false)}
+                                    className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition cursor-pointer"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={submitting}
+                                    className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-sm cursor-pointer disabled:opacity-50"
+                                >
+                                    {submitting ? 'Registering...' : 'Register Animal Profile'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             )}
         </div>
     );
