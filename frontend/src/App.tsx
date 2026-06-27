@@ -2,18 +2,22 @@ import { useState, useEffect } from 'react';
 import { io, Socket } from 'socket.io-client';
 import type { Animal, AlertItem } from './types';
 import { fetchAnimals, fetchActiveAlerts } from './services/api';
+import { RoleHeader } from './components/RoleHeader';
 import { Navbar } from './components/Navbar';
-import { DashboardOverview } from './components/DashboardOverview';
-import { HerdManagement } from './components/HerdManagement';
+import { AlertBanner } from './components/AlertBanner';
+import { UserDashboard } from './components/UserDashboard';
+import { AdminDashboard } from './components/AdminDashboard';
 import { AnalyticsSection } from './components/AnalyticsSection';
 import { DigitalTwinMonitor } from './components/DigitalTwinMonitor';
 import { AlertCenter } from './components/AlertCenter';
 
 export function App() {
-    const [activeTab, setActiveTab] = useState<'overview' | 'herd' | 'analytics' | 'twin' | 'alerts'>('overview');
+    const [role, setRole] = useState<'user' | 'admin'>('user');
+    const [activeTab, setActiveTab] = useState<'dashboard' | 'animals' | 'alerts' | 'analytics' | 'twin'>('dashboard');
     const [animals, setAnimals] = useState<Animal[]>([]);
     const [alerts, setAlerts] = useState<AlertItem[]>([]);
     const [connected, setConnected] = useState(false);
+    const [activeToastAlert, setActiveToastAlert] = useState<AlertItem | null>(null);
 
     const loadInitialData = async () => {
         try {
@@ -44,7 +48,18 @@ export function App() {
 
         socket.on('alert', (newAlert: any) => {
             console.log('Real-time Socket Alert received:', newAlert);
-            // Refresh database data when alert triggers
+
+            const alertObj: AlertItem = {
+                _id: newAlert.id || String(Date.now()),
+                animalId: newAlert.animalId || 'Live Telemetry Node',
+                type: newAlert.type || 'ANOMALY',
+                severity: newAlert.type === 'ANOMALY' ? 'critical' : 'warning',
+                message: newAlert.message || 'Vital deviation detected in live stream',
+                status: 'active',
+                createdAt: newAlert.timestamp || new Date().toISOString(),
+            };
+
+            setActiveToastAlert(alertObj);
             loadInitialData();
         });
 
@@ -54,28 +69,53 @@ export function App() {
     }, []);
 
     return (
-        <div className="min-h-screen bg-[#0b0f17] text-slate-100 flex flex-col font-sans selection:bg-teal-500/30 selection:text-teal-200">
+        <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-emerald-500/20 selection:text-emerald-900">
+            {/* Testing Role Switcher & Environment Bar */}
+            <RoleHeader
+                role={role}
+                setRole={setRole}
+                connected={connected}
+            />
+
+            {/* Light Bento App Navbar */}
             <Navbar
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
-                connected={connected}
                 activeAlertCount={alerts.filter(a => a.status === 'active').length}
+                role={role}
+            />
+
+            {/* Real-time Socket.IO Alert Banner */}
+            <AlertBanner
+                alert={activeToastAlert}
+                onDismiss={() => setActiveToastAlert(null)}
             />
 
             <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-8">
-                {activeTab === 'overview' && (
-                    <DashboardOverview
-                        animals={animals}
-                        alerts={alerts}
-                        setActiveTab={setActiveTab}
-                    />
+                {activeTab === 'dashboard' && (
+                    role === 'admin' ? (
+                        <AdminDashboard
+                            animals={animals}
+                            onRefresh={loadInitialData}
+                        />
+                    ) : (
+                        <UserDashboard
+                            animals={animals}
+                        />
+                    )
                 )}
 
-                {activeTab === 'herd' && (
-                    <HerdManagement
-                        animals={animals}
-                        onRefresh={loadInitialData}
-                    />
+                {activeTab === 'animals' && (
+                    role === 'admin' ? (
+                        <AdminDashboard
+                            animals={animals}
+                            onRefresh={loadInitialData}
+                        />
+                    ) : (
+                        <UserDashboard
+                            animals={animals}
+                        />
+                    )
                 )}
 
                 {activeTab === 'analytics' && (
@@ -98,8 +138,8 @@ export function App() {
                 )}
             </main>
 
-            <footer className="border-t border-slate-800/80 py-6 px-4 text-center text-xs text-slate-500">
-                <p className="m-0">M.A.V.I.S Autonomous Veterinary Intelligence System • Personalised Digital Twin Core</p>
+            <footer className="border-t border-slate-200 bg-white py-6 px-4 text-center text-xs text-slate-500 font-medium">
+                <p className="m-0">M.A.V.I.S Multi Model Animal Vitality Intelligence System • Light Bento Box UI</p>
             </footer>
         </div>
     );
