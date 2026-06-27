@@ -57,7 +57,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeAlertCount, role }) => {
                     {/* Navigation & User Profile Control - Pixel Perfect Horizontal Alignment */}
                     <div className="flex flex-wrap items-center gap-2.5 h-10">
                         {/* Nav Pill Container - Uniform 40px Height */}
-                        <nav className="flex items-center gap-1 bg-slate-50 p-1 rounded-full border border-slate-200 h-10 overflow-x-auto max-w-full">
+                        <nav className="flex items-center gap-1 bg-slate-50 p-1 rounded-full border border-slate-200 h-10 overflow-x-auto overflow-y-hidden no-scrollbar max-w-full">
                             {navItems.map((item) => {
                                 const Icon = item.icon;
                                 return (

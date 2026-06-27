@@ -9,6 +9,15 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Hide scrollbar utility for clean navigation bars */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 /* Custom Scrollbar for Light Theme */
 ::-webkit-scrollbar {
   width: 6px;
