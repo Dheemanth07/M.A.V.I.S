@@ -1,6 +1,6 @@
 import React from 'react';
 import { Thermometer, Heart, Activity } from 'lucide-react';
-import type { Animal } from '../types';
+import type { Animal } from '../../../shared/types';
 
 interface AnimalCardProps {
     animal: Animal;
@@ -26,7 +26,7 @@ export const AnimalCard: React.FC<AnimalCardProps> = ({ animal, onViewVitals }) 
     }[status];
 
     return (
-        <div className="bento-card p-6 flex flex-col justify-between hover:border-slate-300 transition">
+        <div className="bento-card p-6 flex flex-col justify-between hover:border-slate-300 transition bg-white">
             <div>
                 <div className="flex items-center justify-between gap-2 mb-3">
                     <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${statusConfig.badgeClass}`}>
@@ -39,7 +39,6 @@ export const AnimalCard: React.FC<AnimalCardProps> = ({ animal, onViewVitals }) 
                 <h3 className="text-2xl font-black text-slate-900 mb-1">{animal.name}</h3>
                 <p className="text-xs text-slate-500 font-medium mb-6">{animal.species} • {animal.breed || 'Standard Breed'}</p>
 
-                {/* Quick Vitals Glance */}
                 <div className="grid grid-cols-2 gap-3 mb-6">
                     <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
                         <div className="flex items-center gap-1.5 text-xs text-slate-500 font-medium mb-1">
@@ -63,7 +62,7 @@ export const AnimalCard: React.FC<AnimalCardProps> = ({ animal, onViewVitals }) 
 
             <button
                 onClick={() => onViewVitals(animal)}
-                className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition"
+                className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition cursor-pointer"
             >
                 <Activity className="h-4 w-4 text-emerald-600" /> View Detailed Vitals
             </button>

@@ -1,26 +1,25 @@
 import React from 'react';
-import type { Animal, AlertItem } from '../types';
-import { AnalyticsSection } from './AnalyticsSection';
+import { useNavigate } from 'react-router-dom';
+import type { Animal, AlertItem } from '../../../shared/types';
+import { AnalyticsSection } from '../../analytics/components/AnalyticsSection';
 import { ShieldCheck, Activity, AlertTriangle, Cpu, ArrowRight, Smile, Heart } from 'lucide-react';
 
 interface UserDashboardOverviewProps {
     animals: Animal[];
     alerts: AlertItem[];
-    setActiveTab: (tab: 'dashboard' | 'animals' | 'alerts' | 'analytics' | 'twin') => void;
 }
 
 export const UserDashboardOverview: React.FC<UserDashboardOverviewProps> = ({
     animals,
     alerts,
-    setActiveTab
 }) => {
+    const navigate = useNavigate();
     const healthyCount = animals.filter(a => (a.healthStatus || 'healthy') === 'healthy').length;
     const warningCount = animals.filter(a => a.healthStatus === 'warning').length;
     const criticalCount = animals.filter(a => a.healthStatus === 'critical').length;
 
     return (
         <div className="space-y-8 animate-in fade-in duration-300">
-            {/* Friendly Hero Banner */}
             <div className="bento-card p-6 sm:p-8 bg-gradient-to-r from-emerald-600 to-teal-600 text-white border-none shadow-md">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
                     <div className="space-y-2">
@@ -45,7 +44,6 @@ export const UserDashboardOverview: React.FC<UserDashboardOverviewProps> = ({
                 </div>
             </div>
 
-            {/* Top Stat Bento Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                 <div className="bento-card p-5 flex items-center justify-between bg-white">
                     <div>
@@ -92,13 +90,11 @@ export const UserDashboardOverview: React.FC<UserDashboardOverviewProps> = ({
                 </div>
             </div>
 
-            {/* Embed Analytics Section (Bar Chart & Pie Chart) */}
             <AnalyticsSection animals={animals} />
 
-            {/* Quick Action Navigation Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div
-                    onClick={() => setActiveTab('animals')}
+                    onClick={() => navigate('/animals')}
                     className="bento-card p-6 cursor-pointer group hover:border-emerald-500/50 transition flex flex-col justify-between bg-white"
                 >
                     <div>
@@ -114,7 +110,7 @@ export const UserDashboardOverview: React.FC<UserDashboardOverviewProps> = ({
                 </div>
 
                 <div
-                    onClick={() => setActiveTab('twin')}
+                    onClick={() => navigate('/twin')}
                     className="bento-card p-6 cursor-pointer group hover:border-emerald-500/50 transition flex flex-col justify-between bg-white"
                 >
                     <div>

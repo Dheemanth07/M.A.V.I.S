@@ -1,21 +1,21 @@
 import { useState, useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { io, Socket } from 'socket.io-client';
-import type { Animal, AlertItem } from './types';
-import { fetchAnimals, fetchActiveAlerts } from './services/api';
-import { RoleHeader } from './components/RoleHeader';
-import { Navbar } from './components/Navbar';
-import { AlertBanner } from './components/AlertBanner';
-import { UserDashboardOverview } from './components/UserDashboardOverview';
-import { UserAnimalsView } from './components/UserAnimalsView';
-import { AdminOverview } from './components/AdminOverview';
-import { AdminSubjectRegistry } from './components/AdminSubjectRegistry';
-import { AnalyticsSection } from './components/AnalyticsSection';
-import { DigitalTwinMonitor } from './components/DigitalTwinMonitor';
-import { AlertCenter } from './components/AlertCenter';
+import type { Animal, AlertItem } from './shared/types';
+import { fetchAnimals, fetchActiveAlerts } from './shared/services/api';
+import { RoleHeader } from './shared/components/RoleHeader';
+import { Navbar } from './shared/components/Navbar';
+import { AlertBanner } from './features/alerts/components/AlertBanner';
+import { UserDashboardOverview } from './features/dashboard/components/UserDashboardOverview';
+import { UserAnimalsView } from './features/animals/components/UserAnimalsView';
+import { AdminOverview } from './features/admin/components/AdminOverview';
+import { AdminSubjectRegistry } from './features/admin/components/AdminSubjectRegistry';
+import { AnalyticsSection } from './features/analytics/components/AnalyticsSection';
+import { DigitalTwinMonitor } from './features/digital-twin/components/DigitalTwinMonitor';
+import { AlertCenter } from './features/alerts/components/AlertCenter';
 
 export function App() {
     const [role, setRole] = useState<'user' | 'admin'>('user');
-    const [activeTab, setActiveTab] = useState<'dashboard' | 'animals' | 'alerts' | 'analytics' | 'twin'>('dashboard');
     const [animals, setAnimals] = useState<Animal[]>([]);
     const [alerts, setAlerts] = useState<AlertItem[]>([]);
     const [connected, setConnected] = useState(false);
@@ -35,7 +35,6 @@ export function App() {
     useEffect(() => {
         loadInitialData();
 
-        // Connect to Socket.IO server at http://localhost:5000 with clean auto-reconnect
         const socket: Socket = io('http://localhost:5000', {
             transports: ['websocket', 'polling'],
             reconnection: true,
@@ -77,86 +76,59 @@ export function App() {
     }, []);
 
     return (
-        <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-emerald-500/20 selection:text-emerald-900">
-            {/* Testing Role Switcher & Environment Bar */}
-            <RoleHeader
-                role={role}
-                setRole={setRole}
-                connected={connected}
-            />
+        <BrowserRouter>
+            <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col font-sans selection:bg-emerald-500/20 selection:text-emerald-900">
+                <RoleHeader
+                    role={role}
+                    setRole={setRole}
+                    connected={connected}
+                />
 
-            {/* Light Bento App Navbar */}
-            <Navbar
-                activeTab={activeTab}
-                setActiveTab={setActiveTab}
-                activeAlertCount={alerts.filter(a => a && a.status === 'active').length}
-                role={role}
-            />
+                <Navbar
+                    activeAlertCount={alerts.filter(a => a && a.status === 'active').length}
+                    role={role}
+                />
 
-            {/* Real-time Socket.IO Alert Banner */}
-            <AlertBanner
-                alert={activeToastAlert}
-                onDismiss={() => setActiveToastAlert(null)}
-            />
+                <AlertBanner
+                    alert={activeToastAlert}
+                    onDismiss={() => setActiveToastAlert(null)}
+                />
 
-            <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-8">
-                {/* DASHBOARD TAB */}
-                {activeTab === 'dashboard' && (
-                    role === 'admin' ? (
-                        <AdminOverview
-                            animals={animals}
-                            onRefresh={loadInitialData}
+                <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-8">
+                    <Routes>
+                        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                        <Route
+                            path="/dashboard"
+                            element={
+                                role === 'admin' ? (
+                                    <AdminOverview animals={animals} onRefresh={loadInitialData} />
+                                ) : (
+                                    <UserDashboardOverview animals={animals} alerts={alerts} />
+                                )
+                            }
                         />
-                    ) : (
-                        <UserDashboardOverview
-                            animals={animals}
-                            alerts={alerts}
-                            setActiveTab={setActiveTab}
+                        <Route
+                            path="/animals"
+                            element={
+                                role === 'admin' ? (
+                                    <AdminSubjectRegistry animals={animals} onRefresh={loadInitialData} />
+                                ) : (
+                                    <UserAnimalsView animals={animals} />
+                                )
+                            }
                         />
-                    )
-                )}
+                        <Route path="/analytics" element={<AnalyticsSection animals={animals} />} />
+                        <Route path="/twin" element={<DigitalTwinMonitor animals={animals} />} />
+                        <Route path="/alerts" element={<AlertCenter alerts={alerts} onRefresh={loadInitialData} />} />
+                        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                    </Routes>
+                </main>
 
-                {/* MY ANIMALS / SUBJECT REGISTRY TAB */}
-                {activeTab === 'animals' && (
-                    role === 'admin' ? (
-                        <AdminSubjectRegistry
-                            animals={animals}
-                            onRefresh={loadInitialData}
-                        />
-                    ) : (
-                        <UserAnimalsView
-                            animals={animals}
-                        />
-                    )
-                )}
-
-                {/* ANALYTICS TAB */}
-                {activeTab === 'analytics' && (
-                    <AnalyticsSection
-                        animals={animals}
-                    />
-                )}
-
-                {/* DIGITAL TWIN TAB */}
-                {activeTab === 'twin' && (
-                    <DigitalTwinMonitor
-                        animals={animals}
-                    />
-                )}
-
-                {/* ALERTS TAB */}
-                {activeTab === 'alerts' && (
-                    <AlertCenter
-                        alerts={alerts}
-                        onRefresh={loadInitialData}
-                    />
-                )}
-            </main>
-
-            <footer className="border-t border-slate-200 bg-white py-6 px-4 text-center text-xs text-slate-500 font-medium">
-                <p className="m-0">M.A.V.I.S Multi Model Animal Vitality Intelligence System • Light Bento Box UI</p>
-            </footer>
-        </div>
+                <footer className="border-t border-slate-200 bg-white py-6 px-4 text-center text-xs text-slate-500 font-medium">
+                    <p className="m-0">M.A.V.I.S Multi Model Animal Vitality Intelligence System • Modular Architecture</p>
+                </footer>
+            </div>
+        </BrowserRouter>
     );
 }
 

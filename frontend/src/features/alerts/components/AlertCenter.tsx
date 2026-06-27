@@ -1,6 +1,6 @@
 import React from 'react';
-import type { AlertItem } from '../types';
-import { updateAlertStatus } from '../services/api';
+import type { AlertItem } from '../../../shared/types';
+import { updateAlertStatus } from '../../../shared/services/api';
 import { Bell, CheckCircle2, AlertTriangle, AlertCircle, ShieldAlert } from 'lucide-react';
 
 interface AlertCenterProps {
@@ -29,7 +29,7 @@ export const AlertCenter: React.FC<AlertCenterProps> = ({ alerts, onRefresh }) =
 
     return (
         <div className="space-y-6">
-            <div className="bento-card p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="bento-card p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white">
                 <div className="flex items-center gap-3">
                     <div className="p-3 rounded-2xl bg-rose-50 text-rose-600 border border-rose-100">
                         <Bell className="h-6 w-6" />
@@ -46,7 +46,7 @@ export const AlertCenter: React.FC<AlertCenterProps> = ({ alerts, onRefresh }) =
 
             <div className="space-y-4">
                 {(!alerts || alerts.length === 0) ? (
-                    <div className="bento-card p-12 text-center text-slate-500">
+                    <div className="bento-card p-12 text-center text-slate-500 bg-white">
                         <ShieldAlert className="h-10 w-10 text-slate-400 mx-auto mb-3" />
                         <p className="text-sm font-bold text-slate-800 m-0">No active alerts currently recorded.</p>
                         <p className="text-xs text-slate-500 mt-1 font-medium">Collar sensors and digital twin baselines are operating normally.</p>
@@ -55,7 +55,6 @@ export const AlertCenter: React.FC<AlertCenterProps> = ({ alerts, onRefresh }) =
                     alerts.map((alert) => {
                         if (!alert) return null;
 
-                        // SAFE NULL CHECK FOR ANIMAL ID
                         let animalName = 'Unknown Subject';
                         if (alert.animalId && typeof alert.animalId === 'object') {
                             animalName = alert.animalId.name || 'Subject';

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import type { Animal } from '../types';
-import { createAnimal } from '../services/api';
+import type { Animal } from '../../../shared/types';
+import { createAnimal } from '../../../shared/services/api';
 import { Plus, Cpu, ShieldCheck } from 'lucide-react';
 
 interface AdminSubjectRegistryProps {
@@ -47,7 +47,6 @@ export const AdminSubjectRegistry: React.FC<AdminSubjectRegistryProps> = ({ anim
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                {/* Registration & Hardware Binding Forms (5 cols) */}
                 <div className="lg:col-span-5 space-y-6">
                     <div className="bento-card p-6 bg-white">
                         <div className="flex items-center gap-2.5 mb-4">
@@ -96,7 +95,7 @@ export const AdminSubjectRegistry: React.FC<AdminSubjectRegistryProps> = ({ anim
                             <button
                                 type="submit"
                                 disabled={submitting}
-                                className="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition shadow-sm"
+                                className="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition shadow-sm cursor-pointer"
                             >
                                 {submitting ? 'Registering...' : 'Add Subject Profile'}
                             </button>
@@ -117,7 +116,7 @@ export const AdminSubjectRegistry: React.FC<AdminSubjectRegistryProps> = ({ anim
                         <form onSubmit={handlePairNode} className="space-y-3.5">
                             <div>
                                 <label className="text-xs font-semibold text-slate-600 mb-1 block">Select Target Subject</label>
-                                <select className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:border-indigo-600">
+                                <select className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm font-semibold text-slate-900 focus:outline-none focus:border-indigo-600 cursor-pointer">
                                     {animals.map(a => (
                                         <option key={a._id} value={a._id}>{a.name} ({a.species})</option>
                                     ))}
@@ -134,7 +133,7 @@ export const AdminSubjectRegistry: React.FC<AdminSubjectRegistryProps> = ({ anim
                             </div>
                             <button
                                 type="submit"
-                                className="w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition shadow-sm"
+                                className="w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition shadow-sm cursor-pointer"
                             >
                                 Bind Hardware Collar Node
                             </button>
@@ -145,7 +144,6 @@ export const AdminSubjectRegistry: React.FC<AdminSubjectRegistryProps> = ({ anim
                     </div>
                 </div>
 
-                {/* Subject Registry Table (7 cols) */}
                 <div className="lg:col-span-7 space-y-6">
                     <div className="bento-card overflow-hidden bg-white">
                         <div className="p-6 border-b border-slate-100 flex items-center justify-between">

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import type { Animal } from '../types';
+import type { Animal } from '../../../shared/types';
 import { AnimalCard } from './AnimalCard';
 import { VitalsModal } from './VitalsModal';
 import { ShieldCheck, Search, Filter, ChevronLeft, ChevronRight, LayoutGrid, Tag } from 'lucide-react';
@@ -17,12 +17,10 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals }) => 
     const [currentPage, setCurrentPage] = useState<number>(1);
     const [pageSize, setPageSize] = useState<number>(6);
 
-    // Extract unique species dynamically from registered animals
     const uniqueSpecies = Array.from(
         new Set(animals.map(a => a.species).filter(Boolean))
     );
 
-    // Extract unique breeds dynamically for the selected species
     const availableBreeds = Array.from(
         new Set(
             animals
@@ -32,7 +30,6 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals }) => 
         )
     );
 
-    // Filter logic combining Search, Health Status, Species, and Breed
     const filteredAnimals = animals.filter(a => {
         const matchesSearch = a.name.toLowerCase().includes(searchTerm.toLowerCase()) || (a.breed && a.breed.toLowerCase().includes(searchTerm.toLowerCase()));
         const matchesStatus = filterStatus === 'all' || a.healthStatus === filterStatus;
@@ -41,12 +38,10 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals }) => 
         return matchesSearch && matchesStatus && matchesSpecies && matchesBreed;
     });
 
-    // Reset to page 1 when filters or search term change
     useEffect(() => {
         setCurrentPage(1);
     }, [searchTerm, filterStatus, selectedSpecies, selectedBreed, pageSize]);
 
-    // Reset breed filter when species changes
     const handleSpeciesChange = (speciesVal: string) => {
         setSelectedSpecies(speciesVal);
         setSelectedBreed('all');
@@ -58,7 +53,6 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals }) => 
 
     return (
         <div className="space-y-6 animate-in fade-in duration-300">
-            {/* Control & Filter Bar */}
             <div className="bento-card p-6 flex flex-col space-y-4 bg-white">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
@@ -66,7 +60,6 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals }) => 
                         <p className="text-xs text-slate-500 font-medium m-0">Filter subjects by species, breed, or current health status</p>
                     </div>
 
-                    {/* Search Bar */}
                     <div className="relative w-full sm:w-72">
                         <Search className="absolute left-3.5 top-3 h-4 w-4 text-slate-400" />
                         <input
@@ -79,9 +72,7 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals }) => 
                     </div>
                 </div>
 
-                {/* Multi-Tiered Filters (Species, Optional Breed, Health Status) */}
                 <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-slate-100 text-xs font-bold">
-                    {/* Species Selector */}
                     <div className="flex items-center gap-2">
                         <span className="text-slate-400 font-semibold">Animal Type:</span>
                         <select
@@ -96,7 +87,6 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals }) => 
                         </select>
                     </div>
 
-                    {/* Optional Breed Selector - Only active when a specific animal type is selected */}
                     {selectedSpecies !== 'all' && availableBreeds.length > 0 && (
                         <div className="flex items-center gap-2">
                             <Tag className="h-3.5 w-3.5 text-emerald-600" />
@@ -114,7 +104,6 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals }) => 
                         </div>
                     )}
 
-                    {/* Health Status Filter */}
                     <div className="flex items-center gap-2 ml-auto">
                         <Filter className="h-3.5 w-3.5 text-slate-400" />
                         <select
@@ -131,7 +120,6 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals }) => 
                 </div>
             </div>
 
-            {/* Responsive Bento Box Grid (grid-cols-1 md:grid-cols-3 gap-6) */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {paginatedAnimals.length === 0 ? (
                     <div className="col-span-full bento-card p-12 text-center text-slate-500 bg-white">
@@ -150,7 +138,6 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals }) => 
                 )}
             </div>
 
-            {/* Professional Pagination & Page Size Bar */}
             {filteredAnimals.length > 0 && (
                 <div className="bento-card p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white text-xs font-semibold text-slate-600">
                     <div className="flex items-center gap-2">
@@ -159,13 +146,12 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals }) => 
                     </div>
 
                     <div className="flex items-center gap-4">
-                        {/* Page Size Selector */}
                         <div className="flex items-center gap-2">
                             <span className="text-slate-400">Cards per page:</span>
                             <select
                                 value={pageSize}
                                 onChange={(e) => setPageSize(Number(e.target.value))}
-                                className="bg-slate-50 border border-slate-200 text-slate-900 rounded-lg px-2.5 py-1.5 font-bold focus:outline-none focus:border-emerald-600"
+                                className="bg-slate-50 border border-slate-200 text-slate-900 rounded-lg px-2.5 py-1.5 font-bold focus:outline-none focus:border-emerald-600 cursor-pointer"
                             >
                                 <option value={6}>6 per page</option>
                                 <option value={12}>12 per page</option>
@@ -174,13 +160,12 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals }) => 
                             </select>
                         </div>
 
-                        {/* Page Navigation Buttons */}
                         {totalPages > 1 && (
                             <div className="flex items-center gap-1.5">
                                 <button
                                     onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                                     disabled={currentPage === 1}
-                                    className="p-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                                    className="p-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer"
                                     title="Previous Page"
                                 >
                                     <ChevronLeft className="h-4 w-4" />
@@ -193,7 +178,7 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals }) => 
                                 <button
                                     onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                                     disabled={currentPage === totalPages}
-                                    className="p-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                                    className="p-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer"
                                     title="Next Page"
                                 >
                                     <ChevronRight className="h-4 w-4" />
@@ -204,7 +189,6 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals }) => 
                 </div>
             )}
 
-            {/* Vitals Trend Modal */}
             {selectedAnimal && (
                 <VitalsModal
                     animal={selectedAnimal}

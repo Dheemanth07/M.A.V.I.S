@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Animal } from '../types';
+import type { Animal } from '../../../shared/types';
 import { Shield, Database, Activity, RefreshCw, Cpu, Server } from 'lucide-react';
 
 interface AdminOverviewProps {
@@ -10,27 +10,25 @@ interface AdminOverviewProps {
 export const AdminOverview: React.FC<AdminOverviewProps> = ({ animals, onRefresh }) => {
     return (
         <div className="space-y-8 animate-in fade-in duration-300">
-            {/* Header Banner */}
             <div className="bento-card p-6 bg-slate-900 text-white border-none shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                     <div className="p-3 rounded-2xl bg-indigo-600/30 text-indigo-400 border border-indigo-500/30">
                         <Shield className="h-6 w-6" />
                     </div>
                     <div>
-                        <h2 className="text-2xl font-black text-black m-0">Admin Command Overview</h2>
+                        <h2 className="text-2xl font-black text-white m-0">Admin Command Overview</h2>
                         <p className="text-xs text-slate-400 font-medium m-0">Global telemetry stream health, database stats, and baseline override controls</p>
                     </div>
                 </div>
 
                 <button
                     onClick={onRefresh}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition border border-slate-700"
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition border border-slate-700 cursor-pointer"
                 >
                     <RefreshCw className="h-4 w-4" /> Sync Stream Data
                 </button>
             </div>
 
-            {/* Quick Stat Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 <div className="bento-card p-5 bg-white flex items-center justify-between">
                     <div>
@@ -63,7 +61,6 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({ animals, onRefresh
                 </div>
             </div>
 
-            {/* Raw Time-Series Monitoring Grids */}
             <div className="bento-card p-6 bg-white">
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2.5">

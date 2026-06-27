@@ -1,7 +1,7 @@
 import React from 'react';
 import { X, Thermometer, Heart, Sparkles } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import type { Animal } from '../types';
+import type { Animal } from '../../../shared/types';
 
 interface VitalsModalProps {
     animal: Animal | null;
@@ -36,7 +36,7 @@ export const VitalsModal: React.FC<VitalsModalProps> = ({ animal, onClose }) => 
                     </div>
                     <button
                         onClick={onClose}
-                        className="p-2 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition"
+                        className="p-2 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition cursor-pointer"
                     >
                         <X className="h-5 w-5" />
                     </button>
@@ -60,7 +60,6 @@ export const VitalsModal: React.FC<VitalsModalProps> = ({ animal, onClose }) => 
                     </div>
                 </div>
 
-                {/* Temperature Trend Chart */}
                 <div>
                     <h4 className="text-sm font-bold text-slate-800 mb-3">Today's Body Temperature Trend (°C)</h4>
                     <div className="h-56 w-full pt-2">
@@ -87,7 +86,7 @@ export const VitalsModal: React.FC<VitalsModalProps> = ({ animal, onClose }) => 
                 <div className="flex justify-end pt-2">
                     <button
                         onClick={onClose}
-                        className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold transition"
+                        className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-sm font-bold transition cursor-pointer"
                     >
                         Close Summary
                     </button>

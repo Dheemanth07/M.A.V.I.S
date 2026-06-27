@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import type { Animal, HealthStatusResponse } from '../types';
-import { fetchHealthStatus } from '../services/api';
+import type { Animal, HealthStatusResponse } from '../../../shared/types';
+import { fetchHealthStatus } from '../../../shared/services/api';
 import { Cpu, RefreshCw, Thermometer, Heart, Wind, Battery, Zap } from 'lucide-react';
 
 interface DigitalTwinMonitorProps {
@@ -38,7 +38,6 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
 
     return (
         <div className="space-y-6">
-            {/* Subject Selector Header */}
             <div className="bento-card p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white">
                 <div className="flex items-center gap-3">
                     <div className="p-3 rounded-2xl bg-teal-50 text-teal-600 border border-teal-100">
@@ -54,7 +53,7 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
                     <select
                         value={selectedAnimalId}
                         onChange={(e) => setSelectedAnimalId(e.target.value)}
-                        className="bg-slate-50 border border-slate-300 text-slate-900 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:border-teal-600 w-full sm:w-64"
+                        className="bg-slate-50 border border-slate-300 text-slate-900 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:border-teal-600 w-full sm:w-64 cursor-pointer"
                     >
                         {animals.map(a => (
                             <option key={a._id} value={a._id}>{a.name} ({a.species})</option>
@@ -63,7 +62,7 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
 
                     <button
                         onClick={() => loadTwinData(selectedAnimalId)}
-                        className="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl border border-slate-300 transition"
+                        className="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl border border-slate-300 transition cursor-pointer"
                         title="Refresh Twin Telemetry"
                     >
                         <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin text-teal-600' : ''}`} />
@@ -73,7 +72,6 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
 
             {selectedAnimal && (
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                    {/* Left Column: Subject Profile & Baseline Status (4 cols) */}
                     <div className="lg:col-span-4 space-y-6">
                         <div className="bento-card p-6 bg-white">
                             <div className="flex items-center justify-between mb-4">
@@ -86,7 +84,6 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
                             <h3 className="text-2xl font-black text-slate-900 mb-1">{selectedAnimal.name}</h3>
                             <p className="text-xs text-slate-500 font-medium mb-6">{selectedAnimal.species} • {selectedAnimal.breed || 'Standard Breed'}</p>
 
-                            {/* Baseline Initialization Progress */}
                             <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2 mb-6">
                                 <div className="flex items-center justify-between text-xs">
                                     <span className="text-slate-600 font-bold">Baseline Initialization</span>
@@ -102,7 +99,6 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
                                 </div>
                             </div>
 
-                            {/* Learned Baselines Summary */}
                             <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-3">Learned Baselines (EMA α=0.1)</h4>
                             <div className="grid grid-cols-2 gap-3">
                                 <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
@@ -117,7 +113,6 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
                         </div>
                     </div>
 
-                    {/* Right Column: Live Telemetry Cards & Deviations (8 cols) */}
                     <div className="lg:col-span-8 space-y-6">
                         <div className="bento-card p-6 bg-white">
                             <div className="flex items-center justify-between mb-6">
@@ -130,9 +125,7 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
                                 </span>
                             </div>
 
-                            {/* 4 Telemetry Metric Cards */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                {/* Temperature */}
                                 <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-3">
                                     <div className="flex items-center justify-between text-xs">
                                         <span className="flex items-center gap-2 font-bold text-slate-700"><Thermometer className="h-4 w-4 text-teal-600" /> Body Temperature</span>
@@ -145,7 +138,6 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
                                     </div>
                                 </div>
 
-                                {/* Heart Rate */}
                                 <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-3">
                                     <div className="flex items-center justify-between text-xs">
                                         <span className="flex items-center gap-2 font-bold text-slate-700"><Heart className="h-4 w-4 text-blue-600" /> Heart Rate</span>
@@ -156,7 +148,6 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
                                     </div>
                                 </div>
 
-                                {/* Respiratory Rate */}
                                 <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-3">
                                     <div className="flex items-center justify-between text-xs">
                                         <span className="flex items-center gap-2 font-bold text-slate-700"><Wind className="h-4 w-4 text-purple-600" /> Respiratory Rate</span>
@@ -167,7 +158,6 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
                                     </div>
                                 </div>
 
-                                {/* Collar Battery */}
                                 <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-3">
                                     <div className="flex items-center justify-between text-xs">
                                         <span className="flex items-center gap-2 font-bold text-slate-700"><Battery className="h-4 w-4 text-amber-600" /> Collar Battery</span>
@@ -179,7 +169,6 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
                                 </div>
                             </div>
 
-                            {/* Active Alerts in Digital Twin */}
                             {healthSummary?.alerts && healthSummary.alerts.length > 0 && (
                                 <div className="mt-6 bg-rose-50 border border-rose-200 p-4 rounded-2xl space-y-2">
                                     <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-rose-700">

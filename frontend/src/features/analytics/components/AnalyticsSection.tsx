@@ -3,7 +3,7 @@ import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
     PieChart, Pie, Cell
 } from 'recharts';
-import type { Animal } from '../types';
+import type { Animal } from '../../../shared/types';
 import { BarChart3, PieChart as PieIcon, TrendingUp, Sparkles } from 'lucide-react';
 
 interface AnalyticsSectionProps {
@@ -11,7 +11,6 @@ interface AnalyticsSectionProps {
 }
 
 export const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ animals }) => {
-    // Calculate Pie Chart Data (Herd Health Distribution)
     const healthCounts = { healthy: 0, warning: 0, critical: 0 };
     animals.forEach(a => {
         const status = a.healthStatus || 'healthy';
@@ -30,7 +29,6 @@ export const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ animals }) =
         { name: 'Healthy', value: 11, color: '#10b981' },
     ];
 
-    // Calculate Bar Chart Data
     const barData = animals.length > 0
         ? animals.map(a => ({
             name: a.name.length > 10 ? a.name.substring(0, 10) + '...' : a.name,
@@ -47,7 +45,6 @@ export const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ animals }) =
 
     return (
         <div className="space-y-6">
-            {/* Header Banner */}
             <div className="bento-card p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white">
                 <div>
                     <div className="flex items-center gap-2">
@@ -65,9 +62,7 @@ export const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ animals }) =
                 </div>
             </div>
 
-            {/* Bento Grid Analytics Layout */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                {/* Visualization 1: Bar Chart (Left Column - 7 cols) */}
                 <div className="lg:col-span-7 bento-card p-6 flex flex-col justify-between bg-white">
                     <div>
                         <div className="flex items-center justify-between mb-4">
@@ -105,7 +100,6 @@ export const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ animals }) =
                     </div>
                 </div>
 
-                {/* Visualization 2: Pie Chart (Right Column - 5 cols) */}
                 <div className="lg:col-span-5 bento-card p-6 flex flex-col justify-between bg-white">
                     <div>
                         <div className="flex items-center gap-2.5 mb-4">
@@ -142,7 +136,6 @@ export const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ animals }) =
                         </ResponsiveContainer>
                     </div>
 
-                    {/* Legend Badges */}
                     <div className="grid grid-cols-3 gap-2 mt-2">
                         {finalPieData.map((item) => (
                             <div key={item.name} className="bg-slate-50 p-3 rounded-2xl border border-slate-200 text-center">

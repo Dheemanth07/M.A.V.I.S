@@ -1,6 +1,6 @@
 import React from 'react';
 import { AlertTriangle, X, HeartPulse } from 'lucide-react';
-import type { AlertItem } from '../types';
+import type { AlertItem } from '../../../shared/types';
 
 interface AlertBannerProps {
     alert: AlertItem | null;

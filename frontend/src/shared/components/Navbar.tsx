@@ -1,32 +1,26 @@
 import React from 'react';
+import { NavLink } from 'react-router-dom';
 import { Activity, ShieldCheck, Cpu, Bell, Layers } from 'lucide-react';
 
 interface NavbarProps {
-    activeTab: 'dashboard' | 'animals' | 'alerts' | 'analytics' | 'twin';
-    setActiveTab: (tab: 'dashboard' | 'animals' | 'alerts' | 'analytics' | 'twin') => void;
     activeAlertCount: number;
     role: 'user' | 'admin';
 }
 
 interface NavItem {
-    id: 'dashboard' | 'animals' | 'alerts' | 'analytics' | 'twin';
+    path: string;
     label: string;
     icon: React.ComponentType<{ className?: string }>;
     badge?: number;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({
-    activeTab,
-    setActiveTab,
-    activeAlertCount,
-    role
-}) => {
+export const Navbar: React.FC<NavbarProps> = ({ activeAlertCount, role }) => {
     const navItems: NavItem[] = [
-        { id: 'dashboard', label: role === 'admin' ? 'Command Overview' : 'Dashboard', icon: Layers },
-        { id: 'animals', label: role === 'admin' ? 'Subject Registry' : 'My Animals', icon: ShieldCheck },
-        { id: 'analytics', label: 'Analytics', icon: Activity },
-        { id: 'twin', label: 'Digital Twin', icon: Cpu },
-        { id: 'alerts', label: 'Alerts', icon: Bell, badge: activeAlertCount },
+        { path: '/dashboard', label: role === 'admin' ? 'Command Overview' : 'Dashboard', icon: Layers },
+        { path: '/animals', label: role === 'admin' ? 'Subject Registry' : 'My Animals', icon: ShieldCheck },
+        { path: '/analytics', label: 'Analytics', icon: Activity },
+        { path: '/twin', label: 'Digital Twin', icon: Cpu },
+        { path: '/alerts', label: 'Alerts', icon: Bell, badge: activeAlertCount },
     ];
 
     return (
@@ -48,29 +42,34 @@ export const Navbar: React.FC<NavbarProps> = ({
                     </div>
                 </div>
 
-                {/* Active Navigation Pill */}
+                {/* React Router NavLink Tabs */}
                 <nav className="flex items-center gap-1.5 bg-slate-50 p-1.5 rounded-2xl border border-slate-200 overflow-x-auto max-w-full">
                     {navItems.map((item) => {
                         const Icon = item.icon;
-                        const isActive = activeTab === item.id;
                         return (
-                            <button
-                                key={item.id}
-                                onClick={() => setActiveTab(item.id as any)}
-                                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap ${
-                                    isActive
-                                        ? 'bg-white text-slate-900 shadow-xs border border-slate-200/80 font-bold'
-                                        : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100/50'
-                                }`}
+                            <NavLink
+                                key={item.path}
+                                to={item.path}
+                                className={({ isActive }) =>
+                                    `flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 whitespace-nowrap ${
+                                        isActive
+                                            ? 'bg-white text-slate-900 shadow-xs border border-slate-200/80 font-bold'
+                                            : 'text-slate-500 hover:text-slate-900 hover:bg-slate-100/50'
+                                    }`
+                                }
                             >
-                                <Icon className={`h-4 w-4 ${isActive ? 'text-emerald-600' : 'text-slate-400'}`} />
-                                <span>{item.label}</span>
-                                {item.badge !== undefined && item.badge > 0 && (
-                                    <span className="ml-1 px-1.5 py-0.5 text-[10px] font-extrabold rounded-full bg-rose-500 text-white">
-                                        {item.badge}
-                                    </span>
+                                {({ isActive }) => (
+                                    <>
+                                        <Icon className={`h-4 w-4 ${isActive ? 'text-emerald-600' : 'text-slate-400'}`} />
+                                        <span>{item.label}</span>
+                                        {item.badge !== undefined && item.badge > 0 && (
+                                            <span className="ml-1 px-1.5 py-0.5 text-[10px] font-extrabold rounded-full bg-rose-500 text-white">
+                                                {item.badge}
+                                            </span>
+                                        )}
+                                    </>
                                 )}
-                            </button>
+                            </NavLink>
                         );
                     })}
                 </nav>
