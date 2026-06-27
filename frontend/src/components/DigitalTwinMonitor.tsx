@@ -107,7 +107,7 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
                             <div className="grid grid-cols-2 gap-3">
                                 <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
                                     <div className="text-[11px] font-bold text-slate-600 flex items-center gap-1.5"><Thermometer className="h-3.5 w-3.5 text-teal-600" /> Temp Baseline</div>
-                                    <div className="text-lg font-black text-slate-900 mt-1">{(healthSummary?.baselines || selectedAnimal.baselines)?.temperature || '38.0'}°C</div>
+                                    <div className="text-lg font-black text-slate-900 mt-1">{Number((healthSummary?.baselines || selectedAnimal.baselines)?.temperature || 38.0).toFixed(1)}°C</div>
                                 </div>
                                 <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
                                     <div className="text-[11px] font-bold text-slate-600 flex items-center gap-1.5"><Heart className="h-3.5 w-3.5 text-blue-600" /> Heart Rate</div>
@@ -137,11 +137,11 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
                                     <div className="flex items-center justify-between text-xs">
                                         <span className="flex items-center gap-2 font-bold text-slate-700"><Thermometer className="h-4 w-4 text-teal-600" /> Body Temperature</span>
                                         <span className="font-bold text-slate-500">Dev: <strong className={healthSummary?.deviations?.temperature && healthSummary.deviations.temperature > 1.0 ? 'text-rose-600 font-black' : 'text-teal-700 font-black'}>
-                                            +{healthSummary?.deviations?.temperature ?? 0}°C
+                                            +{Number(healthSummary?.deviations?.temperature ?? 0).toFixed(1)}°C
                                         </strong></span>
                                     </div>
                                     <div className="text-3xl font-black text-slate-900">
-                                        {healthSummary?.currentMetrics?.temperature ?? 38.2}<span className="text-lg text-slate-500 font-semibold">°C</span>
+                                        {Number(healthSummary?.currentMetrics?.temperature ?? 38.2).toFixed(1)}<span className="text-lg text-slate-500 font-semibold">°C</span>
                                     </div>
                                 </div>
 

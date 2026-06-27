@@ -11,14 +11,14 @@ interface VitalsModalProps {
 export const VitalsModal: React.FC<VitalsModalProps> = ({ animal, onClose }) => {
     if (!animal) return null;
 
-    // Simulated historical readings for clean trend demonstration
+    const tempVal = animal.baselines?.temperature || 38.2;
     const trendData = [
-        { time: '08:00 AM', temp: (animal.baselines?.temperature || 38.2) - 0.2, heartRate: (animal.baselines?.heartRate || 72) - 2 },
-        { time: '10:00 AM', temp: (animal.baselines?.temperature || 38.2), heartRate: (animal.baselines?.heartRate || 72) },
-        { time: '12:00 PM', temp: (animal.baselines?.temperature || 38.2) + 0.1, heartRate: (animal.baselines?.heartRate || 72) + 4 },
-        { time: '02:00 PM', temp: (animal.baselines?.temperature || 38.2) + 0.3, heartRate: (animal.baselines?.heartRate || 72) + 6 },
-        { time: '04:00 PM', temp: (animal.baselines?.temperature || 38.2) + 0.1, heartRate: (animal.baselines?.heartRate || 72) + 1 },
-        { time: '06:00 PM', temp: (animal.baselines?.temperature || 38.2), heartRate: (animal.baselines?.heartRate || 72) - 1 },
+        { time: '08:00 AM', temp: Number((tempVal - 0.2).toFixed(1)), heartRate: (animal.baselines?.heartRate || 72) - 2 },
+        { time: '10:00 AM', temp: Number((tempVal).toFixed(1)), heartRate: (animal.baselines?.heartRate || 72) },
+        { time: '12:00 PM', temp: Number((tempVal + 0.1).toFixed(1)), heartRate: (animal.baselines?.heartRate || 72) + 4 },
+        { time: '02:00 PM', temp: Number((tempVal + 0.3).toFixed(1)), heartRate: (animal.baselines?.heartRate || 72) + 6 },
+        { time: '04:00 PM', temp: Number((tempVal + 0.1).toFixed(1)), heartRate: (animal.baselines?.heartRate || 72) + 1 },
+        { time: '06:00 PM', temp: Number((tempVal).toFixed(1)), heartRate: (animal.baselines?.heartRate || 72) - 1 },
     ];
 
     return (
@@ -47,7 +47,7 @@ export const VitalsModal: React.FC<VitalsModalProps> = ({ animal, onClose }) => 
                         <div className="flex items-center gap-2 text-xs font-semibold text-slate-500 mb-1">
                             <Thermometer className="h-4 w-4 text-emerald-600" /> Average Temperature
                         </div>
-                        <div className="text-2xl font-black text-slate-900">{animal.baselines?.temperature || 38.2}°C</div>
+                        <div className="text-2xl font-black text-slate-900">{Number(tempVal).toFixed(1)}°C</div>
                         <div className="text-[11px] text-emerald-600 font-medium mt-1">Normal pattern confirmed</div>
                     </div>
 
@@ -75,6 +75,7 @@ export const VitalsModal: React.FC<VitalsModalProps> = ({ animal, onClose }) => 
                                 <XAxis dataKey="time" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
                                 <YAxis domain={['dataMin - 0.5', 'dataMax + 0.5']} stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
                                 <Tooltip
+                                    formatter={(val: any) => [`${Number(val).toFixed(1)}°C`, 'Temperature']}
                                     contentStyle={{ backgroundColor: '#ffffff', borderColor: '#e2e8f0', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.05)', color: '#0f172a' }}
                                 />
                                 <Area type="monotone" dataKey="temp" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorTemp)" name="Temperature (°C)" />

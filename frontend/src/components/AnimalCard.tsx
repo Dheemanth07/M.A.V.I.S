@@ -46,7 +46,7 @@ export const AnimalCard: React.FC<AnimalCardProps> = ({ animal, onViewVitals }) 
                             <Thermometer className="h-3.5 w-3.5 text-emerald-600" /> Temperature
                         </div>
                         <div className="text-xl font-black text-slate-900">
-                            {animal.baselines?.temperature || 38.2}<span className="text-xs text-slate-500 font-normal">°C</span>
+                            {Number(animal.baselines?.temperature || 38.2).toFixed(1)}<span className="text-xs text-slate-500 font-normal">°C</span>
                         </div>
                     </div>
 
