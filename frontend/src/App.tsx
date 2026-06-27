@@ -24,17 +24,22 @@ function AppContent() {
     const [activeToastAlert, setActiveToastAlert] = useState<AlertItem | null>(null);
 
     const accountRole = user?.role || 'user';
-    const [activeRole, setActiveRole] = useState<'user' | 'admin'>(accountRole);
+    const [activeRole, setActiveRole] = useState<'user' | 'admin'>(() => {
+        const savedRole = localStorage.getItem('mavis_active_role');
+        if (savedRole === 'user' || savedRole === 'admin') return savedRole;
+        return user?.role || 'user';
+    });
 
     useEffect(() => {
-        if (user?.role) {
+        if (user?.role && !localStorage.getItem('mavis_active_role')) {
             setActiveRole(user.role);
         }
-    }, [user?.id]);
+    }, [user?.id, user?.role]);
 
     const handleSetRole = (newRole: 'user' | 'admin') => {
         if (accountRole === 'admin') {
             setActiveRole(newRole);
+            localStorage.setItem('mavis_active_role', newRole);
         }
     };
 
