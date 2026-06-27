@@ -17,7 +17,7 @@ import { AuthProvider, useAuth } from './features/auth/context/AuthContext';
 import { AuthPage } from './features/auth/pages/AuthPage';
 
 function AppContent() {
-    const { user, isAuthenticated, setRole: syncAuthRole } = useAuth();
+    const { user, isAuthenticated } = useAuth();
     const [animals, setAnimals] = useState<Animal[]>([]);
     const [alerts, setAlerts] = useState<AlertItem[]>([]);
     const [connected, setConnected] = useState(false);
@@ -27,13 +27,14 @@ function AppContent() {
     const [activeRole, setActiveRole] = useState<'user' | 'admin'>(accountRole);
 
     useEffect(() => {
-        setActiveRole(user?.role || 'user');
-    }, [user?.role]);
+        if (user?.role) {
+            setActiveRole(user.role);
+        }
+    }, [user?.id]);
 
     const handleSetRole = (newRole: 'user' | 'admin') => {
         if (accountRole === 'admin') {
             setActiveRole(newRole);
-            syncAuthRole(newRole);
         }
     };
 
