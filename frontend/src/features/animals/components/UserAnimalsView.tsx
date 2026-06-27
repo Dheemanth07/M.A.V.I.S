@@ -3,7 +3,8 @@ import type { Animal } from '../../../shared/types';
 import { createAnimal } from '../../../shared/services/api';
 import { AnimalCard } from './AnimalCard';
 import { VitalsModal } from './VitalsModal';
-import { ShieldCheck, Search, Filter, ChevronLeft, ChevronRight, LayoutGrid, Tag, Plus, X, Sparkles } from 'lucide-react';
+import { VeterinaryReportModal } from '../../reports/components/VeterinaryReportModal';
+import { ShieldCheck, Search, ChevronLeft, ChevronRight, Plus, X, FileText } from 'lucide-react';
 
 interface UserAnimalsViewProps {
     animals: Animal[];
@@ -12,12 +13,13 @@ interface UserAnimalsViewProps {
 
 export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals, onRefresh }) => {
     const [selectedAnimal, setSelectedAnimal] = useState<Animal | null>(null);
+    const [reportAnimal, setReportAnimal] = useState<Animal | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState<string>('all');
     const [selectedSpecies, setSelectedSpecies] = useState<string>('all');
     const [selectedBreed, setSelectedBreed] = useState<string>('all');
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const [pageSize, setPageSize] = useState<number>(6);
+    const [pageSize] = useState<number>(6);
 
     // Modal state for adding a new pet/animal
     const [showAddModal, setShowAddModal] = useState(false);
@@ -78,8 +80,8 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals, onRef
             <div className="bento-card p-6 flex flex-col space-y-4 bg-white">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div>
-                        <h2 className="text-xl font-bold text-slate-900 m-0">My Animals & Care Glance</h2>
-                        <p className="text-xs text-slate-500 font-medium m-0">Manage your pets or herd, track live vitals, and add new animals</p>
+                        <h2 className="text-xl font-bold tracking-tight text-slate-900 m-0">My Animals & Care Glance</h2>
+                        <p className="text-xs text-slate-500 font-normal m-0">Manage your pets or herd, track live vitals, and add new animals</p>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
@@ -90,27 +92,27 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals, onRef
                                 placeholder="Search by name or breed..."
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl pl-10 pr-4 py-2 text-sm font-semibold focus:outline-none focus:border-emerald-600"
+                                className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl pl-10 pr-4 py-2 text-sm font-medium focus:outline-none focus:border-emerald-600"
                             />
                         </div>
 
                         {/* Add Animal Button for Owners & Farmers */}
                         <button
                             onClick={() => setShowAddModal(true)}
-                            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-sm cursor-pointer whitespace-nowrap"
+                            className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition shadow-xs cursor-pointer whitespace-nowrap"
                         >
                             <Plus className="h-4 w-4" /> Add New Animal
                         </button>
                     </div>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-slate-100 text-xs font-bold">
+                <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-slate-100 text-xs font-semibold">
                     <div className="flex items-center gap-2">
-                        <span className="text-slate-400 font-semibold">Animal Type:</span>
+                        <span className="text-slate-400 font-medium">Animal Type:</span>
                         <select
                             value={selectedSpecies}
                             onChange={(e) => handleSpeciesChange(e.target.value)}
-                            className="bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-600 cursor-pointer"
+                            className="bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:border-emerald-600 cursor-pointer"
                         >
                             <option value="all">All Animals</option>
                             {uniqueSpecies.map(s => (
@@ -119,31 +121,28 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals, onRef
                         </select>
                     </div>
 
-                    {selectedSpecies !== 'all' && availableBreeds.length > 0 && (
-                        <div className="flex items-center gap-2">
-                            <Tag className="h-3.5 w-3.5 text-emerald-600" />
-                            <span className="text-slate-400 font-semibold">Breed:</span>
-                            <select
-                                value={selectedBreed}
-                                onChange={(e) => setSelectedBreed(e.target.value)}
-                                className="bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-600 cursor-pointer"
-                            >
-                                <option value="all">All Breeds</option>
-                                {availableBreeds.map(b => (
-                                    <option key={b} value={b}>{b}</option>
-                                ))}
-                            </select>
-                        </div>
-                    )}
+                    <div className="flex items-center gap-2">
+                        <span className="text-slate-400 font-medium">Breed:</span>
+                        <select
+                            value={selectedBreed}
+                            onChange={(e) => setSelectedBreed(e.target.value)}
+                            className="bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:border-emerald-600 cursor-pointer"
+                        >
+                            <option value="all">All Breeds</option>
+                            {availableBreeds.map(b => (
+                                <option key={b} value={b}>{b}</option>
+                            ))}
+                        </select>
+                    </div>
 
-                    <div className="flex items-center gap-2 ml-auto">
-                        <Filter className="h-3.5 w-3.5 text-slate-400" />
+                    <div className="flex items-center gap-2">
+                        <span className="text-slate-400 font-medium">Health Status:</span>
                         <select
                             value={filterStatus}
                             onChange={(e) => setFilterStatus(e.target.value)}
-                            className="bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-600 cursor-pointer"
+                            className="bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:border-emerald-600 cursor-pointer"
                         >
-                            <option value="all">All Health Statuses</option>
+                            <option value="all">All Statuses</option>
                             <option value="healthy">Healthy Only</option>
                             <option value="warning">Warning Only</option>
                             <option value="critical">Critical Only</option>
@@ -152,141 +151,125 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals, onRef
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {paginatedAnimals.length === 0 ? (
-                    <div className="col-span-full bento-card p-12 text-center text-slate-500 bg-white">
-                        <ShieldCheck className="h-10 w-10 text-emerald-600 mx-auto mb-3" />
-                        <p className="text-base font-bold text-slate-900 m-0">No Animals Match Your Filter</p>
-                        <p className="text-xs text-slate-500 mt-1 font-medium">Try adjusting your animal type, breed, or health status filter.</p>
-                    </div>
-                ) : (
-                    paginatedAnimals.map(animal => (
-                        <AnimalCard
-                            key={animal._id}
-                            animal={animal}
-                            onViewVitals={(anim) => setSelectedAnimal(anim)}
-                        />
-                    ))
-                )}
-            </div>
-
-            {filteredAnimals.length > 0 && (
-                <div className="bento-card p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white text-xs font-semibold text-slate-600">
-                    <div className="flex items-center gap-2">
-                        <LayoutGrid className="h-4 w-4 text-slate-400" />
-                        <span>Showing <strong className="text-slate-900">{Math.min(startIndex + 1, filteredAnimals.length)}–{Math.min(startIndex + pageSize, filteredAnimals.length)}</strong> of <strong className="text-slate-900">{filteredAnimals.length}</strong> subjects</span>
-                    </div>
-
-                    <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-2">
-                            <span className="text-slate-400">Cards per page:</span>
-                            <select
-                                value={pageSize}
-                                onChange={(e) => setPageSize(Number(e.target.value))}
-                                className="bg-slate-50 border border-slate-200 text-slate-900 rounded-lg px-2.5 py-1.5 font-bold focus:outline-none focus:border-emerald-600 cursor-pointer"
+            {paginatedAnimals.length === 0 ? (
+                <div className="bento-card p-12 text-center text-slate-500 bg-white">
+                    <ShieldCheck className="h-12 w-12 text-slate-300 mx-auto mb-3" />
+                    <h3 className="text-lg font-semibold text-slate-800 m-0">No animals matching filters</h3>
+                    <p className="text-xs text-slate-500 mt-1 font-normal">Try clearing search filters or add a new profile above.</p>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {paginatedAnimals.map(animal => (
+                        <div key={animal._id} className="space-y-2">
+                            <AnimalCard
+                                animal={animal}
+                                onViewVitals={(a) => setSelectedAnimal(a)}
+                            />
+                            <button
+                                onClick={() => setReportAnimal(animal)}
+                                className="w-full py-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200/80 text-slate-700 text-xs font-semibold flex items-center justify-center gap-1.5 transition cursor-pointer"
                             >
-                                <option value={6}>6 per page</option>
-                                <option value={12}>12 per page</option>
-                                <option value={24}>24 per page</option>
-                                <option value={999}>Show All</option>
-                            </select>
+                                <FileText className="h-3.5 w-3.5 text-emerald-600" /> Export Clinical PDF Report
+                            </button>
                         </div>
+                    ))}
+                </div>
+            )}
 
-                        {totalPages > 1 && (
-                            <div className="flex items-center gap-1.5">
-                                <button
-                                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                                    disabled={currentPage === 1}
-                                    className="p-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer"
-                                    title="Previous Page"
-                                >
-                                    <ChevronLeft className="h-4 w-4" />
-                                </button>
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+                <div className="bento-card p-4 flex items-center justify-between bg-white text-xs font-medium text-slate-600">
+                    <div>
+                        Showing {startIndex + 1} to {Math.min(startIndex + pageSize, filteredAnimals.length)} of {filteredAnimals.length} subjects
+                    </div>
 
-                                <span className="px-3 py-1 bg-slate-100 rounded-xl text-slate-900 font-bold">
-                                    {currentPage} / {totalPages}
-                                </span>
-
-                                <button
-                                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                                    disabled={currentPage === totalPages}
-                                    className="p-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed transition cursor-pointer"
-                                    title="Next Page"
-                                >
-                                    <ChevronRight className="h-4 w-4" />
-                                </button>
-                            </div>
-                        )}
+                    <div className="flex items-center gap-2">
+                        <button
+                            disabled={currentPage === 1}
+                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                            className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 disabled:opacity-40 transition cursor-pointer"
+                        >
+                            <ChevronLeft className="h-4 w-4" />
+                        </button>
+                        <span>Page {currentPage} of {totalPages}</span>
+                        <button
+                            disabled={currentPage === totalPages}
+                            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                            className="p-2 rounded-xl bg-slate-100 hover:bg-slate-200 disabled:opacity-40 transition cursor-pointer"
+                        >
+                            <ChevronRight className="h-4 w-4" />
+                        </button>
                     </div>
                 </div>
             )}
 
-            {/* Vitals Trend Modal */}
-            {selectedAnimal && (
-                <VitalsModal
-                    animal={selectedAnimal}
-                    onClose={() => setSelectedAnimal(null)}
-                />
-            )}
+            {/* Vitals Modal */}
+            <VitalsModal
+                animal={selectedAnimal}
+                onClose={() => setSelectedAnimal(null)}
+            />
 
-            {/* Add New Animal Modal for Pet Owners & Farmers */}
+            {/* Clinical Report Modal */}
+            <VeterinaryReportModal
+                animal={reportAnimal}
+                onClose={() => setReportAnimal(null)}
+            />
+
+            {/* Add Animal Modal */}
             {showAddModal && (
-                <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-                    <div className="bento-card w-full max-w-lg bg-white p-6 sm:p-8 space-y-6 animate-in fade-in zoom-in duration-200">
+                <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
+                    <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-200">
                         <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-                            <div className="flex items-center gap-3">
-                                <div className="p-3 rounded-2xl bg-emerald-50 text-emerald-600">
-                                    <Sparkles className="h-6 w-6" />
+                            <div className="flex items-center gap-2.5">
+                                <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600">
+                                    <Plus className="h-5 w-5" />
                                 </div>
                                 <div>
-                                    <h3 className="text-xl font-bold text-slate-900 m-0">Register New Animal</h3>
-                                    <p className="text-xs text-slate-500 font-medium m-0">Add a pet or livestock subject to your care profile</p>
+                                    <h3 className="text-lg font-semibold tracking-tight text-slate-900 m-0">Register New Animal</h3>
+                                    <p className="text-xs text-slate-500 font-normal m-0">Link a new pet or livestock profile</p>
                                 </div>
                             </div>
-                            <button
-                                onClick={() => setShowAddModal(false)}
-                                className="p-2 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition cursor-pointer"
-                            >
+                            <button onClick={() => setShowAddModal(false)} className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition cursor-pointer">
                                 <X className="h-5 w-5" />
                             </button>
                         </div>
 
                         <form onSubmit={handleAddAnimal} className="space-y-4">
                             <div>
-                                <label className="text-xs font-bold text-slate-700 mb-1 block">Animal Name / Tag</label>
+                                <label className="text-xs font-semibold text-slate-700 mb-1 block">Animal Name / Identifier</label>
                                 <input
                                     type="text"
                                     required
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    placeholder="e.g. Buddy, Cooper, or Cow #402"
-                                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 text-sm font-semibold focus:outline-none focus:border-emerald-600"
+                                    placeholder="e.g. Buddy, Bella, Cow #12"
+                                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 text-sm font-medium focus:outline-none focus:border-emerald-600"
                                 />
                             </div>
 
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label className="text-xs font-bold text-slate-700 mb-1 block">Species / Type</label>
+                                    <label className="text-xs font-semibold text-slate-700 mb-1 block">Species</label>
                                     <select
                                         value={formData.species}
                                         onChange={(e) => setFormData({ ...formData, species: e.target.value })}
-                                        className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-600 cursor-pointer"
+                                        className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3 py-2.5 text-xs font-semibold focus:outline-none focus:border-emerald-600 cursor-pointer"
                                     >
                                         <option value="Dog">Dog</option>
                                         <option value="Cat">Cat</option>
-                                        <option value="Cow">Cow</option>
+                                        <option value="Cow">Cow / Dairy</option>
                                         <option value="Horse">Horse</option>
                                         <option value="Sheep">Sheep</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="text-xs font-bold text-slate-700 mb-1 block">Breed</label>
+                                    <label className="text-xs font-semibold text-slate-700 mb-1 block">Breed</label>
                                     <input
                                         type="text"
                                         value={formData.breed}
                                         onChange={(e) => setFormData({ ...formData, breed: e.target.value })}
                                         placeholder="e.g. Golden Retriever"
-                                        className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3 py-2 text-xs font-semibold focus:outline-none focus:border-emerald-600"
+                                        className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3 py-2.5 text-xs font-medium focus:outline-none focus:border-emerald-600"
                                     />
                                 </div>
                             </div>
@@ -295,14 +278,14 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals, onRef
                                 <button
                                     type="button"
                                     onClick={() => setShowAddModal(false)}
-                                    className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition cursor-pointer"
+                                    className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition cursor-pointer"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={submitting}
-                                    className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition shadow-sm cursor-pointer disabled:opacity-50"
+                                    className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition shadow-xs cursor-pointer disabled:opacity-50"
                                 >
                                     {submitting ? 'Registering...' : 'Register Animal Profile'}
                                 </button>
