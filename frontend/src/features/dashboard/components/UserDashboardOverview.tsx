@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import type { Animal, AlertItem } from '../../../shared/types';
 import { AnalyticsSection } from '../../analytics/components/AnalyticsSection';
 import { ShieldCheck, Activity, AlertTriangle, Cpu, ArrowRight, Smile, Heart } from 'lucide-react';
+import { useAuth } from '../../auth/context/AuthContext';
 
 interface UserDashboardOverviewProps {
     animals: Animal[];
@@ -13,6 +14,7 @@ export const UserDashboardOverview: React.FC<UserDashboardOverviewProps> = ({
     animals,
     alerts,
 }) => {
+    const { user } = useAuth();
     const navigate = useNavigate();
     const healthyCount = animals.filter(a => (a.healthStatus || 'healthy') === 'healthy').length;
     const warningCount = animals.filter(a => a.healthStatus === 'warning').length;
@@ -26,7 +28,9 @@ export const UserDashboardOverview: React.FC<UserDashboardOverviewProps> = ({
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-xs font-bold text-white">
                             <Smile className="h-4 w-4" /> Everyday Care Dashboard
                         </div>
-                        <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white m-0">Welcome back!</h2>
+                        <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white m-0">
+                            Welcome back, {user?.name ? user.name.split(' ')[0] : 'Caregiver'}!
+                        </h2>
                         <p className="text-sm text-emerald-100 max-w-xl font-medium m-0 leading-relaxed">
                             Everything looks peaceful. All your animals have active baseline collar tracking and their vitals are continuously monitored.
                         </p>

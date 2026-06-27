@@ -16,7 +16,7 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({ animals, onRefresh
                         <Shield className="h-6 w-6" />
                     </div>
                     <div>
-                        <h2 className="text-2xl font-black text-white m-0">Admin Command Overview</h2>
+                        <h2 className="text-2xl font-black text-black m-0">Admin Command Overview</h2>
                         <p className="text-xs text-slate-400 font-medium m-0">Global telemetry stream health, database stats, and baseline override controls</p>
                     </div>
                 </div>
