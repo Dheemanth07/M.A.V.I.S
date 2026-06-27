@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../../../shared/context/ToastContext';
 import { Activity, ShieldCheck, UserCheck, Lock, Mail, User as UserIcon, ArrowRight } from 'lucide-react';
 
 export const AuthPage: React.FC = () => {
@@ -13,6 +14,7 @@ export const AuthPage: React.FC = () => {
     const [loading, setLoading] = useState(false);
 
     const { login, register } = useAuth();
+    const { showToast } = useToast();
     const navigate = useNavigate();
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -23,12 +25,16 @@ export const AuthPage: React.FC = () => {
         try {
             if (isLogin) {
                 await login(email, password);
+                showToast('Welcome back! Workspace session authenticated.', 'success');
             } else {
                 await register(name, email, password, role);
+                showToast('Account created successfully! Welcome to MAVIS.', 'success');
             }
             navigate('/dashboard');
         } catch (err: any) {
-            setError(err.message || 'Authentication failed. Please try again.');
+            const errMsg = err.message || 'Authentication failed. Please try again.';
+            setError(errMsg);
+            showToast(errMsg, 'error');
         } finally {
             setLoading(false);
         }

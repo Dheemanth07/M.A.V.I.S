@@ -1,6 +1,7 @@
 import React from 'react';
 import type { AlertItem } from '../../shared/types';
 import { updateAlertStatus } from '../../shared/services/api';
+import { useToast } from '../../shared/context/ToastContext';
 import { Bell, CheckCircle2, AlertTriangle, AlertCircle, ShieldAlert } from 'lucide-react';
 
 interface AlertCenterProps {
@@ -9,21 +10,27 @@ interface AlertCenterProps {
 }
 
 export const AlertCenter: React.FC<AlertCenterProps> = ({ alerts, onRefresh }) => {
+    const { showToast } = useToast();
+
     const handleAcknowledge = async (id: string) => {
         try {
             await updateAlertStatus(id, 'acknowledged');
+            showToast('Alert acknowledged and marked under review.', 'info');
             onRefresh();
         } catch (err) {
             console.error('Failed to acknowledge alert:', err);
+            showToast('Failed to acknowledge alert.', 'error');
         }
     };
 
     const handleResolve = async (id: string) => {
         try {
             await updateAlertStatus(id, 'resolved');
+            showToast('Alert marked resolved. Telemetry state restored.', 'success');
             onRefresh();
         } catch (err) {
             console.error('Failed to resolve alert:', err);
+            showToast('Failed to resolve alert.', 'error');
         }
     };
 

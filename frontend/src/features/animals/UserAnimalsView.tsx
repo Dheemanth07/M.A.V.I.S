@@ -4,6 +4,7 @@ import { createAnimal } from '../../shared/services/api';
 import { AnimalCard } from './AnimalCard';
 import { VitalsModal } from './VitalsModal';
 import { VeterinaryReportModal } from '../reports/VeterinaryReportModal';
+import { useToast } from '../../shared/context/ToastContext';
 import { ShieldCheck, Search, ChevronLeft, ChevronRight, Plus, X, FileText } from 'lucide-react';
 
 interface UserAnimalsViewProps {
@@ -12,6 +13,7 @@ interface UserAnimalsViewProps {
 }
 
 export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals, onRefresh }) => {
+    const { showToast } = useToast();
     const [selectedAnimal, setSelectedAnimal] = useState<Animal | null>(null);
     const [reportAnimal, setReportAnimal] = useState<Animal | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
@@ -31,11 +33,13 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals, onRef
         setSubmitting(true);
         try {
             await createAnimal(formData);
+            showToast(`Subject '${formData.name}' registered & linked to telemetry mesh.`, 'success');
             setFormData({ name: '', species: 'Dog', breed: 'Labrador', age: 2, weight: 15 });
             setShowAddModal(false);
             if (onRefresh) onRefresh();
-        } catch (err) {
+        } catch (err: any) {
             console.error('Failed to add animal:', err);
+            showToast(err.message || 'Failed to register animal profile.', 'error');
         } finally {
             setSubmitting(false);
         }

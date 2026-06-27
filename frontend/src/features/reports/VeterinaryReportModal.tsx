@@ -1,5 +1,5 @@
-import React from 'react';
 import type { Animal } from '../../shared/types';
+import { useToast } from '../../shared/context/ToastContext';
 import { FileText, Download, X } from 'lucide-react';
 
 interface VeterinaryReportModalProps {
@@ -8,9 +8,11 @@ interface VeterinaryReportModalProps {
 }
 
 export const VeterinaryReportModal: React.FC<VeterinaryReportModalProps> = ({ animal, onClose }) => {
+    const { showToast } = useToast();
     if (!animal) return null;
 
     const handlePrint = () => {
+        showToast(`Preparing Clinical PDF Certificate for ${animal.name}...`, 'info');
         window.print();
     };
 

@@ -15,9 +15,11 @@ import { DigitalTwinMonitor } from './features/digital-twin/DigitalTwinMonitor';
 import { AlertCenter } from './features/alerts/AlertCenter';
 import { AuthProvider, useAuth } from './features/auth/context/AuthContext';
 import { AuthPage } from './features/auth/pages/AuthPage';
+import { ToastProvider, useToast } from './shared/context/ToastContext';
 
 function AppContent() {
     const { user, isAuthenticated } = useAuth();
+    const { showToast } = useToast();
     const [animals, setAnimals] = useState<Animal[]>([]);
     const [alerts, setAlerts] = useState<AlertItem[]>([]);
     const [connected, setConnected] = useState(false);
@@ -89,6 +91,7 @@ function AppContent() {
                 };
 
                 setActiveToastAlert(alertObj);
+                showToast(alertObj.message, alertObj.severity === 'critical' ? 'error' : 'warning');
             }
             loadInitialData();
         });
@@ -174,7 +177,9 @@ export function App() {
     return (
         <BrowserRouter>
             <AuthProvider>
-                <AppContent />
+                <ToastProvider>
+                    <AppContent />
+                </ToastProvider>
             </AuthProvider>
         </BrowserRouter>
     );

@@ -3,6 +3,7 @@ import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { Activity, ShieldCheck, Cpu, Bell, Layers, LogOut, User as UserIcon, Settings } from 'lucide-react';
 import { useAuth } from '../../features/auth/context/AuthContext';
 import { UserSettingsModal } from '../../features/auth/UserSettingsModal';
+import { useToast } from '../context/ToastContext';
 
 interface NavbarProps {
     activeAlertCount: number;
@@ -18,6 +19,7 @@ interface NavItem {
 
 export const Navbar: React.FC<NavbarProps> = ({ activeAlertCount, role }) => {
     const { user, logout } = useAuth();
+    const { showToast } = useToast();
     const navigate = useNavigate();
     const location = useLocation();
     const [showSettings, setShowSettings] = useState(false);
@@ -27,6 +29,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeAlertCount, role }) => {
 
     const handleLogout = () => {
         logout();
+        showToast('Logged out successfully. Session ended.', 'info');
         navigate('/login');
     };
 

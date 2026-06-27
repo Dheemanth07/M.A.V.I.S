@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { Animal } from '../../shared/types';
 import { createAnimal } from '../../shared/services/api';
+import { useToast } from '../../shared/context/ToastContext';
 import { Plus, Cpu, ShieldCheck } from 'lucide-react';
 
 interface AdminSubjectRegistryProps {
@@ -9,6 +10,7 @@ interface AdminSubjectRegistryProps {
 }
 
 export const AdminSubjectRegistry: React.FC<AdminSubjectRegistryProps> = ({ animals, onRefresh }) => {
+    const { showToast } = useToast();
     const [formData, setFormData] = useState({ name: '', species: 'Cow', breed: 'Holstein', age: 3, weight: 500 });
     const [pairedNodeId, setPairedNodeId] = useState('ESP32-COLLAR-01');
     const [submitting, setSubmitting] = useState(false);
@@ -19,10 +21,12 @@ export const AdminSubjectRegistry: React.FC<AdminSubjectRegistryProps> = ({ anim
         setSubmitting(true);
         try {
             await createAnimal(formData);
+            showToast(`Subject '${formData.name}' registered to Admin Registry.`, 'success');
             setFormData({ name: '', species: 'Cow', breed: 'Holstein', age: 3, weight: 500 });
             onRefresh();
-        } catch (err) {
+        } catch (err: any) {
             console.error('Failed to register subject profile:', err);
+            showToast(err.message || 'Failed to register subject.', 'error');
         } finally {
             setSubmitting(false);
         }
@@ -31,6 +35,7 @@ export const AdminSubjectRegistry: React.FC<AdminSubjectRegistryProps> = ({ anim
     const handlePairNode = (e: React.FormEvent) => {
         e.preventDefault();
         setPairSuccess(true);
+        showToast(`Hardware Node '${pairedNodeId}' paired to target collar mesh!`, 'success');
         setTimeout(() => setPairSuccess(false), 3000);
     };
 
