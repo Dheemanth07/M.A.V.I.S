@@ -31,6 +31,13 @@ import SensorData from "./features/sensors/sensor.model.js";
 import SensorValidator from "./features/sensors/sensor.validator.js";
 import SensorRoutes from "./features/sensors/sensor.routes.js";
 
+import AlertData from "./features/alerts/alert.model.js";
+import AlertRepository from "./features/alerts/alert.repository.js";
+import AlertService from "./features/alerts/alert.service.js";
+import AlertController from "./features/alerts/alert.controller.js";
+import AlertValidator from "./features/alerts/alert.validator.js";
+import AlertRoutes from "./features/alerts/alert.routes.js";
+
 dotenv.config({ quiet: true });
 
 const PORT = process.env.PORT || 5000;
@@ -55,15 +62,22 @@ io.on("connection", (socket) => {
 
 const animalRepository = new AnimalRepository(AnimalData);
 const sensorRepository = new SensorRepository(SensorData);
+const alertRepository = new AlertRepository(AlertData);
+
 const animalService = new AnimalService(animalRepository, sensorRepository);
 const animalController = new AnimalController(animalService);
 const animalValidator = new AnimalValidator();
 const animalRoutes = new AnimalRoutes(animalController, animalValidator);
 
-const sensorService = new SensorService(sensorRepository, animalRepository);
+const sensorService = new SensorService(sensorRepository, animalRepository, alertRepository);
 const sensorController = new SensorController(sensorService);
 const sensorValidator = new SensorValidator();
 const sensorRoutes = new SensorRoutes(sensorController, sensorValidator);
+
+const alertService = new AlertService(alertRepository);
+const alertController = new AlertController(alertService);
+const alertValidator = new AlertValidator();
+const alertRoutes = new AlertRoutes(alertController, alertValidator);
 
 /**
  * Basic liveness endpoint with database connection state.
@@ -82,6 +96,7 @@ app.get("/", (req, res) => {
 
 app.use("/api/animals", animalRoutes.getRouter());
 app.use("/api/sensor", sensorRoutes.getRouter());
+app.use("/api/alerts", alertRoutes.getRouter());
 
 app.use(globalErrorHandler);
 

@@ -11,14 +11,17 @@ import { ensureValidObjectId } from "../../utils/validateObjectId.js";
 class SensorService {
     #sensorRepository;
     #animalRepository;
+    #alertRepository;
 
     /**
      * @param {Object} sensorRepository - SensorRepository instance.
      * @param {Object} animalRepository - AnimalRepository instance.
+     * @param {Object} [alertRepository] - AlertRepository instance.
      */
-    constructor(sensorRepository, animalRepository) {
+    constructor(sensorRepository, animalRepository, alertRepository = null) {
         this.#sensorRepository = sensorRepository;
         this.#animalRepository = animalRepository;
+        this.#alertRepository = alertRepository;
     }
 
     /**
@@ -118,12 +121,25 @@ class SensorService {
 
             if (hasAnomaly) {
                 // Emit Socket.IO alert, do NOT update baseline
+                const alertMessage = `Deviation detected: ${anomalyDetails.join("; ")}`;
                 io.emit("alert", {
                     animalId: sensorData.animalId,
                     type: "ANOMALY",
-                    message: `Deviation detected: ${anomalyDetails.join("; ")}`,
+                    message: alertMessage,
                     timestamp: sensorData.timestamp
                 });
+
+                if (this.#alertRepository) {
+                    await this.#alertRepository.createMany([{
+                        animalId: sensorData.animalId,
+                        type: "ANOMALY",
+                        severity: "critical",
+                        message: alertMessage,
+                        metric: "physiology",
+                        value: temperature,
+                        status: "active"
+                    }]);
+                }
             } else {
                 // Happy path: Update baseline using EMA (learning rate alpha = 0.1)
                 const alpha = 0.1;
@@ -140,12 +156,25 @@ class SensorService {
 
         // Hardware Maintenance
         if (sensorData.device?.batteryLevel < BATTERY_WARNING_THRESHOLD) {
+            const batteryMessage = `Warning: Low battery level detected! (${sensorData.device.batteryLevel}%)`;
             io.emit("alert", {
                 animalId: sensorData.animalId,
                 type: "BATTERY",
-                message: `Warning: Low battery level detected! (${sensorData.device.batteryLevel}%)`,
+                message: batteryMessage,
                 timestamp: sensorData.timestamp,
             });
+
+            if (this.#alertRepository) {
+                await this.#alertRepository.createMany([{
+                    animalId: sensorData.animalId,
+                    type: "BATTERY",
+                    severity: "warning",
+                    message: batteryMessage,
+                    metric: "batteryLevel",
+                    value: sensorData.device.batteryLevel,
+                    status: "active"
+                }]);
+            }
         }
 
         return sensorData;
@@ -195,7 +224,7 @@ class SensorService {
 
     async ingestData(animalId, payload) {
         // 1. Save the raw IoT data to MongoDB
-        const savedData = await this.sensorRepository.create({ animalId, ...payload });
+        const savedData = await this.#sensorRepository.create({ animalId, ...payload });
 
         // 2. Fire the event in the background! 
         mavisEvents.emit(EVENTS.SENSOR_DATA_RECEIVED, {

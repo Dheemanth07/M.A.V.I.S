@@ -5,7 +5,7 @@ const alertSchema = new mongoose.Schema(
     {
         animalId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Animal",
+            ref: "Animal_Data",
             required: [true, "Animal ID is required to log an alert"],
             index: true // Speeds up queries for a specific animal's dashboard
         },
