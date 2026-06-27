@@ -19,7 +19,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeAlertCount, role }) => {
         { path: '/dashboard', label: role === 'admin' ? 'Command Overview' : 'Dashboard', icon: Layers },
         { path: '/animals', label: role === 'admin' ? 'Subject Registry' : 'My Animals', icon: ShieldCheck },
         { path: '/analytics', label: 'Analytics', icon: Activity },
-        { path: '/twin', label: 'Digital Twin', icon: Cpu },
+        { path: '/twin', label: role === 'admin' ? 'Digital Twin Engine' : 'AI Health Profile', icon: Cpu },
         { path: '/alerts', label: 'Alerts', icon: Bell, badge: activeAlertCount },
     ];
 

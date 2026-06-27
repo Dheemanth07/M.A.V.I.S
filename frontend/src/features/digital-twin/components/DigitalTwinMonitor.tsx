@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import type { Animal, HealthStatusResponse } from '../../../shared/types';
 import { fetchHealthStatus } from '../../../shared/services/api';
-import { Cpu, RefreshCw, Thermometer, Heart, Wind, Battery, Zap } from 'lucide-react';
+import { Cpu, RefreshCw, Thermometer, Heart, Wind, Battery, Zap, Sparkles } from 'lucide-react';
 
 interface DigitalTwinMonitorProps {
     animals: Animal[];
+    role?: 'user' | 'admin';
 }
 
-export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals }) => {
+export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals, role = 'user' }) => {
     const [selectedAnimalId, setSelectedAnimalId] = useState<string>(animals[0]?._id || '');
     const [healthSummary, setHealthSummary] = useState<HealthStatusResponse | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
@@ -37,15 +38,37 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
     const selectedAnimal = animals.find(a => a._id === selectedAnimalId) || animals[0];
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 animate-in fade-in duration-300">
+            {/* Friendly Educational Explanation Banner for Everyday Owners / Farmers */}
+            {role === 'user' && (
+                <div className="bento-card p-5 bg-gradient-to-r from-teal-50 to-emerald-50 border border-teal-200/80 text-teal-950 flex flex-col sm:flex-row items-start gap-4">
+                    <div className="p-2.5 rounded-2xl bg-teal-600 text-white shrink-0 shadow-xs">
+                        <Sparkles className="h-5 w-5" />
+                    </div>
+                    <div className="space-y-1">
+                        <h3 className="text-sm font-black text-teal-950 flex items-center gap-1.5 m-0">
+                            What is an AI Health Profile?
+                            <span className="text-[10px] font-extrabold uppercase bg-teal-200/60 text-teal-900 px-2 py-0.5 rounded-full">Personalized Care</span>
+                        </h3>
+                        <p className="text-xs text-teal-900 font-medium m-0 leading-relaxed">
+                            Every animal is unique! Instead of comparing your pet against rigid textbook averages, our smart collar learns what is <strong>"normal"</strong> for your specific animal over its first 10 readings. You'll receive instant alerts whenever their vitals deviate from their personal baseline.
+                        </p>
+                    </div>
+                </div>
+            )}
+
             <div className="bento-card p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white">
                 <div className="flex items-center gap-3">
                     <div className="p-3 rounded-2xl bg-teal-50 text-teal-600 border border-teal-100">
-                        <Cpu className="h-6 w-6" />
+                        {role === 'admin' ? <Cpu className="h-6 w-6" /> : <Sparkles className="h-6 w-6" />}
                     </div>
                     <div>
-                        <h2 className="text-xl font-black text-slate-900 m-0">Personalised Digital Twin Telemetry</h2>
-                        <p className="text-xs text-slate-500 font-medium m-0">Real-time baseline tracking & deviation anomaly classification</p>
+                        <h2 className="text-xl font-black text-slate-900 m-0">
+                            {role === 'admin' ? 'Personalised Digital Twin Telemetry' : 'Personalised Health Baseline'}
+                        </h2>
+                        <p className="text-xs text-slate-500 font-medium m-0">
+                            {role === 'admin' ? 'Real-time baseline tracking & deviation anomaly classification' : 'Real-time normal pattern tracking for your selected animal'}
+                        </p>
                     </div>
                 </div>
 
@@ -63,7 +86,7 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
                     <button
                         onClick={() => loadTwinData(selectedAnimalId)}
                         className="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl border border-slate-300 transition cursor-pointer"
-                        title="Refresh Twin Telemetry"
+                        title="Refresh Telemetry"
                     >
                         <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin text-teal-600' : ''}`} />
                     </button>
@@ -99,7 +122,9 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
                                 </div>
                             </div>
 
-                            <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-3">Learned Baselines (EMA α=0.1)</h4>
+                            <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-3">
+                                {role === 'admin' ? 'Learned Baselines (EMA α=0.1)' : 'Learned Normal Range'}
+                            </h4>
                             <div className="grid grid-cols-2 gap-3">
                                 <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
                                     <div className="text-[11px] font-bold text-slate-600 flex items-center gap-1.5"><Thermometer className="h-3.5 w-3.5 text-teal-600" /> Temp Baseline</div>
@@ -117,8 +142,12 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
                         <div className="bento-card p-6 bg-white">
                             <div className="flex items-center justify-between mb-6">
                                 <div>
-                                    <h3 className="text-lg font-bold text-slate-900 m-0">Live Vitals & Anomaly Deviation Scores</h3>
-                                    <p className="text-xs text-slate-500 font-medium m-0">Comparing live telemetry against personalized Digital Twin baseline</p>
+                                    <h3 className="text-lg font-bold text-slate-900 m-0">
+                                        {role === 'admin' ? 'Live Vitals & Anomaly Deviation Scores' : 'Current Vitals vs Normal Pattern'}
+                                    </h3>
+                                    <p className="text-xs text-slate-500 font-medium m-0">
+                                        {role === 'admin' ? 'Comparing live telemetry against personalized Digital Twin baseline' : 'Comparing live collar readings against learned healthy pattern'}
+                                    </p>
                                 </div>
                                 <span className="text-xs px-3 py-1 rounded-full bg-teal-50 text-teal-700 border border-teal-200 font-extrabold">
                                     Live Stream

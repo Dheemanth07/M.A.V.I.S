@@ -118,7 +118,7 @@ export function App() {
                             }
                         />
                         <Route path="/analytics" element={<AnalyticsSection animals={animals} />} />
-                        <Route path="/twin" element={<DigitalTwinMonitor animals={animals} />} />
+                        <Route path="/twin" element={<DigitalTwinMonitor animals={animals} role={role} />} />
                         <Route path="/alerts" element={<AlertCenter alerts={alerts} onRefresh={loadInitialData} />} />
                         <Route path="*" element={<Navigate to="/dashboard" replace />} />
                     </Routes>
