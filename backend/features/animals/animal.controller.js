@@ -28,7 +28,11 @@ class AnimalController {
         const service = this.#service;
 
         try {
-            const animal = await service.createAnimal(req.body);
+            const payload = { ...req.body };
+            if (req.user && req.user.id && !payload.owner) {
+                payload.owner = req.user.id;
+            }
+            const animal = await service.createAnimal(payload);
             sendSuccess(res, 201, animal, "Animal created successfully");
         } catch (err) {
             next(err);
@@ -36,7 +40,7 @@ class AnimalController {
     };
 
     /**
-     * Lists all animals.
+     * Lists animals (filtered by owner for pet owners, global for admins).
      *
      * @param {import("express").Request} req - Express request.
      * @param {import("express").Response} res - Express response.
@@ -47,7 +51,17 @@ class AnimalController {
         const service = this.#service;
 
         try {
-            const animals = await service.getAnimals();
+            let filter = {};
+            if (req.user && req.user.role !== 'admin') {
+                filter = {
+                    $or: [
+                        { owner: req.user.id },
+                        { owner: { $exists: false } },
+                        { owner: null }
+                    ]
+                };
+            }
+            const animals = await service.getAnimals(filter);
             sendSuccess(res, 200, animals, "Animals fetched successfully");
         } catch (err) {
             next(err);

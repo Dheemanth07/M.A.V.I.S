@@ -4,7 +4,7 @@
 import mongoose from 'mongoose';
 
 /**
- * Stores animal profile data plus the current summarized health state.
+ * Stores animal profile data plus the current summarized health state and owner link.
  */
 const animalSchema = new mongoose.Schema(
     {
@@ -32,6 +32,17 @@ const animalSchema = new mongoose.Schema(
 
         weight: {
             type: Number
+        },
+
+        owner: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
+            required: false
+        },
+
+        deviceId: {
+            type: String,
+            trim: true
         },
 
         healthStatus: {

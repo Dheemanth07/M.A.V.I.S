@@ -34,10 +34,11 @@ class AnimalService {
     }
 
     /**
-     * @returns {Promise<Object[]>} All animals.
+     * @param {Object} [filter={}] - Filter criteria.
+     * @returns {Promise<Object[]>} Matching animals.
      */
-    async getAnimals() {
-        return await this.#animalRepository.findAll();
+    async getAnimals(filter = {}) {
+        return await this.#animalRepository.findAll(filter);
     }
 
     /**

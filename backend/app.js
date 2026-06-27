@@ -14,6 +14,7 @@ import mongoose from "mongoose";
 
 import corsOptions from "./middlewares/cors.js";
 import globalErrorHandler from "./middlewares/error.middleware.js";
+import { extractUser } from "./middlewares/auth.middleware.js";
 import logger from "./utils/logger.js";
 
 import AnimalData from "./features/animals/animal.model.js";
@@ -42,6 +43,7 @@ export const createApp = () => {
 
     app.use(cors(corsOptions));
     app.use(express.json());
+    app.use(extractUser);
 
     const httpServer = createServer(app);
     const io = new Server(httpServer, { cors: corsOptions });

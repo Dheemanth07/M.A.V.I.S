@@ -24,10 +24,11 @@ class AnimalRepository {
     }
 
     /**
-     * @returns {Promise<Object[]>} All animal documents.
+     * @param {Object} [filter={}] - Mongo filter query.
+     * @returns {Promise<Object[]>} Matching animal documents.
      */
-    async findAll() {
-        return await this.#model.find();
+    async findAll(filter = {}) {
+        return await this.#model.find(filter);
     }
 
     /**
