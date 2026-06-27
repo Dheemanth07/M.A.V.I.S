@@ -89,15 +89,15 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals }) => 
                             onChange={(e) => handleSpeciesChange(e.target.value)}
                             className="bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3 py-2 text-xs font-bold focus:outline-none focus:border-emerald-600 cursor-pointer"
                         >
-                            <option value="all">All Animals (Dog, Cat, Cow...)</option>
+                            <option value="all">All Animals</option>
                             {uniqueSpecies.map(s => (
                                 <option key={s} value={s}>{s}</option>
                             ))}
                         </select>
                     </div>
 
-                    {/* Optional Breed Selector */}
-                    {availableBreeds.length > 0 && (
+                    {/* Optional Breed Selector - Only active when a specific animal type is selected */}
+                    {selectedSpecies !== 'all' && availableBreeds.length > 0 && (
                         <div className="flex items-center gap-2">
                             <Tag className="h-3.5 w-3.5 text-emerald-600" />
                             <span className="text-slate-400 font-semibold">Breed:</span>
