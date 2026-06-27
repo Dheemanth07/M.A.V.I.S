@@ -3,7 +3,7 @@ import {
     BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
     PieChart, Pie, Cell
 } from 'recharts';
-import type { Animal } from '../../../shared/types';
+import type { Animal } from '../../shared/types';
 import { BarChart3, PieChart as PieIcon, TrendingUp, Sparkles } from 'lucide-react';
 
 interface AnalyticsSectionProps {

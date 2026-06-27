@@ -1,7 +1,7 @@
 import React from 'react';
 import { X, Thermometer, Heart, Sparkles } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import type { Animal } from '../../../shared/types';
+import type { Animal } from '../../shared/types';
 
 interface VitalsModalProps {
     animal: Animal | null;

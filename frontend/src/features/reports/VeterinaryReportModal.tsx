@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Animal } from '../../../shared/types';
+import type { Animal } from '../../shared/types';
 import { FileText, Download, X } from 'lucide-react';
 
 interface VeterinaryReportModalProps {

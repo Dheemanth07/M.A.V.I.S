@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { Activity, ShieldCheck, Cpu, Bell, Layers, LogOut, User as UserIcon, Settings } from 'lucide-react';
 import { useAuth } from '../../features/auth/context/AuthContext';
-import { UserSettingsModal } from '../../features/auth/components/UserSettingsModal';
+import { UserSettingsModal } from '../../features/auth/UserSettingsModal';
 
 interface NavbarProps {
     activeAlertCount: number;

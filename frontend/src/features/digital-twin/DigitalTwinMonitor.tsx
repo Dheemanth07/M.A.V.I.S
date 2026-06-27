@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import type { Animal, HealthStatusResponse } from '../../../shared/types';
-import { fetchHealthStatus } from '../../../shared/services/api';
+import type { Animal, HealthStatusResponse } from '../../shared/types';
+import { fetchHealthStatus } from '../../shared/services/api';
 import { Cpu, RefreshCw, Thermometer, Heart, Wind, Battery, Zap, Sparkles } from 'lucide-react';
 import { AICopilotCard } from './AICopilotCard';
 

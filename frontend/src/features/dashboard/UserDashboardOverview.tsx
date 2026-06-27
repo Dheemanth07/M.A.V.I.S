@@ -1,10 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import type { Animal, AlertItem } from '../../../shared/types';
-import { AnalyticsSection } from '../../analytics/components/AnalyticsSection';
-import { GeofenceMonitor } from '../../geofence/components/GeofenceMonitor';
+import type { Animal, AlertItem } from '../../shared/types';
+import { AnalyticsSection } from '../analytics/AnalyticsSection';
+import { GeofenceMonitor } from '../geofence/GeofenceMonitor';
 import { ShieldCheck, Activity, AlertTriangle, Cpu, ArrowRight, Smile, Heart, Sparkles } from 'lucide-react';
-import { useAuth } from '../../auth/context/AuthContext';
+import { useAuth } from '../auth/context/AuthContext';
 
 interface UserDashboardOverviewProps {
     animals: Animal[];

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { Animal } from '../../../shared/types';
+import type { Animal } from '../../shared/types';
 import { MapPin, ShieldAlert } from 'lucide-react';
 
 interface GeofenceMonitorProps {

@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import type { Animal } from '../../../shared/types';
-import { createAnimal } from '../../../shared/services/api';
+import type { Animal } from '../../shared/types';
+import { createAnimal } from '../../shared/services/api';
 import { AnimalCard } from './AnimalCard';
 import { VitalsModal } from './VitalsModal';
-import { VeterinaryReportModal } from '../../reports/components/VeterinaryReportModal';
+import { VeterinaryReportModal } from '../reports/VeterinaryReportModal';
 import { ShieldCheck, Search, ChevronLeft, ChevronRight, Plus, X, FileText } from 'lucide-react';
 
 interface UserAnimalsViewProps {

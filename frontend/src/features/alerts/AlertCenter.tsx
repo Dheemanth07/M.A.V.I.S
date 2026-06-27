@@ -1,6 +1,6 @@
 import React from 'react';
-import type { AlertItem } from '../../../shared/types';
-import { updateAlertStatus } from '../../../shared/services/api';
+import type { AlertItem } from '../../shared/types';
+import { updateAlertStatus } from '../../shared/services/api';
 import { Bell, CheckCircle2, AlertTriangle, AlertCircle, ShieldAlert } from 'lucide-react';
 
 interface AlertCenterProps {

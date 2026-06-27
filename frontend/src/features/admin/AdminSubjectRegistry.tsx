@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import type { Animal } from '../../../shared/types';
-import { createAnimal } from '../../../shared/services/api';
+import type { Animal } from '../../shared/types';
+import { createAnimal } from '../../shared/services/api';
 import { Plus, Cpu, ShieldCheck } from 'lucide-react';
 
 interface AdminSubjectRegistryProps {

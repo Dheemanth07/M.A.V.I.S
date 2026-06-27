@@ -1,6 +1,6 @@
 import React from 'react';
 import { Thermometer, Heart, Activity } from 'lucide-react';
-import type { Animal } from '../../../shared/types';
+import type { Animal } from '../../shared/types';
 
 interface AnimalCardProps {
     animal: Animal;
