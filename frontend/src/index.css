@@ -25,7 +25,7 @@ body {
   background: #94a3b8;
 }
 
-/* Bento Box Card System */
+/* Crisp Light Bento Box Card System */
 .bento-card {
   background-color: #ffffff;
   border-radius: 20px;
@@ -36,23 +36,24 @@ body {
 
 .bento-card:hover {
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+  border-color: #cbd5e1;
 }
 
-/* Status Pills */
+/* High-Contrast Status Pills */
 .status-pill-healthy {
   background-color: #ecfdf5;
-  color: #059669;
+  color: #047857;
   border: 1px solid #a7f3d0;
 }
 
 .status-pill-warning {
   background-color: #fffbeb;
-  color: #d97706;
+  color: #b45309;
   border: 1px solid #fde68a;
 }
 
 .status-pill-critical {
   background-color: #fff1f2;
-  color: #e11d48;
+  color: #be123c;
   border: 1px solid #fecdd3;
 }

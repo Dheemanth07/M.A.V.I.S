@@ -26,14 +26,11 @@ export const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ animals }) =
         { name: 'Critical', value: healthCounts.critical, color: '#ef4444' },
     ].filter(item => item.value > 0 || animals.length === 0);
 
-    // If no real data yet, provide clean placeholder counts for demonstration
     const finalPieData = pieData.length > 0 ? pieData : [
-        { name: 'Healthy', value: 8, color: '#10b981' },
-        { name: 'Warning', value: 3, color: '#f59e0b' },
-        { name: 'Critical', value: 1, color: '#ef4444' },
+        { name: 'Healthy', value: 11, color: '#10b981' },
     ];
 
-    // Calculate Bar Chart Data (Baseline Vitals Comparison per Animal)
+    // Calculate Bar Chart Data
     const barData = animals.length > 0
         ? animals.map(a => ({
             name: a.name.length > 10 ? a.name.substring(0, 10) + '...' : a.name,
@@ -42,26 +39,28 @@ export const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ animals }) =
             RespiratoryRate: a.baselines?.respiratoryRate || 24,
         }))
         : [
-            { name: 'Cow 101', Temperature: 38.2, HeartRate: 70, RespiratoryRate: 22 },
-            { name: 'Holstein #4', Temperature: 38.5, HeartRate: 75, RespiratoryRate: 25 },
-            { name: 'Angus B2', Temperature: 39.1, HeartRate: 88, RespiratoryRate: 28 },
-            { name: 'Dairy Queen', Temperature: 38.0, HeartRate: 68, RespiratoryRate: 20 },
+            { name: 'Dog 1', Temperature: 38.2, HeartRate: 70, RespiratoryRate: 22 },
+            { name: 'Dog 2', Temperature: 38.5, HeartRate: 75, RespiratoryRate: 25 },
+            { name: 'Cat 1', Temperature: 39.1, HeartRate: 88, RespiratoryRate: 28 },
+            { name: 'Dairy Cow', Temperature: 38.0, HeartRate: 68, RespiratoryRate: 20 },
         ];
 
     return (
         <div className="space-y-6">
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-slate-900/50 p-6 rounded-3xl border border-slate-800">
+            {/* Header Banner */}
+            <div className="bento-card p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white">
                 <div>
                     <div className="flex items-center gap-2">
-                        <Sparkles className="h-5 w-5 text-teal-400" />
-                        <h2 className="text-2xl font-extrabold tracking-tight text-white m-0">Herd Health & Baseline Analytics</h2>
+                        <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600">
+                            <Sparkles className="h-5 w-5" />
+                        </div>
+                        <h2 className="text-xl font-black tracking-tight text-slate-900 m-0">Herd Health & Baseline Analytics</h2>
                     </div>
-                    <p className="text-sm text-slate-400 mt-1 mb-0">Cross-sectional biometric telemetry and digital twin health risk distributions</p>
+                    <p className="text-xs text-slate-500 font-medium mt-1 mb-0">Biometric telemetry trends and digital twin health risk distributions</p>
                 </div>
                 <div className="flex items-center gap-3">
-                    <div className="px-3 py-1.5 rounded-xl bg-slate-800 text-xs font-semibold text-slate-300 border border-slate-700">
-                        Total Subjects: <span className="text-teal-400 font-bold">{animals.length || 12}</span>
+                    <div className="px-3.5 py-2 rounded-xl bg-slate-100 text-xs font-bold text-slate-700 border border-slate-200">
+                        Total Subjects: <span className="text-emerald-600 font-black">{animals.length || 11}</span>
                     </div>
                 </div>
             </div>
@@ -69,36 +68,36 @@ export const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ animals }) =
             {/* Bento Grid Analytics Layout */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 {/* Visualization 1: Bar Chart (Left Column - 7 cols) */}
-                <div className="lg:col-span-7 mavis-card p-6 flex flex-col justify-between">
+                <div className="lg:col-span-7 bento-card p-6 flex flex-col justify-between bg-white">
                     <div>
                         <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-2.5">
-                                <div className="p-2 rounded-xl bg-teal-500/10 text-teal-400 border border-teal-500/20">
+                                <div className="p-2 rounded-xl bg-teal-50 text-teal-600 border border-teal-100">
                                     <BarChart3 className="h-5 w-5" />
                                 </div>
                                 <div>
-                                    <h3 className="text-lg font-bold text-white m-0">Baseline Vitals Comparison</h3>
-                                    <p className="text-xs text-slate-400 m-0">Learned Digital Twin baselines per subject</p>
+                                    <h3 className="text-lg font-bold text-slate-900 m-0">Baseline Vitals Comparison</h3>
+                                    <p className="text-xs text-slate-500 font-medium m-0">Learned Digital Twin baselines per subject</p>
                                 </div>
                             </div>
-                            <span className="text-xs font-semibold text-slate-400 flex items-center gap-1">
-                                <TrendingUp className="h-3.5 w-3.5 text-teal-400" /> Live Dynamic
+                            <span className="text-xs font-bold text-teal-600 flex items-center gap-1 bg-teal-50 px-2.5 py-1 rounded-full border border-teal-100">
+                                <TrendingUp className="h-3.5 w-3.5" /> Live Dynamic
                             </span>
                         </div>
                     </div>
 
                     <div className="h-[300px] w-full mt-4">
                         <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={barData} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#334155" vertical={false} />
-                                <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} tickLine={false} />
-                                <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} />
+                            <BarChart data={barData} margin={{ top: 20, right: 30, left: -10, bottom: 5 }}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
+                                <XAxis dataKey="name" stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} fontWeight={600} />
+                                <YAxis stroke="#64748b" fontSize={12} tickLine={false} axisLine={false} fontWeight={600} />
                                 <Tooltip
-                                    contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '12px', color: '#fff' }}
-                                    itemStyle={{ fontSize: '12px' }}
+                                    contentStyle={{ backgroundColor: '#ffffff', borderColor: '#cbd5e1', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', color: '#0f172a' }}
+                                    itemStyle={{ fontSize: '12px', fontWeight: 'bold' }}
                                 />
-                                <Legend wrapperStyle={{ paddingTop: '15px', fontSize: '12px' }} />
-                                <Bar dataKey="Temperature" fill="#14b8a6" radius={[6, 6, 0, 0]} name="Temp (°C)" />
+                                <Legend wrapperStyle={{ paddingTop: '15px', fontSize: '12px', fontWeight: 'bold' }} />
+                                <Bar dataKey="Temperature" fill="#0d6b5f" radius={[6, 6, 0, 0]} name="Temp (°C)" />
                                 <Bar dataKey="HeartRate" fill="#3b82f6" radius={[6, 6, 0, 0]} name="Heart Rate (BPM)" />
                                 <Bar dataKey="RespiratoryRate" fill="#a855f7" radius={[6, 6, 0, 0]} name="Resp Rate" />
                             </BarChart>
@@ -107,20 +106,20 @@ export const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ animals }) =
                 </div>
 
                 {/* Visualization 2: Pie Chart (Right Column - 5 cols) */}
-                <div className="lg:col-span-5 mavis-card p-6 flex flex-col justify-between">
+                <div className="lg:col-span-5 bento-card p-6 flex flex-col justify-between bg-white">
                     <div>
                         <div className="flex items-center gap-2.5 mb-4">
-                            <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">
+                            <div className="p-2 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100">
                                 <PieIcon className="h-5 w-5" />
                             </div>
                             <div>
-                                <h3 className="text-lg font-bold text-white m-0">Herd Health Distribution</h3>
-                                <p className="text-xs text-slate-400 m-0">Categorical risk segmentation across herd</p>
+                                <h3 className="text-lg font-bold text-slate-900 m-0">Herd Health Distribution</h3>
+                                <p className="text-xs text-slate-500 font-medium m-0">Categorical risk segmentation across herd</p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="h-[260px] w-full flex items-center justify-center relative">
+                    <div className="h-[240px] w-full flex items-center justify-center relative">
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie
@@ -133,11 +132,11 @@ export const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ animals }) =
                                     dataKey="value"
                                 >
                                     {finalPieData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={entry.color} stroke="#0f172a" strokeWidth={3} />
+                                        <Cell key={`cell-${index}`} fill={entry.color} stroke="#ffffff" strokeWidth={3} />
                                     ))}
                                 </Pie>
                                 <Tooltip
-                                    contentStyle={{ backgroundColor: '#0f172a', borderColor: '#334155', borderRadius: '12px', color: '#fff' }}
+                                    contentStyle={{ backgroundColor: '#ffffff', borderColor: '#cbd5e1', borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', color: '#0f172a' }}
                                 />
                             </PieChart>
                         </ResponsiveContainer>
@@ -146,12 +145,12 @@ export const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ animals }) =
                     {/* Legend Badges */}
                     <div className="grid grid-cols-3 gap-2 mt-2">
                         {finalPieData.map((item) => (
-                            <div key={item.name} className="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800 text-center">
+                            <div key={item.name} className="bg-slate-50 p-3 rounded-2xl border border-slate-200 text-center">
                                 <div className="flex items-center justify-center gap-1.5 mb-1">
                                     <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: item.color }} />
-                                    <span className="text-xs font-semibold text-slate-300">{item.name}</span>
+                                    <span className="text-xs font-bold text-slate-700">{item.name}</span>
                                 </div>
-                                <span className="text-base font-extrabold text-white">{item.value}</span>
+                                <span className="text-xl font-black text-slate-900">{item.value}</span>
                             </div>
                         ))}
                     </div>

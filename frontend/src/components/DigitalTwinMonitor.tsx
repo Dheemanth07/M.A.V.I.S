@@ -39,14 +39,14 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
     return (
         <div className="space-y-6">
             {/* Subject Selector Header */}
-            <div className="mavis-card p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="bento-card p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white">
                 <div className="flex items-center gap-3">
-                    <div className="p-3 rounded-2xl bg-teal-500/10 text-teal-400 border border-teal-500/20">
+                    <div className="p-3 rounded-2xl bg-teal-50 text-teal-600 border border-teal-100">
                         <Cpu className="h-6 w-6" />
                     </div>
                     <div>
-                        <h2 className="text-xl font-black text-white m-0">Personalised Digital Twin Telemetry</h2>
-                        <p className="text-xs text-slate-400 m-0">Real-time baseline tracking & deviation anomaly classification</p>
+                        <h2 className="text-xl font-black text-slate-900 m-0">Personalised Digital Twin Telemetry</h2>
+                        <p className="text-xs text-slate-500 font-medium m-0">Real-time baseline tracking & deviation anomaly classification</p>
                     </div>
                 </div>
 
@@ -54,7 +54,7 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
                     <select
                         value={selectedAnimalId}
                         onChange={(e) => setSelectedAnimalId(e.target.value)}
-                        className="bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2.5 text-sm font-semibold focus:outline-none focus:border-teal-500 w-full sm:w-64"
+                        className="bg-slate-50 border border-slate-300 text-slate-900 rounded-xl px-4 py-2.5 text-sm font-bold focus:outline-none focus:border-teal-600 w-full sm:w-64"
                     >
                         {animals.map(a => (
                             <option key={a._id} value={a._id}>{a.name} ({a.species})</option>
@@ -63,10 +63,10 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
 
                     <button
                         onClick={() => loadTwinData(selectedAnimalId)}
-                        className="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl border border-slate-700 transition"
+                        className="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl border border-slate-300 transition"
                         title="Refresh Twin Telemetry"
                     >
-                        <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin text-teal-400' : ''}`} />
+                        <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin text-teal-600' : ''}`} />
                     </button>
                 </div>
             </div>
@@ -75,43 +75,43 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                     {/* Left Column: Subject Profile & Baseline Status (4 cols) */}
                     <div className="lg:col-span-4 space-y-6">
-                        <div className="mavis-card p-6">
+                        <div className="bento-card p-6 bg-white">
                             <div className="flex items-center justify-between mb-4">
-                                <span className={`mavis-badge mavis-badge-${healthSummary?.status || selectedAnimal.healthStatus}`}>
-                                    {healthSummary?.status || selectedAnimal.healthStatus}
+                                <span className={`status-pill-${healthSummary?.status || selectedAnimal.healthStatus || 'healthy'} text-xs font-bold px-3 py-1 rounded-full uppercase`}>
+                                    {healthSummary?.status || selectedAnimal.healthStatus || 'healthy'}
                                 </span>
-                                <span className="text-xs text-slate-400 font-mono">ID: {selectedAnimal._id.substring(0, 8)}</span>
+                                <span className="text-xs text-slate-400 font-mono font-bold">ID: {selectedAnimal._id.substring(0, 8)}</span>
                             </div>
 
-                            <h3 className="text-2xl font-black text-white mb-1">{selectedAnimal.name}</h3>
-                            <p className="text-xs text-slate-400 mb-6">{selectedAnimal.species} • {selectedAnimal.breed || 'Standard Breed'}</p>
+                            <h3 className="text-2xl font-black text-slate-900 mb-1">{selectedAnimal.name}</h3>
+                            <p className="text-xs text-slate-500 font-medium mb-6">{selectedAnimal.species} • {selectedAnimal.breed || 'Standard Breed'}</p>
 
                             {/* Baseline Initialization Progress */}
-                            <div className="bg-slate-900/80 p-4 rounded-2xl border border-slate-800 space-y-2 mb-6">
+                            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-2 mb-6">
                                 <div className="flex items-center justify-between text-xs">
-                                    <span className="text-slate-400 font-medium">Baseline Initialization</span>
-                                    <span className="text-teal-400 font-bold">
+                                    <span className="text-slate-600 font-bold">Baseline Initialization</span>
+                                    <span className="text-teal-700 font-black">
                                         {healthSummary?.baselineReadingsCount ?? selectedAnimal.baselineReadingsCount ?? 0} / 10 Readings
                                     </span>
                                 </div>
-                                <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
+                                <div className="h-2.5 w-full bg-slate-200 rounded-full overflow-hidden">
                                     <div
-                                        className="h-full bg-gradient-to-r from-teal-500 to-emerald-400 transition-all duration-500"
+                                        className="h-full bg-teal-600 transition-all duration-500 rounded-full"
                                         style={{ width: `${Math.min(100, ((healthSummary?.baselineReadingsCount ?? selectedAnimal.baselineReadingsCount ?? 0) / 10) * 100)}%` }}
                                     />
                                 </div>
                             </div>
 
                             {/* Learned Baselines Summary */}
-                            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3">Learned Baselines (EMA α=0.1)</h4>
+                            <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-500 mb-3">Learned Baselines (EMA α=0.1)</h4>
                             <div className="grid grid-cols-2 gap-3">
-                                <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-800/80">
-                                    <div className="text-[11px] text-slate-400 flex items-center gap-1.5"><Thermometer className="h-3.5 w-3.5 text-teal-400" /> Temp Baseline</div>
-                                    <div className="text-lg font-extrabold text-white mt-1">{(healthSummary?.baselines || selectedAnimal.baselines)?.temperature || '38.0'}°C</div>
+                                <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
+                                    <div className="text-[11px] font-bold text-slate-600 flex items-center gap-1.5"><Thermometer className="h-3.5 w-3.5 text-teal-600" /> Temp Baseline</div>
+                                    <div className="text-lg font-black text-slate-900 mt-1">{(healthSummary?.baselines || selectedAnimal.baselines)?.temperature || '38.0'}°C</div>
                                 </div>
-                                <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-800/80">
-                                    <div className="text-[11px] text-slate-400 flex items-center gap-1.5"><Heart className="h-3.5 w-3.5 text-blue-400" /> Heart Rate</div>
-                                    <div className="text-lg font-extrabold text-white mt-1">{(healthSummary?.baselines || selectedAnimal.baselines)?.heartRate || '75'} BPM</div>
+                                <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
+                                    <div className="text-[11px] font-bold text-slate-600 flex items-center gap-1.5"><Heart className="h-3.5 w-3.5 text-blue-600" /> Heart Rate</div>
+                                    <div className="text-lg font-black text-slate-900 mt-1">{(healthSummary?.baselines || selectedAnimal.baselines)?.heartRate || '75'} BPM</div>
                                 </div>
                             </div>
                         </div>
@@ -119,13 +119,13 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
 
                     {/* Right Column: Live Telemetry Cards & Deviations (8 cols) */}
                     <div className="lg:col-span-8 space-y-6">
-                        <div className="mavis-card p-6">
+                        <div className="bento-card p-6 bg-white">
                             <div className="flex items-center justify-between mb-6">
                                 <div>
-                                    <h3 className="text-lg font-bold text-white m-0">Live Vitals & Anomaly Deviation Scores</h3>
-                                    <p className="text-xs text-slate-400 m-0">Comparing live telemetry against personalized Digital Twin baseline</p>
+                                    <h3 className="text-lg font-bold text-slate-900 m-0">Live Vitals & Anomaly Deviation Scores</h3>
+                                    <p className="text-xs text-slate-500 font-medium m-0">Comparing live telemetry against personalized Digital Twin baseline</p>
                                 </div>
-                                <span className="text-xs px-2.5 py-1 rounded-full bg-teal-500/10 text-teal-400 border border-teal-500/20 font-semibold">
+                                <span className="text-xs px-3 py-1 rounded-full bg-teal-50 text-teal-700 border border-teal-200 font-extrabold">
                                     Live Stream
                                 </span>
                             </div>
@@ -133,59 +133,59 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
                             {/* 4 Telemetry Metric Cards */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 {/* Temperature */}
-                                <div className="bg-slate-900/80 p-5 rounded-2xl border border-slate-800 space-y-3">
-                                    <div className="flex items-center justify-between text-xs text-slate-400">
-                                        <span className="flex items-center gap-2 font-semibold text-slate-300"><Thermometer className="h-4 w-4 text-teal-400" /> Body Temperature</span>
-                                        <span>Dev: <strong className={healthSummary?.deviations?.temperature && healthSummary.deviations.temperature > 1.0 ? 'text-red-400' : 'text-emerald-400'}>
-                                            +{healthSummary?.deviations?.temperature ?? 0.2}°C
+                                <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-3">
+                                    <div className="flex items-center justify-between text-xs">
+                                        <span className="flex items-center gap-2 font-bold text-slate-700"><Thermometer className="h-4 w-4 text-teal-600" /> Body Temperature</span>
+                                        <span className="font-bold text-slate-500">Dev: <strong className={healthSummary?.deviations?.temperature && healthSummary.deviations.temperature > 1.0 ? 'text-rose-600 font-black' : 'text-teal-700 font-black'}>
+                                            +{healthSummary?.deviations?.temperature ?? 0}°C
                                         </strong></span>
                                     </div>
-                                    <div className="text-3xl font-black text-white">
-                                        {healthSummary?.currentMetrics?.temperature ?? 38.2}<span className="text-lg text-slate-400 font-normal">°C</span>
+                                    <div className="text-3xl font-black text-slate-900">
+                                        {healthSummary?.currentMetrics?.temperature ?? 38.2}<span className="text-lg text-slate-500 font-semibold">°C</span>
                                     </div>
                                 </div>
 
                                 {/* Heart Rate */}
-                                <div className="bg-slate-900/80 p-5 rounded-2xl border border-slate-800 space-y-3">
-                                    <div className="flex items-center justify-between text-xs text-slate-400">
-                                        <span className="flex items-center gap-2 font-semibold text-slate-300"><Heart className="h-4 w-4 text-blue-400" /> Heart Rate</span>
-                                        <span>Dev: <strong className="text-emerald-400">+{healthSummary?.deviations?.heartRate ?? 2} BPM</strong></span>
+                                <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-3">
+                                    <div className="flex items-center justify-between text-xs">
+                                        <span className="flex items-center gap-2 font-bold text-slate-700"><Heart className="h-4 w-4 text-blue-600" /> Heart Rate</span>
+                                        <span className="font-bold text-slate-500">Dev: <strong className="text-teal-700 font-black">+{healthSummary?.deviations?.heartRate ?? 0} BPM</strong></span>
                                     </div>
-                                    <div className="text-3xl font-black text-white">
-                                        {healthSummary?.currentMetrics?.heartRate ?? 77}<span className="text-lg text-slate-400 font-normal"> BPM</span>
+                                    <div className="text-3xl font-black text-slate-900">
+                                        {healthSummary?.currentMetrics?.heartRate ?? 72}<span className="text-lg text-slate-500 font-semibold"> BPM</span>
                                     </div>
                                 </div>
 
                                 {/* Respiratory Rate */}
-                                <div className="bg-slate-900/80 p-5 rounded-2xl border border-slate-800 space-y-3">
-                                    <div className="flex items-center justify-between text-xs text-slate-400">
-                                        <span className="flex items-center gap-2 font-semibold text-slate-300"><Wind className="h-4 w-4 text-purple-400" /> Respiratory Rate</span>
-                                        <span>Dev: <strong className="text-emerald-400">+{healthSummary?.deviations?.respiratoryRate ?? 1}</strong></span>
+                                <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-3">
+                                    <div className="flex items-center justify-between text-xs">
+                                        <span className="flex items-center gap-2 font-bold text-slate-700"><Wind className="h-4 w-4 text-purple-600" /> Respiratory Rate</span>
+                                        <span className="font-bold text-slate-500">Dev: <strong className="text-teal-700 font-black">+{healthSummary?.deviations?.respiratoryRate ?? 0}</strong></span>
                                     </div>
-                                    <div className="text-3xl font-black text-white">
-                                        {healthSummary?.currentMetrics?.respiratoryRate ?? 23}
+                                    <div className="text-3xl font-black text-slate-900">
+                                        {healthSummary?.currentMetrics?.respiratoryRate ?? 24}
                                     </div>
                                 </div>
 
                                 {/* Collar Battery */}
-                                <div className="bg-slate-900/80 p-5 rounded-2xl border border-slate-800 space-y-3">
-                                    <div className="flex items-center justify-between text-xs text-slate-400">
-                                        <span className="flex items-center gap-2 font-semibold text-slate-300"><Battery className="h-4 w-4 text-amber-400" /> Collar Battery</span>
-                                        <span className="text-emerald-400 font-semibold">Normal Ops</span>
+                                <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-3">
+                                    <div className="flex items-center justify-between text-xs">
+                                        <span className="flex items-center gap-2 font-bold text-slate-700"><Battery className="h-4 w-4 text-amber-600" /> Collar Battery</span>
+                                        <span className="text-teal-700 font-bold">Normal Ops</span>
                                     </div>
-                                    <div className="text-3xl font-black text-white">
-                                        {healthSummary?.currentMetrics?.battery ?? 88}<span className="text-lg text-slate-400 font-normal">%</span>
+                                    <div className="text-3xl font-black text-slate-900">
+                                        {healthSummary?.currentMetrics?.battery ?? 88}<span className="text-lg text-slate-500 font-semibold">%</span>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Active Alerts in Digital Twin */}
                             {healthSummary?.alerts && healthSummary.alerts.length > 0 && (
-                                <div className="mt-6 bg-red-500/10 border border-red-500/30 p-4 rounded-2xl space-y-2">
-                                    <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-red-400">
-                                        <Zap className="h-4 w-4" /> Active Telemetry Alerts ({healthSummary.alerts.length})
+                                <div className="mt-6 bg-rose-50 border border-rose-200 p-4 rounded-2xl space-y-2">
+                                    <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-rose-700">
+                                        <Zap className="h-4 w-4 text-rose-600" /> Active Telemetry Alerts ({healthSummary.alerts.length})
                                     </div>
-                                    <ul className="space-y-1 text-xs text-red-200 pl-5 list-disc m-0">
+                                    <ul className="space-y-1 text-xs text-rose-900 font-medium pl-5 list-disc m-0">
                                         {healthSummary.alerts.map((alt, idx) => (
                                             <li key={idx}>{alt}</li>
                                         ))}

@@ -5,8 +5,10 @@ import { fetchAnimals, fetchActiveAlerts } from './services/api';
 import { RoleHeader } from './components/RoleHeader';
 import { Navbar } from './components/Navbar';
 import { AlertBanner } from './components/AlertBanner';
-import { UserDashboard } from './components/UserDashboard';
-import { AdminDashboard } from './components/AdminDashboard';
+import { UserDashboardOverview } from './components/UserDashboardOverview';
+import { UserAnimalsView } from './components/UserAnimalsView';
+import { AdminOverview } from './components/AdminOverview';
+import { AdminSubjectRegistry } from './components/AdminSubjectRegistry';
 import { AnalyticsSection } from './components/AnalyticsSection';
 import { DigitalTwinMonitor } from './components/DigitalTwinMonitor';
 import { AlertCenter } from './components/AlertCenter';
@@ -22,9 +24,9 @@ export function App() {
     const loadInitialData = async () => {
         try {
             const animalsData = await fetchAnimals();
-            setAnimals(animalsData);
+            setAnimals(animalsData || []);
             const alertsData = await fetchActiveAlerts();
-            setAlerts(alertsData);
+            setAlerts(alertsData || []);
         } catch (err) {
             console.error('Error fetching backend data:', err);
         }
@@ -33,9 +35,12 @@ export function App() {
     useEffect(() => {
         loadInitialData();
 
-        // Connect to Socket.IO server at http://localhost:5000
+        // Connect to Socket.IO server at http://localhost:5000 with clean auto-reconnect
         const socket: Socket = io('http://localhost:5000', {
-            transports: ['websocket', 'polling']
+            transports: ['websocket', 'polling'],
+            reconnection: true,
+            reconnectionAttempts: 10,
+            reconnectionDelay: 2000
         });
 
         socket.on('connect', () => {
@@ -49,21 +54,24 @@ export function App() {
         socket.on('alert', (newAlert: any) => {
             console.log('Real-time Socket Alert received:', newAlert);
 
-            const alertObj: AlertItem = {
-                _id: newAlert.id || String(Date.now()),
-                animalId: newAlert.animalId || 'Live Telemetry Node',
-                type: newAlert.type || 'ANOMALY',
-                severity: newAlert.type === 'ANOMALY' ? 'critical' : 'warning',
-                message: newAlert.message || 'Vital deviation detected in live stream',
-                status: 'active',
-                createdAt: newAlert.timestamp || new Date().toISOString(),
-            };
+            if (newAlert) {
+                const alertObj: AlertItem = {
+                    _id: newAlert.id || String(Date.now()),
+                    animalId: newAlert.animalId || 'Live Telemetry Node',
+                    type: newAlert.type || 'ANOMALY',
+                    severity: newAlert.type === 'ANOMALY' ? 'critical' : 'warning',
+                    message: newAlert.message || 'Vital deviation detected in live stream',
+                    status: 'active',
+                    createdAt: newAlert.timestamp || new Date().toISOString(),
+                };
 
-            setActiveToastAlert(alertObj);
+                setActiveToastAlert(alertObj);
+            }
             loadInitialData();
         });
 
         return () => {
+            socket.removeAllListeners();
             socket.disconnect();
         };
     }, []);
@@ -81,7 +89,7 @@ export function App() {
             <Navbar
                 activeTab={activeTab}
                 setActiveTab={setActiveTab}
-                activeAlertCount={alerts.filter(a => a.status === 'active').length}
+                activeAlertCount={alerts.filter(a => a && a.status === 'active').length}
                 role={role}
             />
 
@@ -92,44 +100,51 @@ export function App() {
             />
 
             <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-8">
+                {/* DASHBOARD TAB */}
                 {activeTab === 'dashboard' && (
                     role === 'admin' ? (
-                        <AdminDashboard
+                        <AdminOverview
                             animals={animals}
                             onRefresh={loadInitialData}
                         />
                     ) : (
-                        <UserDashboard
+                        <UserDashboardOverview
                             animals={animals}
+                            alerts={alerts}
+                            setActiveTab={setActiveTab}
                         />
                     )
                 )}
 
+                {/* MY ANIMALS / SUBJECT REGISTRY TAB */}
                 {activeTab === 'animals' && (
                     role === 'admin' ? (
-                        <AdminDashboard
+                        <AdminSubjectRegistry
                             animals={animals}
                             onRefresh={loadInitialData}
                         />
                     ) : (
-                        <UserDashboard
+                        <UserAnimalsView
                             animals={animals}
                         />
                     )
                 )}
 
+                {/* ANALYTICS TAB */}
                 {activeTab === 'analytics' && (
                     <AnalyticsSection
                         animals={animals}
                     />
                 )}
 
+                {/* DIGITAL TWIN TAB */}
                 {activeTab === 'twin' && (
                     <DigitalTwinMonitor
                         animals={animals}
                     />
                 )}
 
+                {/* ALERTS TAB */}
                 {activeTab === 'alerts' && (
                     <AlertCenter
                         alerts={alerts}
