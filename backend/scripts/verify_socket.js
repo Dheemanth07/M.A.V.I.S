@@ -27,18 +27,18 @@ socket.on("connect_error", (error) => {
 socket.on("alert", (alertData) => {
     console.log("\n[ALERT RECEIVED] :", JSON.stringify(alertData, null, 2));
 
-    if (alertData.type === "FEVER") {
+    if (alertData.type === "FEVER" || alertData.type === "ANOMALY") {
         feverAlertsReceived.push(alertData);
     } else if (alertData.type === "BATTERY") {
         batteryAlertsReceived.push(alertData);
     }
 
-    console.log(`Progress: FEVER alerts = ${feverAlertsReceived.length}, BATTERY alerts = ${batteryAlertsReceived.length}`);
+    console.log(`Progress: FEVER/ANOMALY alerts = ${feverAlertsReceived.length}, BATTERY alerts = ${batteryAlertsReceived.length}`);
 
     // Exit gracefully after we have verified both types of alerts
     if (feverAlertsReceived.length >= 1 && batteryAlertsReceived.length >= 1) {
         console.log("\n==========================================");
-        console.log("SUCCESS: Received both FEVER and BATTERY alerts!");
+        console.log("SUCCESS: Received both ANOMALY/FEVER and BATTERY alerts!");
         console.log(`Total FEVER alerts captured: ${feverAlertsReceived.length}`);
         console.log(`Total BATTERY alerts captured: ${batteryAlertsReceived.length}`);
         console.log("Exiting verification script gracefully.");
@@ -56,7 +56,7 @@ setTimeout(() => {
     if (feverAlertsReceived.length >= 1 && batteryAlertsReceived.length >= 1) {
         process.exit(0);
     } else {
-        console.error("FAIL: Did not receive all expected alert types (need at least 1 FEVER and 1 BATTERY alert).");
+        console.error("FAIL: Did not receive all expected alert types (need at least 1 ANOMALY/FEVER and 1 BATTERY alert).");
         process.exit(1);
     }
 }, 60000);
