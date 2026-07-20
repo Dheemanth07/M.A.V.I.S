@@ -34,7 +34,7 @@ class AlertRepository {
         return await this.model.findByIdAndUpdate(
             alertId,
             { status: newStatus },
-            { new: true, runValidators: true }
+            { returnDocument: 'after', runValidators: true }
         );
     }
 }

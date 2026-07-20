@@ -45,7 +45,7 @@ class AnimalRepository {
      * @returns {Promise<Object|null>} Updated animal, if found.
      */
     async update(id, data) {
-        return await this.#model.findByIdAndUpdate(id, data, { new: true });
+        return await this.#model.findByIdAndUpdate(id, data, { returnDocument: 'after' });
     }
 
     /**

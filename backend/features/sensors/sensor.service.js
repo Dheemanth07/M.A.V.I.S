@@ -62,7 +62,7 @@ class SensorService {
         const { temperature, heartRate, respiratoryRate, bloodOxygen } = sensorData.physiology;
 
         if (animal.baselineReadingsCount < 10) {
-            // Baseline Initialization Phase: Accumulate first 10 readings
+            // --- PHASE 1: Baseline Initialization (accumulate first 10 readings) ---
             const count = animal.baselineReadingsCount + 1;
             const currentAccumulator = animal.baselineAccumulator || { temperature: 0, heartRate: 0, respiratoryRate: 0, bloodOxygen: 0 };
             const newAccumulator = {
@@ -74,6 +74,7 @@ class SensorService {
 
             let newBaselines = animal.baselines || { temperature: 0, heartRate: 0, respiratoryRate: 0, bloodOxygen: 0 };
             if (count === 10) {
+                // Lock in the initial baseline from the average of the first 10 readings
                 newBaselines = {
                     temperature: Math.round((newAccumulator.temperature / 10) * 10) / 10,
                     heartRate: Math.round(newAccumulator.heartRate / 10),
@@ -87,17 +88,21 @@ class SensorService {
                 baselineAccumulator: newAccumulator,
                 baselines: newBaselines
             });
-            // Section 3 Compliance: Adaptive Moving Baseline Engine B(t) = alpha * X(t) + (1 - alpha) * B(t-1)
-            const alpha = 0.05; // Adaptive learning rate (0 < alpha < 1)
-            const updatedBaselines = {
-                temperature: Math.round((alpha * temperature + (1 - alpha) * tempBaseline) * 10) / 10,
-                heartRate: Math.round(alpha * heartRate + (1 - alpha) * hrBaseline),
-                respiratoryRate: Math.round(alpha * respiratoryRate + (1 - alpha) * rrBaseline),
-                bloodOxygen: Math.round(alpha * bloodOxygen + (1 - alpha) * boBaseline)
-            };
+        } else {
+            // --- PHASE 2: Adaptive Monitoring (EMA + Anomaly Detection) ---
+            const baselines = animal.baselines || { temperature: 38.5, heartRate: 75, respiratoryRate: 22, bloodOxygen: 98 };
 
-            // Update digital twin baseline state in MongoDB
-            await this.#animalRepository.update(animal._id, { baselines: updatedBaselines });
+            // Extract current baselines
+            const tempBaseline = baselines.temperature;
+            const hrBaseline = baselines.heartRate;
+            const rrBaseline = baselines.respiratoryRate;
+            const boBaseline = baselines.bloodOxygen;
+
+            // Calculate absolute deviations from baseline
+            const tempDev = Math.abs(temperature - tempBaseline);
+            const hrDev = Math.abs(heartRate - hrBaseline);
+            const rrDev = Math.abs(respiratoryRate - rrBaseline);
+            const boDev = Math.abs(bloodOxygen - boBaseline);
 
             let hasAnomaly = false;
             let anomalyDetails = [];
@@ -120,7 +125,7 @@ class SensorService {
             }
 
             if (hasAnomaly) {
-                // Emit Socket.IO alert, do NOT update baseline
+                // Anomaly detected — emit alert, do NOT update baseline
                 const alertMessage = `Deviation detected: ${anomalyDetails.join("; ")}`;
                 io.emit("alert", {
                     animalId: sensorData.animalId,
@@ -141,20 +146,20 @@ class SensorService {
                     }]);
                 }
             } else {
-                // Happy path: Update baseline using EMA (learning rate alpha = 0.1)
-                const alpha = 0.1;
-                const newBaselines = {
+                // No anomaly — update baseline using Adaptive EMA: B(t) = alpha * X(t) + (1 - alpha) * B(t-1)
+                const alpha = 0.05;
+                const updatedBaselines = {
                     temperature: Math.round((alpha * temperature + (1 - alpha) * tempBaseline) * 10) / 10,
                     heartRate: Math.round(alpha * heartRate + (1 - alpha) * hrBaseline),
                     respiratoryRate: Math.round(alpha * respiratoryRate + (1 - alpha) * rrBaseline),
                     bloodOxygen: Math.round(alpha * bloodOxygen + (1 - alpha) * boBaseline)
                 };
 
-                await this.#animalRepository.update(animal._id, { baselines: newBaselines });
+                await this.#animalRepository.update(animal._id, { baselines: updatedBaselines });
             }
         }
 
-        // Hardware Maintenance
+        // Hardware Maintenance Alert
         if (sensorData.device?.batteryLevel < BATTERY_WARNING_THRESHOLD) {
             const batteryMessage = `Warning: Low battery level detected! (${sensorData.device.batteryLevel}%)`;
             io.emit("alert", {
@@ -179,6 +184,7 @@ class SensorService {
 
         return sensorData;
     }
+
 
     /**
      * @param {string} animalId
