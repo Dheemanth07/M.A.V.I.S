@@ -177,10 +177,21 @@ void loop() {
     StaticJsonDocument<512> doc;
     doc["animalId"] = animalId;
 
+    // Dynamic Respiratory Rate based on activity (motion)
+    int dynamicRR = motionActive ? (28 + random(0, 5)) : (18 + random(0, 4));
+
+    // Dynamic environmental fluctuations
+    float dynamicAmbientTemp = 27.0 + (random(-10, 15) / 10.0);
+    int dynamicHumidity = 55 + random(-3, 4);
+    int dynamicAQI = 42 + random(-2, 3);
+
+    // Dynamic battery level decay (drops 1% roughly every 2 minutes of run time, resets at 15%)
+    int dynamicBattery = 98 - ((millis() / 120000) % 15);
+
     JsonObject physiology = doc.createNestedObject("physiology");
     physiology["temperature"] = round(cleanTemp * 10.0) / 10.0;
     physiology["heartRate"] = round(cleanHR);
-    physiology["respiratoryRate"] = 24;
+    physiology["respiratoryRate"] = dynamicRR;
     physiology["bloodOxygen"] = round(rawBO);
 
     JsonObject behavior = doc.createNestedObject("behavior");
@@ -189,9 +200,9 @@ void loop() {
     behavior["lyingDown"] = (random(0, 100) < 10);
 
     JsonObject environment = doc.createNestedObject("environment");
-    environment["ambientTemperature"] = 27;
-    environment["humidity"] = 55;
-    environment["aqi"] = 42;
+    environment["ambientTemperature"] = dynamicAmbientTemp;
+    environment["humidity"] = dynamicHumidity;
+    environment["aqi"] = dynamicAQI;
 
     JsonObject location = doc.createNestedObject("location");
     location["latitude"] = 12.9716 + (random(-5, 6) / 10000.0);
@@ -199,7 +210,7 @@ void loop() {
     location["zone"] = "farm_1";
 
     JsonObject device = doc.createNestedObject("device");
-    device["batteryLevel"] = 95;
+    device["batteryLevel"] = dynamicBattery;
     device["signalStrength"] = WiFi.RSSI();
 
     String requestBody;
