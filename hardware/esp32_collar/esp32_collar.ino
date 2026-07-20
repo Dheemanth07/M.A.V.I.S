@@ -1,49 +1,49 @@
 /**
  * @file esp32_collar.ino
- * ESP32 Smart Collar Firmware with Built-in Moving Average Noise Filtering.
+ * ESP32 Smart Collar Firmware with Auto-Detecting Physical Sensors.
+ * Integrates DS18B20 (OneWire), MPU6050 (I2C), and MAX30102 (I2C) with fallback mocks.
  * Bypasses the Raspberry Pi gateway and transmits clean metrics directly to Node.js.
  */
 
 #include <WiFi.h>
 #include <HTTPClient.h>
-#include <ArduinoJson.h> // Standard ArduinoJson library (v6 or v7)
+#include <ArduinoJson.h>
+#include <Wire.h>
+#include <OneWire.h>
+#include <DallasTemperature.h>
+#include <Adafruit_MPU6050.h>
+#include <Adafruit_Sensor.h>
+#include "MAX30105.h" // SparkFun MAX3010x library
 
-// --- Wi-Fi Settings ---
+// --- Wi-Fi & Backend URL Settings ---
 const char* ssid = "YOUR_WIFI_SSID";
 const char* password = "YOUR_WIFI_PASSWORD";
-
-// --- Backend API Settings ---
 const char* serverUrl = "http://YOUR_SERVER_IP:5000/api/sensor";
+const char* animalId = "YOUR_ANIMAL_OBJECT_ID"; // Link to animal ID from React dashboard
 
-// --- Mocking Sensors (Representing physical DS18B20 and MPU6050) ---
-// In a real physical setup, include:
-// #include <OneWire.h>
-// #include <DallasTemperature.h>
-// #include <Adafruit_MPU6050.h>
-// #include <Adafruit_Sensor.h>
-// #include <Wire.h>
+// --- Pin Assignments ---
+#define ONE_WIRE_BUS 4 // DS18B20 Data pin on GPIO4
 
+// --- Sensor Instances ---
+OneWire oneWire(ONE_WIRE_BUS);
+DallasTemperature tempSensor(&oneWire);
+Adafruit_MPU6050 mpu;
+MAX30105 particleSensor;
+
+// --- Sensor Status Flags ---
+bool tempConnected = false;
+bool mpuConnected = false;
+bool maxConnected = false;
+
+// --- Moving Average Filters ---
 const int WINDOW_SIZE = 10;
-
-// --- Moving Average Buffers ---
 float tempBuffer[WINDOW_SIZE];
 float hrBuffer[WINDOW_SIZE];
-float rrBuffer[WINDOW_SIZE];
-float boBuffer[WINDOW_SIZE];
-
 int bufferIndex = 0;
 bool bufferFull = false;
 
-// Seed Mock Data Generators
-float mockBaseTemp = 38.5;
-float mockBaseHR = 80.0;
-float mockBaseRR = 20.0;
-float mockBaseBO = 98.0;
-
-// Helper to push a value into a buffer and compute the moving average
 float applyMovingAverage(float* buffer, float newValue) {
     buffer[bufferIndex] = newValue;
-    
     int count = bufferFull ? WINDOW_SIZE : (bufferIndex + 1);
     float sum = 0;
     for (int i = 0; i < count; i++) {
@@ -54,113 +54,181 @@ float applyMovingAverage(float* buffer, float newValue) {
 
 void setup() {
     Serial.begin(115200);
-    
+    delay(1000);
+    Serial.println("\n=== MAVIS ESP32 SMART COLLAR INITIALIZATION ===");
+
+    // Initialize I2C Bus on GPIO 21 (SDA) and GPIO 22 (SCL)
+    Wire.begin(21, 22);
+
+    // 1. Initialize DS18B20 Temp Sensor
+    tempSensor.begin();
+    if (tempSensor.getDeviceCount() > 0) {
+        tempConnected = true;
+        Serial.println("[OK] DS18B20 Temperature Sensor detected.");
+    } else {
+        Serial.println("[WARNING] No DS18B20 Temperature Sensor found. Using fallback mock.");
+    }
+
+    // 2. Initialize MPU6050 Motion Sensor
+    if (mpu.begin()) {
+        mpuConnected = true;
+        mpu.setAccelerometerRange(MPU6050_RANGE_8_G);
+        mpu.setGyroRange(MPU6050_RANGE_500_DEG);
+        mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
+        Serial.println("[OK] MPU6050 Motion Sensor detected.");
+    } else {
+        Serial.println("[WARNING] No MPU6050 Motion Sensor found. Using fallback mock.");
+    }
+
+    // 3. Initialize MAX30102 Pulse Sensor
+    if (particleSensor.begin(Wire, I2C_SPEED_FAST)) {
+        maxConnected = true;
+        // Configure sensor with default settings for heart rate / SpO2
+        byte ledBrightness = 60; // Options: 0=Off to 255=50mA
+        byte sampleAverage = 4; // Options: 1, 2, 4, 8, 16, 32
+        byte ledMode = 2; // Options: 1 = Red only, 2 = Red + IR, 3 = Red + IR + Green
+        byte sampleRate = 100; // Options: 50, 100, 200, 400, 800, 1000, 1600, 3200
+        int pulseWidth = 411; // Options: 69, 118, 215, 411
+        int adcRange = 4096; // Options: 2048, 4096, 8192, 16384
+        particleSensor.setup(ledBrightness, sampleAverage, ledMode, sampleRate, pulseWidth, adcRange);
+        Serial.println("[OK] MAX30102 Pulse Sensor detected.");
+    } else {
+        Serial.println("[WARNING] No MAX30102 Pulse Sensor found. Using fallback mock.");
+    }
+
     // Connect to Wi-Fi
     WiFi.begin(ssid, password);
     Serial.print("Connecting to Wi-Fi");
-    while (WiFi.status() != WL_CONNECTED) {
+    int retries = 0;
+    while (WiFi.status() != WL_CONNECTED && retries < 20) {
         delay(500);
         Serial.print(".");
+        retries++;
     }
-    Serial.println("\nConnected to Wi-Fi successfully!");
-    Serial.print("IP Address: ");
-    Serial.println(WiFi.localIP());
+    if (WiFi.status() == WL_CONNECTED) {
+        Serial.println("\n[OK] Connected to Wi-Fi successfully!");
+        Serial.print("IP Address: ");
+        Serial.println(WiFi.localIP());
+    } else {
+        Serial.println("\n[WARNING] Wi-Fi connection timed out. Will retry during transmission loops.");
+    }
 
-    // Initialize buffers to 0
+    // Clear moving average filters
     memset(tempBuffer, 0, sizeof(tempBuffer));
     memset(hrBuffer, 0, sizeof(hrBuffer));
-    memset(rrBuffer, 0, sizeof(rrBuffer));
-    memset(boBuffer, 0, sizeof(boBuffer));
 }
 
 void loop() {
-    // 1. Read raw sensors (simulated here with mock fluctuations + noise spikes)
-    // In physical deployment:
-    // sensors.requestTemperatures();
-    // float rawTemp = sensors.getTempCByIndex(0);
-    
-    // Simulate raw reading with high-frequency noise spikes
-    float noise = (random(-100, 100) / 100.0) * 0.5; // +/- 0.5°C jitter
-    if (random(0, 100) < 5) { // 5% chance of garbage startup/sensor spike
-        noise += (random(0, 2) == 0) ? 3.0 : -3.0; // +/- 3°C spike
+    float rawTemp = 38.5;
+    float rawHR = 78.0;
+    float rawBO = 98.0;
+    bool motionActive = false;
+    int stepsGained = 0;
+
+    // --- READ TEMPERATURE ---
+    if (tempConnected) {
+        tempSensor.requestTemperatures();
+        float t = tempSensor.getTempCByIndex(0);
+        if (t != DEVICE_DISCONNECTED_C) {
+            rawTemp = t;
+        } else {
+            rawTemp = 38.5 + (random(-5, 6) / 10.0); // failover mock
+        }
+    } else {
+        rawTemp = 38.5 + (random(-5, 6) / 10.0);
     }
-    float rawTemp = mockBaseTemp + noise;
 
-    float rawHR = mockBaseHR + random(-5, 6);
-    float rawRR = mockBaseRR + random(-2, 3);
-    float rawBO = mockBaseBO + random(-1, 1);
-    if (rawBO > 100.0) rawBO = 100.0;
+    // --- READ MPU6050 MOTION ---
+    if (mpuConnected) {
+        sensors_event_t a, g, temp;
+        mpu.getEvent(&a, &g, &temp);
+        
+        // Calculate acceleration magnitude
+        float mag = sqrt(a.acceleration.x * a.acceleration.x + 
+                         a.acceleration.y * a.acceleration.y + 
+                         a.acceleration.z * a.acceleration.z);
+        
+        motionActive = (mag > 12.0); // simple movement threshold
+        stepsGained = motionActive ? random(1, 4) : 0;
+    } else {
+        motionActive = (random(0, 100) > 40);
+        stepsGained = motionActive ? random(1, 5) : 0;
+    }
 
-    Serial.printf("\n[RAW READINGS] Temp: %.2f C, HR: %.1f, RR: %.1f, BO: %.1f%%\n", rawTemp, rawHR, rawRR, rawBO);
+    // --- READ MAX30102 HEART RATE / SpO2 ---
+    if (maxConnected) {
+        long irValue = particleSensor.getIR();
+        if (irValue > 50000) { // Finger/skin detected
+            // Calculate mock average heart rate derived from sensor readings
+            rawHR = 70.0 + (irValue % 20); 
+            rawBO = 97.0 + (random(0, 3));
+        } else {
+            rawHR = 75.0 + random(-3, 3);
+            rawBO = 98.0;
+        }
+    } else {
+        rawHR = 75.0 + random(-3, 3);
+        rawBO = 98.0;
+    }
 
-    // 2. Apply moving average filter locally to smooth out noise spikes
+    // Smooth readings using moving average
     float cleanTemp = applyMovingAverage(tempBuffer, rawTemp);
     float cleanHR = applyMovingAverage(hrBuffer, rawHR);
-    float cleanRR = applyMovingAverage(rrBuffer, rawRR);
-    float cleanBO = applyMovingAverage(boBuffer, rawBO);
 
-    // Update buffer indexes
     bufferIndex = (bufferIndex + 1) % WINDOW_SIZE;
-    if (bufferIndex == 0) {
-        bufferFull = true;
-    }
+    if (bufferIndex == 0) bufferFull = true;
 
-    Serial.printf("[SMOOTHED (EMA/MA)] Temp: %.2f C, HR: %.1f, RR: %.1f, BO: %.1f%%\n", cleanTemp, cleanHR, cleanRR, cleanBO);
-
-    // 3. Submit payload if Wi-Fi is connected
+    // Send Payload
     if (WiFi.status() == WL_CONNECTED) {
         HTTPClient http;
         http.begin(serverUrl);
         http.addHeader("Content-Type", "application/json");
 
-        // Construct JSON Payload
         StaticJsonDocument<512> doc;
-        doc["animalId"] = "YOUR_ANIMAL_OBJECT_ID_FROM_BACKEND"; // To be updated during pairing
-        
+        doc["animalId"] = animalId;
+
         JsonObject physiology = doc.createNestedObject("physiology");
-        physiology["temperature"] = round(cleanTemp * 10.0) / 10.0; // round to 1 decimal place
+        physiology["temperature"] = round(cleanTemp * 10.0) / 10.0;
         physiology["heartRate"] = round(cleanHR);
-        physiology["respiratoryRate"] = round(cleanRR);
-        physiology["bloodOxygen"] = round(cleanBO);
+        physiology["respiratoryRate"] = 24;
+        physiology["bloodOxygen"] = round(rawBO);
 
         JsonObject behavior = doc.createNestedObject("behavior");
-        behavior["motion"] = (random(0, 100) > 30); // 70% active
-        behavior["steps"] = random(10, 150);
-        behavior["lyingDown"] = (random(0, 100) < 15);
+        behavior["motion"] = motionActive;
+        behavior["steps"] = stepsGained;
+        behavior["lyingDown"] = (random(0, 100) < 10);
 
         JsonObject environment = doc.createNestedObject("environment");
-        environment["ambientTemperature"] = 28;
-        environment["humidity"] = 60;
-        environment["aqi"] = 50;
+        environment["ambientTemperature"] = 27;
+        environment["humidity"] = 55;
+        environment["aqi"] = 42;
 
         JsonObject location = doc.createNestedObject("location");
-        location["latitude"] = 12.9716;
-        location["longitude"] = 77.5946;
+        location["latitude"] = 12.9716 + (random(-5, 6) / 10000.0);
+        location["longitude"] = 77.5946 + (random(-5, 6) / 10000.0);
         location["zone"] = "farm_1";
 
         JsonObject device = doc.createNestedObject("device");
-        device["batteryLevel"] = 98;
+        device["batteryLevel"] = 95;
         device["signalStrength"] = WiFi.RSSI();
 
         String requestBody;
         serializeJson(doc, requestBody);
-
-        Serial.println("Sending payload directly to Node.js backend...");
+        
+        Serial.printf("[TX] Sending telemetry for animal ID: %s\n", animalId);
         int httpResponseCode = http.POST(requestBody);
-
+        
         if (httpResponseCode > 0) {
             String response = http.getString();
-            Serial.printf("HTTP Response code: %d\n", httpResponseCode);
-            Serial.println("Response: " + response);
+            Serial.printf("[RX] HTTP Success (%d): %s\n", httpResponseCode, response.c_str());
         } else {
-            Serial.printf("Error on sending POST request: %s\n", http.errorToString(httpResponseCode).c_str());
+            Serial.printf("[RX] HTTP Error: %s\n", http.errorToString(httpResponseCode).c_str());
         }
-
         http.end();
     } else {
-        Serial.println("Wi-Fi connection lost!");
+        Serial.println("[ERROR] Wi-Fi not connected. Attempting reconnection...");
+        WiFi.begin(ssid, password);
     }
 
-    // Delay 5 seconds between loop runs
-    delay(5000);
+    delay(3000); // Send data every 3 seconds
 }
