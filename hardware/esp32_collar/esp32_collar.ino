@@ -137,10 +137,11 @@ void loop() {
   float rawBO = 98.0;
   bool motionActive = false;
   int stepsGained = 0;
+  long irValue = 0;
 
   // Read raw IR value from MAX30102
   if (maxConnected) {
-    long irValue = particleSensor.getIR();
+    irValue = particleSensor.getIR();
     
     if (irValue > 50000) { // Skin/finger contact detected
       // Check if a beat occurred
@@ -160,6 +161,12 @@ void loop() {
             sum += rates[x];
           }
           beatAvg = sum / RATE_SIZE;
+          
+          // Print real-time diagnostic to show beat detection is working
+          Serial.print("[PULSE] Heartbeat peak detected! Current BPM: ");
+          Serial.print(beatsPerMinute);
+          Serial.print(" | Rolling Avg: ");
+          Serial.println(beatAvg);
         }
       }
       rawHR = beatAvg;
@@ -260,14 +267,44 @@ void loop() {
       String requestBody;
       serializeJson(doc, requestBody);
 
-      Serial.printf("[TX] Sending telemetry for animal ID: %s (HR: %d BPM)\n", animalId, (int)round(cleanHR));
+      // Print formatted local telemetry summary
+      Serial.println("\n=======================================================");
+      Serial.println("           MAVIS LIVE TELEMETRY UPDATE                 ");
+      Serial.println("=======================================================");
+      if (tempConnected) {
+        Serial.printf(" [TEMP]     Sensor: ON  | Raw: %.2f C | Smooth: %.2f C\n", rawTemp, cleanTemp);
+      } else {
+        Serial.printf(" [TEMP]     Sensor: OFF | Simulated: %.2f C | Smooth: %.2f C\n", rawTemp, cleanTemp);
+      }
+
+      if (maxConnected) {
+        if (irValue > 50000) {
+          Serial.printf(" [HR/SpO2]  Contact: ON  | Heart Rate: %d BPM | SpO2: %d%%\n", (int)round(cleanHR), (int)round(rawBO));
+        } else {
+          Serial.printf(" [HR/SpO2]  Contact: OFF | Standby Rate: %d BPM | SpO2: 98%%\n", (int)round(cleanHR));
+        }
+      } else {
+        Serial.printf(" [HR/SpO2]  Sensor: OFF | Simulated HR: %d BPM | SpO2: 98%%\n", (int)round(cleanHR));
+      }
+
+      if (mpuConnected) {
+        Serial.printf(" [MOTION]   Sensor: ON  | Moving: %s | Steps Added: %d\n", motionActive ? "YES" : "NO", stepsGained);
+      } else {
+        Serial.printf(" [MOTION]   Sensor: OFF | Simulated Moving: %s | Steps: %d\n", motionActive ? "YES" : "NO", stepsGained);
+      }
+
+      Serial.printf(" [ENV]      Ambient Temp: %.1f C | Humidity: %d%% | AQI: %d\n", dynamicAmbientTemp, dynamicHumidity, dynamicAQI);
+      Serial.printf(" [DEVICE]   WiFi RSSI: %d dBm | Battery: %d%%\n", WiFi.RSSI(), dynamicBattery);
+      Serial.println("-------------------------------------------------------");
+      Serial.printf(" [TX] Transmitting payload to backend for Animal: %s\n", animalId);
+      
       int httpResponseCode = http.POST(requestBody);
 
       if (httpResponseCode > 0) {
         String response = http.getString();
-        Serial.printf("[RX] HTTP Success (%d): %s\n", httpResponseCode, response.c_str());
+        Serial.printf(" [RX] HTTP Success (%d): %s\n", httpResponseCode, response.c_str());
       } else {
-        Serial.printf("[RX] HTTP Error: %s\n", http.errorToString(httpResponseCode).c_str());
+        Serial.printf(" [RX] HTTP Error: %s\n", http.errorToString(httpResponseCode).c_str());
       }
       http.end();
     } else {
