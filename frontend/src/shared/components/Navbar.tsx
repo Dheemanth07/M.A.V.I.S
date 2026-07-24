@@ -80,7 +80,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeAlertCount, role }) => {
                     </div>
 
                     {/* Navigation & User Profile Control */}
-                    <div className="flex flex-wrap items-center gap-2.5 h-10">
+                    <div className="flex flex-nowrap items-center gap-2.5 max-w-full overflow-x-auto no-scrollbar shrink-0">
                         {/* Nav Pill Container - Relative positioning for smooth sliding pill */}
                         <nav className="relative flex items-center gap-1 bg-slate-50 p-1 rounded-full border border-slate-200 h-10 overflow-x-auto overflow-y-hidden no-scrollbar max-w-full">
                             {/* Smooth Sliding Active Highlight Pill */}

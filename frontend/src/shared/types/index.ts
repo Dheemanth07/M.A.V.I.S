@@ -5,6 +5,8 @@ export interface Animal {
     breed?: string;
     age?: number;
     weight?: number;
+    deviceId?: string;
+    collarId?: string;
     healthStatus: 'healthy' | 'warning' | 'critical';
     baselineReadingsCount: number;
     baselines: {

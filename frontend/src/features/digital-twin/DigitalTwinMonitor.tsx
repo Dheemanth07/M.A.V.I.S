@@ -135,7 +135,7 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals,
                             </div>
                         </div>
 
-                        <AICopilotCard animalId={selectedAnimal._id} animalName={selectedAnimal.name} />
+                        <AICopilotCard animalId={selectedAnimal._id} animalName={selectedAnimal.name} allAnimals={animals} />
                     </div>
 
                     <div className="lg:col-span-8 space-y-6">

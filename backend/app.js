@@ -9,9 +9,9 @@ import express from "express";
 import cors from "cors";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import dotenv from "dotenv";
 import mongoose from "mongoose";
 
+import "./config/env.js";
 import corsOptions from "./middlewares/cors.js";
 import globalErrorHandler from "./middlewares/error.middleware.js";
 import { extractUser } from "./middlewares/auth.middleware.js";
@@ -32,8 +32,6 @@ import SensorValidator from "./features/sensors/sensor.validator.js";
 import SensorRoutes from "./features/sensors/sensor.routes.js";
 
 import aiRoutes from "./features/ai-insights/ai.routes.js";
-
-dotenv.config({ quiet: true });
 
 /**
  * Creates the configured Express app and backing HTTP server.

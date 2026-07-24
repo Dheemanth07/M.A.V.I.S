@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import type { Animal } from '../../shared/types';
-import { createAnimal } from '../../shared/services/api';
+import { createAnimal, deleteAnimal } from '../../shared/services/api';
+import { VeterinaryReportModal } from '../reports/VeterinaryReportModal';
 import { useToast } from '../../shared/context/ToastContext';
-import { Plus, Cpu, ShieldCheck } from 'lucide-react';
+import { Plus, Cpu, ShieldCheck, Trash2, FileText } from 'lucide-react';
 
 interface AdminSubjectRegistryProps {
     animals: Animal[];
@@ -12,9 +13,12 @@ interface AdminSubjectRegistryProps {
 export const AdminSubjectRegistry: React.FC<AdminSubjectRegistryProps> = ({ animals, onRefresh }) => {
     const { showToast } = useToast();
     const [formData, setFormData] = useState({ name: '', species: 'Cow', breed: 'Holstein', age: 3, weight: 500 });
+    const [selectedTargetId, setSelectedTargetId] = useState<string>('');
     const [pairedNodeId, setPairedNodeId] = useState('ESP32-COLLAR-01');
     const [submitting, setSubmitting] = useState(false);
     const [pairSuccess, setPairSuccess] = useState(false);
+    const [deletingId, setDeletingId] = useState<string | null>(null);
+    const [reportAnimal, setReportAnimal] = useState<Animal | null>(null);
 
     const handleRegister = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -34,26 +38,52 @@ export const AdminSubjectRegistry: React.FC<AdminSubjectRegistryProps> = ({ anim
 
     const handlePairNode = (e: React.FormEvent) => {
         e.preventDefault();
+        const targetAnimal = animals.find(a => a._id === selectedTargetId) || animals[0];
         setPairSuccess(true);
-        showToast(`Hardware Node '${pairedNodeId}' paired to target collar mesh!`, 'success');
-        setTimeout(() => setPairSuccess(false), 3000);
+        showToast(`Hardware Collar Node '${pairedNodeId}' bound to ${targetAnimal?.name || 'subject'}!`, 'success');
+        setTimeout(() => setPairSuccess(false), 3500);
+    };
+
+    const handleDelete = async (animalId: string, name: string) => {
+        if (!window.confirm(`Are you sure you want to delete subject '${name}' from global registry?`)) return;
+        setDeletingId(animalId);
+        try {
+            await deleteAnimal(animalId);
+            showToast(`Subject '${name}' removed from registry.`, 'info');
+            onRefresh();
+        } catch (err: any) {
+            console.error('Delete failed:', err);
+            showToast(err.message || 'Failed to delete animal.', 'error');
+        } finally {
+            setDeletingId(null);
+        }
     };
 
     return (
         <div className="space-y-6 animate-in fade-in duration-300">
-            <div className="bento-card p-6 bg-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="bento-card p-6 bg-white border border-slate-200/90 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
                     <h2 className="text-xl font-bold tracking-tight text-slate-900 m-0">Admin Subject Registry & Hardware Binding</h2>
-                    <p className="text-xs text-slate-500 font-normal m-0">System-wide registration, hardware node pairing, and profile management</p>
+                    <p className="text-xs text-slate-500 font-normal m-0">System-wide registration, hardware node pairing, and administrative CRUD operations</p>
                 </div>
-                <span className="text-xs font-semibold bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-xl border border-indigo-200">
-                    {animals.length} Profiles Registered
-                </span>
+                <div className="flex items-center gap-2">
+                    <span className="text-xs font-semibold bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded-xl border border-indigo-200">
+                        {animals.length} Profiles Registered
+                    </span>
+                    {animals.length > 0 && (
+                        <button
+                            onClick={() => setReportAnimal(animals[0])}
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold transition cursor-pointer shadow-xs"
+                        >
+                            <FileText className="h-3.5 w-3.5" /> Herd Audit PDF
+                        </button>
+                    )}
+                </div>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <div className="lg:col-span-5 space-y-6">
-                    <div className="bento-card p-6 bg-white">
+                    <div className="bento-card p-6 bg-white border border-slate-200/90">
                         <div className="flex items-center gap-2.5 mb-4">
                             <div className="p-2 rounded-xl bg-emerald-50 text-emerald-600">
                                 <Plus className="h-5 w-5" />
@@ -107,7 +137,7 @@ export const AdminSubjectRegistry: React.FC<AdminSubjectRegistryProps> = ({ anim
                         </form>
                     </div>
 
-                    <div className="bento-card p-6 bg-white">
+                    <div className="bento-card p-6 bg-white border border-slate-200/90">
                         <div className="flex items-center gap-2.5 mb-4">
                             <div className="p-2 rounded-xl bg-indigo-50 text-indigo-600">
                                 <Cpu className="h-5 w-5" />
@@ -121,7 +151,11 @@ export const AdminSubjectRegistry: React.FC<AdminSubjectRegistryProps> = ({ anim
                         <form onSubmit={handlePairNode} className="space-y-3.5">
                             <div>
                                 <label className="text-xs font-semibold text-slate-600 mb-1 block">Select Target Subject</label>
-                                <select className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm font-medium text-slate-900 focus:outline-none focus:border-indigo-600 cursor-pointer">
+                                <select
+                                    value={selectedTargetId}
+                                    onChange={(e) => setSelectedTargetId(e.target.value)}
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm font-medium text-slate-900 focus:outline-none focus:border-indigo-600 cursor-pointer"
+                                >
                                     {animals.map(a => (
                                         <option key={a._id} value={a._id}>{a.name} ({a.species})</option>
                                     ))}
@@ -150,7 +184,7 @@ export const AdminSubjectRegistry: React.FC<AdminSubjectRegistryProps> = ({ anim
                 </div>
 
                 <div className="lg:col-span-7 space-y-6">
-                    <div className="bento-card overflow-hidden bg-white">
+                    <div className="bento-card overflow-hidden bg-white border border-slate-200/90">
                         <div className="p-6 border-b border-slate-100 flex items-center justify-between">
                             <div className="flex items-center gap-2.5">
                                 <ShieldCheck className="h-5 w-5 text-indigo-600" />
@@ -165,7 +199,7 @@ export const AdminSubjectRegistry: React.FC<AdminSubjectRegistryProps> = ({ anim
                                         <th className="py-3.5 px-4">Name</th>
                                         <th className="py-3.5 px-4">Species</th>
                                         <th className="py-3.5 px-4">Status</th>
-                                        <th className="py-3.5 px-4">Baseline Progress</th>
+                                        <th className="py-3.5 px-4">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-slate-100 text-xs text-slate-700 font-normal">
@@ -178,8 +212,22 @@ export const AdminSubjectRegistry: React.FC<AdminSubjectRegistryProps> = ({ anim
                                                     {animal.healthStatus || 'healthy'}
                                                 </span>
                                             </td>
-                                            <td className="py-3.5 px-4 font-semibold text-slate-600">
-                                                {animal.baselineReadingsCount || 0}/10 Readings
+                                            <td className="py-3.5 px-4 flex items-center gap-2">
+                                                <button
+                                                    onClick={() => setReportAnimal(animal)}
+                                                    className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition cursor-pointer"
+                                                    title="View Herd Audit Report"
+                                                >
+                                                    <FileText className="h-3.5 w-3.5" />
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(animal._id, animal.name)}
+                                                    disabled={deletingId === animal._id}
+                                                    className="p-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 transition cursor-pointer"
+                                                    title="Delete Subject (Admin Privileges Required)"
+                                                >
+                                                    <Trash2 className="h-3.5 w-3.5" />
+                                                </button>
                                             </td>
                                         </tr>
                                     ))}
@@ -189,6 +237,15 @@ export const AdminSubjectRegistry: React.FC<AdminSubjectRegistryProps> = ({ anim
                     </div>
                 </div>
             </div>
+
+            {/* Audit Modal */}
+            {reportAnimal && (
+                <VeterinaryReportModal
+                    animal={reportAnimal}
+                    role="admin"
+                    onClose={() => setReportAnimal(null)}
+                />
+            )}
         </div>
     );
 };
