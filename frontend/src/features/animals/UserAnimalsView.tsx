@@ -213,9 +213,10 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals, onRef
                 onClose={() => setSelectedAnimal(null)}
             />
 
-            {/* Clinical Report Modal */}
+            {/* Pet Passport Report Modal */}
             <VeterinaryReportModal
                 animal={reportAnimal}
+                role="user"
                 onClose={() => setReportAnimal(null)}
             />
 

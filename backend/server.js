@@ -7,8 +7,8 @@ import cors from "cors";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import mongoose from "mongoose";
-import dotenv from "dotenv";
 
+import "./config/env.js";
 import corsOptions from "./middlewares/cors.js";
 import { extractUser } from "./middlewares/auth.middleware.js";
 import connectDB from "./config/db.js";
@@ -39,8 +39,6 @@ import AlertRoutes from "./features/alerts/alert.routes.js";
 
 import authRoutes from "./features/auth/auth.routes.js";
 import aiRoutes from "./features/ai-insights/ai.routes.js";
-
-dotenv.config({ quiet: true });
 
 const PORT = process.env.PORT || 5000;
 const app = express();

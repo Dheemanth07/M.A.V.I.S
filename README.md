@@ -120,11 +120,11 @@ Clone your repository code and create a production-ignored environment profile c
 ```bash
 git clone https://github.com/your-username/MAVIS.git
 cd MAVIS/backend
-touch .env
+touch .ENV
 
 ```
 
-Populate `.env` with the following configuration keys:
+Populate `.ENV` with the following configuration keys:
 
 ```env
 PORT=5000

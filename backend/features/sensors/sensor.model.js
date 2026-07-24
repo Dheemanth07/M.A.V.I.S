@@ -55,8 +55,10 @@ const sensorSchema = new mongoose.Schema(
     }
 );
 
-// Keeps latest/history lookups quick for each animal.
+// High-speed indexing for time-series range lookups & hardware battery audits
 sensorSchema.index({ animalId: 1, timestamp: -1 });
+sensorSchema.index({ timestamp: -1 });
+sensorSchema.index({ "device.batteryLevel": 1 });
 
 /**
  * Sensor reading collection model.
