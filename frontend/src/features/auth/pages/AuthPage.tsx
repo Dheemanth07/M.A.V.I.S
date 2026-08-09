@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../../../shared/context/ToastContext';
-import { Activity, ShieldCheck, UserCheck, Lock, Mail, User as UserIcon, ArrowRight } from 'lucide-react';
+import { ShieldCheck, UserCheck, Lock, Mail, User as UserIcon, ArrowRight } from 'lucide-react';
 
 export const AuthPage: React.FC = () => {
     const [isLogin, setIsLogin] = useState(true);
@@ -45,10 +45,12 @@ export const AuthPage: React.FC = () => {
             <div className="w-full max-w-md space-y-6 animate-in fade-in zoom-in duration-300">
                 {/* Brand Logo Header */}
                 <div className="text-center space-y-2">
-                    <div className="h-14 w-14 rounded-2xl bg-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-600/30 text-white mx-auto">
-                        <Activity className="h-7 w-7" />
-                    </div>
-                    <h1 className="text-2xl font-bold text-slate-900 tracking-tight m-0">M.A.V.I.S</h1>
+                    <img 
+                        src="/logo.svg" 
+                        alt="MAVIS Logo" 
+                        className="h-16 w-16 rounded-full shadow-lg shadow-teal-700/25 mx-auto transition-transform hover:scale-105" 
+                    />
+                    <h1 className="text-2xl font-bold text-slate-900 tracking-tight m-0 font-display">M.A.V.I.S</h1>
                     <p className="text-xs text-slate-500 font-medium m-0">Multi Model Animal Vitality Intelligence System</p>
                 </div>
 
@@ -172,10 +174,6 @@ export const AuthPage: React.FC = () => {
                         </button>
                     </form>
                 </div>
-
-                <p className="text-center text-xs text-slate-400 font-medium m-0">
-                    Protected by MAVIS Encrypted Workspace Auth
-                </p>
             </div>
         </div>
     );

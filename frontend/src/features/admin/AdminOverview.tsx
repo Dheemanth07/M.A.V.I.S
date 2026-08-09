@@ -99,10 +99,10 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({ animals, onRefresh
                             {animals.slice(0, 8).map((a) => (
                                 <tr key={a._id} className="hover:bg-slate-50 transition">
                                     <td className="py-3.5 px-4 font-semibold text-slate-900">{a.name}</td>
-                                    <td className="py-3.5 px-4">{a.baselines?.temperature || 38.2}°C</td>
-                                    <td className="py-3.5 px-4">{a.baselines?.heartRate || 72} BPM</td>
-                                    <td className="py-3.5 px-4">{a.baselines?.respiratoryRate || 22}</td>
-                                    <td className="py-3.5 px-4 font-semibold text-emerald-600">88%</td>
+                                    <td className="py-3.5 px-4">{a.baselines?.temperature ? `${Number(a.baselines.temperature).toFixed(1)}°C` : '--'}</td>
+                                    <td className="py-3.5 px-4">{a.baselines?.heartRate ? `${a.baselines.heartRate} BPM` : '--'}</td>
+                                    <td className="py-3.5 px-4">{a.baselines?.respiratoryRate ? a.baselines.respiratoryRate : '--'}</td>
+                                    <td className="py-3.5 px-4 font-semibold text-emerald-700">Online</td>
                                 </tr>
                             ))}
                         </tbody>

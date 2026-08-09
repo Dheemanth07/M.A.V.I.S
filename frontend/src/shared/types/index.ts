@@ -5,6 +5,8 @@ export interface Animal {
     breed?: string;
     age?: number;
     weight?: number;
+    zone?: string;
+    deviceId?: string;
     healthStatus: 'healthy' | 'warning' | 'critical';
     baselineReadingsCount: number;
     baselines: {
@@ -57,8 +59,18 @@ export interface AlertItem {
     type: 'ANOMALY' | 'BATTERY' | 'FEVER' | string;
     severity: 'critical' | 'warning' | 'none' | string;
     message: string;
-    metric?: string;
-    value?: number;
     status: 'active' | 'acknowledged' | 'resolved';
-    createdAt: string;
+    createdAt?: string;
+}
+
+export interface AIInsight {
+    timestamp?: string;
+    animalName?: string;
+    species?: string;
+    riskLevel: 'Low' | 'Moderate' | 'High' | 'Critical' | string;
+    summary: string;
+    differentialDiagnosis?: string[];
+    recommendations: string[];
+    source: string;
+    latencyMs?: number;
 }
