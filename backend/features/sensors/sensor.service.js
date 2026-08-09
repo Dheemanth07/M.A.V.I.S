@@ -1,12 +1,22 @@
-/**
- * @file Business logic for sensor readings and realtime alerts.
- */
 import AppError from "../../utils/AppError.js";
 import { BATTERY_WARNING_THRESHOLD, FEVER_TEMPERATURE_THRESHOLD } from "../../config/constants.js";
 import { ensureValidObjectId } from "../../utils/validateObjectId.js";
 
 /**
- * Validates animal ownership, stores sensor data, and fetches readings.
+ * =========================================================================
+ * PHASE-2 ADVANCED RESEARCH MATH (COMMENTED FOR REVIEW REFERENCE):
+ * =========================================================================
+ * 1. Circadian Diurnal Baseline:
+ *    B_diurnal(t) = B_learned + deltaT_species * cos(2 * PI * (t - t_peak) / 24)
+ * 2. Welford's Algorithm Running Variance:
+ *    M2_n = M2_{n-1} + (X_n - mu_{n-1})(X_n - mu_n)
+ *    sigma = sqrt(M2 / (N - 1))
+ *    Z_score = |X - B_diurnal| / sigma  (Anomaly if Z >= 2.5)
+ * =========================================================================
+ */
+
+/**
+ * Validates animal ownership, stores sensor data, and executes Digital Twin baseline analytics.
  */
 class SensorService {
     #sensorRepository;

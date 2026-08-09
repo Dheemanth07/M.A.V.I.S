@@ -1,4 +1,5 @@
 import AppError from "../../utils/AppError.js";
+import Animal from "../animals/animal.model.js";
 
 class AlertController {
     /**
@@ -10,11 +11,18 @@ class AlertController {
 
     /**
      * GET /api/alerts/active
-     * Fetches all unresolved alerts for the main farm dashboard.
+     * Fetches all unresolved alerts for the main farm dashboard (filtered by user ownership).
      */
     getActiveAlerts = async (req, res, next) => {
         try {
-            const alerts = await this.alertService.getActiveAlerts();
+            let alerts = [];
+            if (req.user && req.user.role !== 'admin') {
+                const userAnimals = await Animal.find({ owner: req.user.id }).select('_id');
+                const animalIds = userAnimals.map(a => a._id);
+                alerts = await this.alertService.getActiveAlertsForAnimals(animalIds);
+            } else {
+                alerts = await this.alertService.getActiveAlerts();
+            }
 
             res.status(200).json({
                 status: "success",

@@ -18,13 +18,15 @@ class AnimalValidator {
             breed: Joi.string().trim().optional(),
             age: Joi.number().min(0).optional(),
             weight: Joi.number().min(0).optional(),
-            healthStatus: Joi.string().valid("healthy", "warning", "critical"),
+            deviceId: Joi.string().trim().optional(),
+            zone: Joi.string().trim().optional(),
+            healthStatus: Joi.string().valid("healthy", "warning", "critical").optional(),
             location: Joi.object({
-                lat: Joi.number(),
-                lng: Joi.number(),
+                lat: Joi.number().optional(),
+                lng: Joi.number().optional(),
             }).optional(),
             isActive: Joi.boolean().optional(),
-        });
+        }).unknown(true);
 
         this.updateSchema = this.createSchema
             .fork(["name", "species"], (schema) => schema.optional())

@@ -31,8 +31,15 @@ export function evaluateHealth(payload = {}) {
     thi: thiValue === undefined ? null : evaluateTHI(Number(thiValue)),
   };
 
-  // 2. Run the aggregators using the evaluated data
-  const overallRiskScore = calculateRiskScore(evaluations);
+  // 2. Run the aggregators using the evaluated data & multi-modal context
+  const context = {
+    motion: payload.motion ?? payload.behavior?.motion,
+    lyingDown: payload.lyingDown ?? payload.behavior?.lyingDown,
+    thi: thiValue,
+    herdRiskScore: payload.herdRiskScore
+  };
+
+  const overallRiskScore = calculateRiskScore(evaluations, context);
   const overallHealthStatus = determineHealthStatus(overallRiskScore);
   const mergedAlerts = mergeAlerts(evaluations);
 
