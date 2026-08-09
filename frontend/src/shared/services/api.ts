@@ -5,15 +5,20 @@ const API_BASE = 'http://localhost:5000/api';
 function getAuthHeaders(): Record<string, string> {
     const headers: Record<string, string> = { 'Content-Type': 'application/json' };
     const savedUser = localStorage.getItem('mavis_user');
+    const activeRole = localStorage.getItem('mavis_active_role');
+
     if (savedUser) {
         try {
             const parsed = JSON.parse(savedUser);
             if (parsed.id) headers['x-user-id'] = parsed.id;
-            if (parsed.role) headers['x-user-role'] = parsed.role;
+            headers['x-user-role'] = activeRole || parsed.role || 'user';
         } catch (e) {
             console.error('Error parsing saved user in API headers:', e);
         }
+    } else if (activeRole) {
+        headers['x-user-role'] = activeRole;
     }
+
     return headers;
 }
 
@@ -35,6 +40,18 @@ export async function createAnimal(animalData: Partial<Animal>): Promise<Animal>
     if (!res.ok) throw new Error('Failed to create animal');
     const json = await res.json();
     return json.data || json;
+}
+
+export async function deleteAnimal(animalId: string): Promise<boolean> {
+    const res = await fetch(`${API_BASE}/animals/${animalId}`, {
+        method: 'DELETE',
+        headers: getAuthHeaders()
+    });
+    if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        throw new Error(errJson.message || 'Failed to delete animal (Admin access required)');
+    }
+    return true;
 }
 
 export async function fetchHealthStatus(animalId: string): Promise<HealthStatusResponse> {

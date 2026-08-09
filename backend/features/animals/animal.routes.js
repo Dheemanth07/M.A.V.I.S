@@ -2,6 +2,7 @@
  * @file Animal route registration.
  */
 import express from "express";
+import { requireRole } from "../../middlewares/auth.middleware.js";
 
 /**
  * Owns the Express router for animal profile endpoints.
@@ -44,6 +45,7 @@ class AnimalRoutes {
         );
         this.router.delete(
             "/:id",
+            requireRole("admin"),
             this.animalValidator.validateIdParam,
             this.animalController.deleteAnimal,
         );

@@ -1,6 +1,8 @@
 import type { Animal } from '../../shared/types';
 import { useToast } from '../../shared/context/ToastContext';
 import { Shield, Database, Activity, RefreshCw, Cpu, Server } from 'lucide-react';
+import { CollarHardwareMonitor } from './CollarHardwareMonitor';
+import { GeofenceMonitor } from '../geofence/GeofenceMonitor';
 
 interface AdminOverviewProps {
     animals: Animal[];
@@ -17,27 +19,27 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({ animals, onRefresh
 
     return (
         <div className="space-y-6 animate-in fade-in duration-300">
-            <div className="bento-card p-6 bg-slate-900 text-white border-none shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="bento-card p-6 bg-white border border-slate-200/90 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                    <div className="p-3 rounded-2xl bg-indigo-600/30 text-indigo-400 border border-indigo-500/30">
+                    <div className="p-3 rounded-2xl bg-indigo-50 text-indigo-600 border border-indigo-100">
                         <Shield className="h-6 w-6" />
                     </div>
                     <div>
-                        <h2 className="text-2xl font-bold tracking-tight text-slate-100 m-0">Admin Command Overview</h2>
-                        <p className="text-xs text-slate-400 font-normal m-0">Global telemetry stream health, database stats, and baseline override controls</p>
+                        <h2 className="text-2xl font-bold tracking-tight text-slate-900 m-0">Admin Command Overview</h2>
+                        <p className="text-xs text-slate-500 font-medium m-0">Global telemetry stream health, database stats, and baseline override controls</p>
                     </div>
                 </div>
 
                 <button
                     onClick={handleSync}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold transition border border-slate-700 cursor-pointer"
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold transition cursor-pointer shadow-xs"
                 >
                     <RefreshCw className="h-4 w-4" /> Sync Stream Data
                 </button>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                <div className="bento-card p-5 bg-white flex items-center justify-between">
+                <div className="bento-card p-5 bg-white border border-slate-200/90 flex items-center justify-between">
                     <div>
                         <span className="text-xs font-semibold tracking-wider uppercase text-slate-500 block">Total Active Mesh Nodes</span>
                         <span className="text-3xl font-bold tracking-tight text-slate-900 mt-1 block">{animals.length}</span>
@@ -47,7 +49,7 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({ animals, onRefresh
                     </div>
                 </div>
 
-                <div className="bento-card p-5 bg-white flex items-center justify-between">
+                <div className="bento-card p-5 bg-white border border-slate-200/90 flex items-center justify-between">
                     <div>
                         <span className="text-xs font-semibold tracking-wider uppercase text-slate-500 block">HTTP Ingestion Status</span>
                         <span className="text-sm font-semibold text-emerald-600 mt-1 block">POST /api/sensor (201 OK)</span>
@@ -57,7 +59,7 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({ animals, onRefresh
                     </div>
                 </div>
 
-                <div className="bento-card p-5 bg-white flex items-center justify-between">
+                <div className="bento-card p-5 bg-white border border-slate-200/90 flex items-center justify-between">
                     <div>
                         <span className="text-xs font-semibold tracking-wider uppercase text-slate-500 block">WebSocket Gateway</span>
                         <span className="text-sm font-semibold text-blue-600 mt-1 block">ws://localhost:5000</span>
@@ -68,7 +70,13 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({ animals, onRefresh
                 </div>
             </div>
 
-            <div className="bento-card p-6 bg-white">
+            {/* Hardware Mesh Diagnostic Component */}
+            <CollarHardwareMonitor animals={animals} />
+
+            {/* Interactive GPS Geofence & Location Component */}
+            <GeofenceMonitor animals={animals} />
+
+            <div className="bento-card p-6 bg-white border border-slate-200/90">
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2.5">
                         <div className="p-2 rounded-xl bg-slate-100 text-slate-700">

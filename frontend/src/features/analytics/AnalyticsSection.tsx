@@ -208,6 +208,16 @@ export const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ animals }) =
 
     const minChartWidth = Math.max(500, barData.length * 65);
 
+    const handleExportCSV = () => {
+        exportAnimalsToCSV(animals);
+        showToast('Exported telemetry records as CSV file.', 'success');
+    };
+
+    const handleExportJSON = () => {
+        exportAnimalsToJSON(animals);
+        showToast('Exported telemetry stream as JSON dataset.', 'success');
+    };
+
     return (
         <div className="space-y-6 animate-in fade-in duration-300">
             {/* Top Overview Banner */}
@@ -595,6 +605,9 @@ export const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ animals }) =
                                 </div>
                             </div>
                         </div>
+                        <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700">
+                            Distribution
+                        </span>
                     </div>
                 </div>
             </div>

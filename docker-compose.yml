@@ -16,7 +16,7 @@ services:
       - /usr/src/app/node_modules # Prevents local node_modules from overwriting container's node_modules
     command: npm run dev
     env_file:
-      - ./backend/.env
+      - ./backend/.ENV
     environment:
       NODE_ENV: development
     ports:

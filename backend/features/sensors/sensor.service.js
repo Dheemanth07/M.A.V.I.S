@@ -1,4 +1,5 @@
 import AppError from "../../utils/AppError.js";
+import mavisEvents, { EVENTS } from "../../config/events.js";
 import { BATTERY_WARNING_THRESHOLD, FEVER_TEMPERATURE_THRESHOLD } from "../../config/constants.js";
 import { ensureValidObjectId } from "../../utils/validateObjectId.js";
 
@@ -240,6 +241,7 @@ class SensorService {
 
     async ingestData(animalId, payload) {
         // 1. Save the raw IoT data to MongoDB
+        await this.#ensureAnimalExists(animalId);
         const savedData = await this.#sensorRepository.create({ animalId, ...payload });
 
         // 2. Fire the event in the background! 

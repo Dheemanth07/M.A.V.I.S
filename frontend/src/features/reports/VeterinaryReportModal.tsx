@@ -5,10 +5,11 @@ import { FileText, Download, X, CheckCircle2 } from 'lucide-react';
 
 interface VeterinaryReportModalProps {
     animal: Animal | null;
+    role?: 'user' | 'admin';
     onClose: () => void;
 }
 
-export const VeterinaryReportModal: React.FC<VeterinaryReportModalProps> = ({ animal, onClose }) => {
+export const VeterinaryReportModal: React.FC<VeterinaryReportModalProps> = ({ animal, role = 'user', onClose }) => {
     const { showToast } = useToast();
 
     if (!animal) return null;

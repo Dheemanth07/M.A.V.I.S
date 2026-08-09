@@ -1,17 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { io, Socket } from 'socket.io-client';
 import type { Animal, AlertItem } from './shared/types';
 import { fetchAnimals, fetchActiveAlerts } from './shared/services/api';
 import { Navbar } from './shared/components/Navbar';
 import { AlertBanner } from './features/alerts/AlertBanner';
-import { UserDashboardOverview } from './features/dashboard/UserDashboardOverview';
-import { UserAnimalsView } from './features/animals/UserAnimalsView';
-import { AdminOverview } from './features/admin/AdminOverview';
-import { AdminSubjectRegistry } from './features/admin/AdminSubjectRegistry';
-import { AnalyticsSection } from './features/analytics/AnalyticsSection';
-import { DigitalTwinMonitor } from './features/digital-twin/DigitalTwinMonitor';
-import { AlertCenter } from './features/alerts/AlertCenter';
 import { AuthProvider, useAuth } from './features/auth/context/AuthContext';
 import { AuthPage } from './features/auth/pages/AuthPage';
 import { ToastProvider, useToast } from './shared/context/ToastContext';
