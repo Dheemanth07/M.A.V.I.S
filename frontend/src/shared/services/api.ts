@@ -65,3 +65,13 @@ export async function updateAlertStatus(alertId: string, status: 'acknowledged' 
     const json = await res.json();
     return json.data?.alert || json;
 }
+
+export async function fetchAIInsight(animalId: string): Promise<any> {
+    const res = await fetch(`${API_BASE}/ai/${animalId}`, {
+        headers: getAuthHeaders()
+    });
+    if (!res.ok) throw new Error('Failed to fetch AI insights');
+    const json = await res.json();
+    return json.data || json;
+}
+

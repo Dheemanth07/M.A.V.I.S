@@ -45,7 +45,7 @@ export const RoleHeader: React.FC<RoleHeaderProps> = ({ role, accountRole, setRo
 
             <div className="flex items-center gap-2 text-slate-300">
                 <Radio className={`h-3.5 w-3.5 ${connected ? 'text-emerald-400 animate-pulse' : 'text-slate-500'}`} />
-                <span className="font-medium">{connected ? 'Hardware Stream Active' : 'Connecting Server...'}</span>
+                <span className="font-medium">{connected ? 'Server Gateway Online' : 'Connecting Gateway...'}</span>
             </div>
         </div>
     );
