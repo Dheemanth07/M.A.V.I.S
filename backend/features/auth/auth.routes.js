@@ -72,7 +72,10 @@ router.post("/login", async (req, res) => {
             id: user._id,
             name: user.name,
             email: user.email,
-            role: user.role
+            role: user.role,
+            vetContact: user.vetContact || "",
+            alertSettings: user.alertSettings || { soundAlerts: true, tempSensitivity: 1.0, hrThreshold: 100 },
+            collarSettings: user.collarSettings || { syncInterval: 5, motionSensitivity: "standard" },
         };
 
         res.status(200).json({
@@ -82,6 +85,102 @@ router.post("/login", async (req, res) => {
         });
     } catch (err) {
         console.error("Login error:", err);
+        res.status(500).json({ status: "error", message: err.message });
+    }
+});
+
+// GET /api/auth/profile/:id
+router.get("/profile/:id", async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ status: "fail", message: "User not found" });
+        }
+        res.status(200).json({
+            status: "success",
+            data: {
+                user: {
+                    id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
+                    vetContact: user.vetContact || "",
+                    alertSettings: user.alertSettings,
+                    collarSettings: user.collarSettings,
+                }
+            }
+        });
+    } catch (err) {
+        res.status(500).json({ status: "error", message: err.message });
+    }
+});
+
+// PUT /api/auth/profile/:id
+router.put("/profile/:id", async (req, res) => {
+    try {
+        const { name, email, vetContact, alertSettings, collarSettings } = req.body;
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ status: "fail", message: "User not found" });
+        }
+
+        if (name) user.name = name;
+        if (email) user.email = email.toLowerCase();
+        if (vetContact !== undefined) user.vetContact = vetContact;
+        if (alertSettings) user.alertSettings = { ...user.alertSettings, ...alertSettings };
+        if (collarSettings) user.collarSettings = { ...user.collarSettings, ...collarSettings };
+
+        await user.save();
+
+        res.status(200).json({
+            status: "success",
+            message: "Profile preferences updated successfully",
+            data: {
+                user: {
+                    id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
+                    vetContact: user.vetContact,
+                    alertSettings: user.alertSettings,
+                    collarSettings: user.collarSettings,
+                }
+            }
+        });
+    } catch (err) {
+        res.status(500).json({ status: "error", message: err.message });
+    }
+});
+
+// PUT /api/auth/password/:id
+router.put("/password/:id", async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({ status: "fail", message: "Current and new passwords are required" });
+        }
+        if (newPassword.length < 6) {
+            return res.status(400).json({ status: "fail", message: "New password must be at least 6 characters" });
+        }
+
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ status: "fail", message: "User not found" });
+        }
+
+        const currentHashed = hashPassword(currentPassword);
+        if (user.password !== currentHashed) {
+            return res.status(401).json({ status: "fail", message: "Current password is incorrect" });
+        }
+
+        user.password = hashPassword(newPassword);
+        await user.save();
+
+        res.status(200).json({
+            status: "success",
+            message: "Password updated successfully"
+        });
+    } catch (err) {
         res.status(500).json({ status: "error", message: err.message });
     }
 });

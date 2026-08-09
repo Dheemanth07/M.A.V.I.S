@@ -23,6 +23,20 @@ const userSchema = new mongoose.Schema(
             enum: ["user", "admin"],
             default: "user",
         },
+        vetContact: {
+            type: String,
+            default: "",
+            trim: true,
+        },
+        alertSettings: {
+            soundAlerts: { type: Boolean, default: true },
+            tempSensitivity: { type: Number, default: 1.0 },
+            hrThreshold: { type: Number, default: 100 },
+        },
+        collarSettings: {
+            syncInterval: { type: Number, default: 5 },
+            motionSensitivity: { type: String, enum: ["high", "standard", "low"], default: "standard" },
+        },
     },
     { timestamps: true }
 );

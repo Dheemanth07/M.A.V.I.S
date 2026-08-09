@@ -99,11 +99,14 @@ app.get("/", (req, res) => {
 
 app.use("/api/animals", animalRoutes.getRouter());
 app.use("/api/sensor", sensorRoutes.getRouter());
+app.use("/api/sensors", sensorRoutes.getRouter());
 app.use("/api/alerts", alertRoutes.getRouter());
 app.use("/api/auth", authRoutes);
 app.use("/api/ai", aiRoutes);
 
 app.use(globalErrorHandler);
+
+import TelemetryDaemon from "./features/simulation/telemetryDaemon.service.js";
 
 /**
  * Connects to MongoDB before accepting HTTP requests.
@@ -113,6 +116,10 @@ app.use(globalErrorHandler);
 const startServer = async () => {
     try {
         await connectDB();
+
+        // Start continuous background telemetry daemon for all animals & scenarios
+        const daemon = new TelemetryDaemon(io);
+        await daemon.start();
 
         httpServer.listen(PORT, () => {
             logger.info(`Server running on port ${PORT}`);

@@ -44,14 +44,24 @@ const connectDB = async ({
     let attempt = 1;
     let lastError;
 
-    // 2. Single, clean retry loop
+    // 2. Single, clean retry loop with local edge fallback
+    const targetUri = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/mavis";
+
     while (attempt <= retryOptions.maxRetries) {
         try {
-            const conn = await mongoose.connect(process.env.MONGO_URI, {
-                serverSelectionTimeoutMS: 5000,
+            const uriToTry = (attempt > 2 && targetUri.includes("mongodb+srv")) 
+                ? "mongodb://127.0.0.1:27017/mavis" 
+                : targetUri;
+
+            const conn = await mongoose.connect(uriToTry, {
+                serverSelectionTimeoutMS: 4000,
             });
 
-            logger.info("MongoDB connected", { host: conn.connection.host });
+            logger.info("MongoDB connected successfully", { 
+                host: conn.connection.host,
+                database: conn.connection.name,
+                isLocal: conn.connection.host.includes("127.0.0.1") || conn.connection.host.includes("localhost")
+            });
             return;
 
         } catch (error) {
@@ -62,6 +72,20 @@ const connectDB = async ({
                 maxRetries: retryOptions.maxRetries,
                 message: error.message,
             });
+
+            // If remote Atlas failed with auth error, immediately switch to local MongoDB
+            if (targetUri.includes("mongodb+srv") && error.message.includes("auth")) {
+                try {
+                    logger.info("Falling back to local Edge MongoDB at 127.0.0.1:27017/mavis...");
+                    const localConn = await mongoose.connect("mongodb://127.0.0.1:27017/mavis", {
+                        serverSelectionTimeoutMS: 3000,
+                    });
+                    logger.info("Connected to local Edge MongoDB", { host: localConn.connection.host });
+                    return;
+                } catch (localErr) {
+                    logger.warn("Local MongoDB fallback also failed", { message: localErr.message });
+                }
+            }
 
             // 3. Wait before trying again (if not on the last attempt)
             if (attempt < retryOptions.maxRetries) {

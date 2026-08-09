@@ -14,7 +14,19 @@ class AlertRepository {
      * Fetches all active alerts across the entire farm/system.
      */
     async findActiveAlerts() {
-        return await this.model.find({ status: "active" })
+        return await this.model.find({ status: { $in: ["active", "acknowledged"] } })
+            .populate("animalId", "name species tagNumber")
+            .sort({ createdAt: -1 });
+    }
+
+    /**
+     * Fetches active alerts for a specific set of animal IDs (user-specific).
+     */
+    async findActiveAlertsForAnimals(animalIds) {
+        return await this.model.find({
+            status: { $in: ["active", "acknowledged"] },
+            animalId: { $in: animalIds }
+        })
             .populate("animalId", "name species tagNumber")
             .sort({ createdAt: -1 });
     }

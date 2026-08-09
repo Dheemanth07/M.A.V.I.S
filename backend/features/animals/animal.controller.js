@@ -53,13 +53,7 @@ class AnimalController {
         try {
             let filter = {};
             if (req.user && req.user.role !== 'admin') {
-                filter = {
-                    $or: [
-                        { owner: req.user.id },
-                        { owner: { $exists: false } },
-                        { owner: null }
-                    ]
-                };
+                filter = { owner: req.user.id };
             }
             const animals = await service.getAnimals(filter);
             sendSuccess(res, 200, animals, "Animals fetched successfully");

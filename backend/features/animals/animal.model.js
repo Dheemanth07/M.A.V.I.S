@@ -78,6 +78,16 @@ const animalSchema = new mongoose.Schema(
             heartRate: { type: Number, default: 0 },
             respiratoryRate: { type: Number, default: 0 },
             bloodOxygen: { type: Number, default: 0 }
+        },
+
+        welfordM2: {
+            temperature: { type: Number, default: 0 },
+            heartRate: { type: Number, default: 0 }
+        },
+
+        baselineVariance: {
+            temperature: { type: Number, default: 0.25 }, // Default initial nominal stdDev
+            heartRate: { type: Number, default: 6.0 }
         }
     },
     {

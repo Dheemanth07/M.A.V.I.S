@@ -57,6 +57,10 @@ class AlertService {
         return await this.alertRepository.findActiveAlerts();
     }
 
+    async getActiveAlertsForAnimals(animalIds) {
+        return await this.alertRepository.findActiveAlertsForAnimals(animalIds);
+    }
+
     async getAlertsByAnimal(animalId) {
         return await this.alertRepository.findByAnimalId(animalId);
     }

@@ -13,7 +13,7 @@ export const oxygenMatrix = [
         severity: "warning",
         riskContribution: 25,
         alertType: "mild-hypoxia",
-        recommendation: "Isolate animal; evaluate for bovine respiratory disease (BRD)"
+        recommendation: "Isolate animal; prioritize for clinical veterinary auscultation and airway inspection"
     },
     {
         state: "Normal",
