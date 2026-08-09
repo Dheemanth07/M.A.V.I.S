@@ -10,25 +10,33 @@
       <stop offset="50%" stop-color="#0d9488" />
       <stop offset="100%" stop-color="#059669" />
     </linearGradient>
+    <filter id="subtleShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="12" stdDeviation="16" flood-color="#0f766e" flood-opacity="0.25" />
+    </filter>
   </defs>
 
-  <!-- Background Circle with Rich Gradient -->
-  <circle cx="256" cy="256" r="248" fill="url(#mavisGrad)" />
+  <!-- Background Circle with Rich Gradient & Shadow -->
+  <circle cx="256" cy="256" r="236" fill="url(#mavisGrad)" filter="url(#subtleShadow)" />
+
+  <!-- Outer Specular Ring -->
+  <circle cx="256" cy="256" r="234" fill="none" stroke="#ffffff" stroke-width="4" stroke-opacity="0.2" />
 
   <!-- Animal Paw Emblem (Crisp, High-Contrast White) -->
+  <!-- 4 Toes / Pads -->
   <ellipse cx="168" cy="180" rx="34" ry="46" fill="#ffffff" transform="rotate(-18 168 180)" />
   <ellipse cx="225" cy="142" rx="32" ry="46" fill="#ffffff" transform="rotate(-6 225 142)" />
   <ellipse cx="287" cy="142" rx="32" ry="46" fill="#ffffff" transform="rotate(6 287 142)" />
   <ellipse cx="344" cy="180" rx="34" ry="46" fill="#ffffff" transform="rotate(18 344 180)" />
 
-  <!-- Main Central Pad -->
+  <!-- Main Central Pad with Cutout Heartbeat Path -->
+  <!-- Main Pad Base -->
   <path d="M 160 300 C 145 250, 185 220, 256 220 C 327 220, 367 250, 352 300 C 342 340, 310 375, 256 375 C 202 375, 170 340, 160 300 Z" fill="#ffffff" />
 
   <!-- Precision ECG Pulse Waveform Integrated in the Pad -->
   <path d="M 160 315 L 210 315 L 225 345 L 245 260 L 268 365 L 285 300 L 302 315 L 352 315" 
         fill="none" 
         stroke="url(#pulseGrad)" 
-        stroke-width="20" 
+        stroke-width="18" 
         stroke-linecap="round" 
         stroke-linejoin="round" />
 </svg>
