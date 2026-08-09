@@ -9,7 +9,7 @@ interface VeterinaryReportModalProps {
     onClose: () => void;
 }
 
-export const VeterinaryReportModal: React.FC<VeterinaryReportModalProps> = ({ animal, role = 'user', onClose }) => {
+export const VeterinaryReportModal: React.FC<VeterinaryReportModalProps> = ({ animal, onClose }) => {
     const { showToast } = useToast();
 
     if (!animal) return null;

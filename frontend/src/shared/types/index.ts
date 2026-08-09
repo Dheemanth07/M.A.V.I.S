@@ -7,6 +7,7 @@ export interface Animal {
     weight?: number;
     zone?: string;
     deviceId?: string;
+    collarId?: string;
     healthStatus: 'healthy' | 'warning' | 'critical';
     baselineReadingsCount: number;
     baselines: {

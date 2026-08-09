@@ -1,4 +1,4 @@
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { io, Socket } from 'socket.io-client';
 import type { Animal, AlertItem } from './shared/types';
@@ -9,6 +9,13 @@ import { AuthProvider, useAuth } from './features/auth/context/AuthContext';
 import { AuthPage } from './features/auth/pages/AuthPage';
 import { ToastProvider, useToast } from './shared/context/ToastContext';
 import { LandingPage } from './features/landing/LandingPage';
+import { UserDashboardOverview } from './features/dashboard/UserDashboardOverview';
+import { AdminOverview } from './features/admin/AdminOverview';
+import { AdminSubjectRegistry } from './features/admin/AdminSubjectRegistry';
+import { UserAnimalsView } from './features/animals/UserAnimalsView';
+import { AnalyticsSection } from './features/analytics/AnalyticsSection';
+import { DigitalTwinMonitor } from './features/digital-twin/DigitalTwinMonitor';
+import { AlertCenter } from './features/alerts/AlertCenter';
 
 function AppContent() {
     const { user, isAuthenticated } = useAuth();

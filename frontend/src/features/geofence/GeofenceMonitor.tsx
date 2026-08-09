@@ -1,7 +1,12 @@
 import React from 'react';
+import type { Animal } from '../../shared/types';
 import { MapPin, Cpu, Signal, Lock } from 'lucide-react';
 
-export const GeofenceMonitor: React.FC = () => {
+interface GeofenceMonitorProps {
+    animals?: Animal[];
+}
+
+export const GeofenceMonitor: React.FC<GeofenceMonitorProps> = () => {
     return (
         <div className="space-y-6">
             {/* Header */}

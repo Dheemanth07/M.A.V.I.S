@@ -4,7 +4,6 @@ import { Stethoscope, RefreshCw, CheckCircle2, Sparkles, Activity, Cpu } from 'l
 interface AICopilotCardProps {
     animalId?: string;
     animalName?: string;
-    allAnimals?: Animal[];
 }
 
 interface ClinicalInsight {
@@ -19,23 +18,6 @@ interface ClinicalInsight {
 export const AICopilotCard: React.FC<AICopilotCardProps> = ({ animalId, animalName }) => {
     const [insight, setInsight] = useState<ClinicalInsight | null>(null);
     const [loading, setLoading] = useState(false);
-    const [showChatModal, setShowChatModal] = useState(false);
-    const [chatInput, setChatInput] = useState('');
-    const [messages, setMessages] = useState<ChatMessage[]>([]);
-
-    const userName = user?.name ? user.name.split(' ')[0] : 'Caregiver';
-
-    const currentAnimal = allAnimals.find(a => a._id === animalId) || {
-        _id: animalId || '1',
-        name: animalName || 'Subject',
-        species: 'Dog',
-        breed: 'Retriever',
-        age: 2,
-        weight: 15,
-        healthStatus: 'healthy' as const,
-        baselineReadingsCount: 10,
-        baselines: { temperature: 38.2, heartRate: 72, respiratoryRate: 22, bloodOxygen: 98 }
-    };
 
     const fetchInsight = async () => {
         if (!animalId) return;
@@ -67,136 +49,6 @@ export const AICopilotCard: React.FC<AICopilotCardProps> = ({ animalId, animalNa
         fetchInsight();
     }, [animalId]);
 
-    useEffect(() => {
-        if (showChatModal && messages.length === 0) {
-            setMessages([
-                {
-                    sender: 'ai',
-                    text: `Hello ${userName}! I am your M.A.V.I.S Veterinary Copilot. I'm actively monitoring ${currentAnimal.name} (${currentAnimal.species}, ${currentAnimal.breed || 'Standard'}). Ask me anything about ${currentAnimal.name}'s vitals, diet, fever management, or overall herd status!`,
-                    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                }
-            ]);
-        }
-    }, [showChatModal, currentAnimal.name, currentAnimal.species, currentAnimal.breed, userName, messages.length]);
-
-    const generateAIResponse = (query: string): string => {
-        const lower = query.toLowerCase().trim();
-
-        // 1. Check if the user is explicitly asking about another animal by name (e.g. "tell me about Dog 2", "how is Bella")
-        const matchedAnimal = allAnimals.find(a =>
-            a.name && lower.includes(a.name.toLowerCase())
-        );
-
-        if (matchedAnimal) {
-            const temp = matchedAnimal.baselines?.temperature || 38.5;
-            const hr = matchedAnimal.baselines?.heartRate || 74;
-            const resp = matchedAnimal.baselines?.respiratoryRate || 22;
-            const spo2 = matchedAnimal.baselines?.bloodOxygen || 98;
-            const status = (matchedAnimal.healthStatus || 'healthy').toUpperCase();
-            const ageStr = matchedAnimal.age ? `${matchedAnimal.age} yr(s)` : '2 yrs';
-            const weightStr = matchedAnimal.weight ? `${matchedAnimal.weight} kg` : '15 kg';
-
-            return `🐾 Personalized Telemetry Report for ${matchedAnimal.name}:\n` +
-                `• Caregiver: ${userName}\n` +
-                `• Profile: ${matchedAnimal.species} (${matchedAnimal.breed || 'Standard'}), ${ageStr}, ${weightStr}\n` +
-                `• Health Status: ${status}\n` +
-                `• Body Temp: ${temp}°C | Heart Rate: ${hr} BPM\n` +
-                `• Resp Rate: ${resp} breaths/min | SpO2: ${spo2}%\n` +
-                `• Clinical Prognosis: ${matchedAnimal.name} is displaying steady metabolic stability with zero acute thermal risks.`;
-        }
-
-        const subject = currentAnimal.name || 'subject';
-
-        // 2. Greetings
-        if (/^(hi|hello|hey|greetings|good morning|good afternoon|good evening)/i.test(lower)) {
-            return `Hello ${userName}! How can I assist you with ${subject}'s physiological vitals, daily care, or telemetry history today?`;
-        }
-
-        // 3. Herd / Other Animals Query
-        if (lower.includes('other') || lower.includes('all animal') || lower.includes('herd') || lower.includes('others') || lower.includes('rest')) {
-            const animalListStr = allAnimals.length > 0
-                ? allAnimals.map(a => `• ${a.name} (${a.species}, ${(a.healthStatus || 'healthy').toUpperCase()})`).join('\n')
-                : '• Dog 1 (DOG, HEALTHY)\n• Dog 2 (DOG, HEALTHY)\n• Dairy Cow #402 (COW, HEALTHY)';
-
-            return `Hello ${userName}, here is your active herd overview:\n${animalListStr}\n\nAll IoT collar mesh nodes are broadcasting continuous telemetry to your database.`;
-        }
-
-        // 4. Fever & Temperature Query
-        if (lower.includes('fever') || lower.includes('temperature') || lower.includes('temp') || lower.includes('hot') || lower.includes('feverish')) {
-            const currentTemp = currentAnimal.baselines?.temperature || 38.2;
-            return `Personalized Thermal Profile for ${subject}:\n` +
-                `• Current Baseline Temp: ${currentTemp}°C\n` +
-                `• Normal Range: 38.0°C – 39.2°C\n` +
-                `• Care Status: ${currentTemp > 39.5 ? '⚠️ High Thermal Risk' : '✅ Optimal Temperature'}\n\n` +
-                `Advice for ${userName}: ${currentTemp > 39.5 ? 'Move subject to shade immediately and apply cold compresses.' : 'Body temperature is completely stable. Continue standard routine care.'}`;
-        }
-
-        // 5. Diet & Nutrition Query
-        if (lower.includes('diet') || lower.includes('feed') || lower.includes('food') || lower.includes('eat') || lower.includes('water') || lower.includes('nutrition')) {
-            return `Nutrition Guidance for ${subject} (${currentAnimal.species}, ${currentAnimal.breed || 'Standard'}):\n` +
-                `1. Provide fresh, clean drinking water access 24/7.\n` +
-                `2. For a ${currentAnimal.weight || 15} kg ${currentAnimal.species}, maintain balanced caloric intake split into 2 daily meals.\n` +
-                `3. Add electrolyte supplements if ambient barn/room temperature exceeds 30°C.`;
-        }
-
-        // 6. Cardiac & Respiratory Query
-        if (lower.includes('heart') || lower.includes('pulse') || lower.includes('bpm') || lower.includes('respiratory') || lower.includes('breath')) {
-            const hr = currentAnimal.baselines?.heartRate || 72;
-            const resp = currentAnimal.baselines?.respiratoryRate || 22;
-            return `Cardiovascular Profile for ${subject}:\n` +
-                `• Resting Heart Rate: ${hr} BPM (Normal range: 60 - 90 BPM)\n` +
-                `• Respiratory Rate: ${resp} breaths/min\n` +
-                `• SpO2 Saturation: ${currentAnimal.baselines?.bloodOxygen || 98}%\n` +
-                `• Heart Rhythm: Regular sinus rhythm detected via collar sensors.`;
-        }
-
-        // 7. Advice & Recommendations
-        if (lower.includes('recommend') || lower.includes('suggest') || lower.includes('advice') || lower.includes('do') || lower.includes('help')) {
-            if (insight?.recommendations && insight.recommendations.length > 0) {
-                return `Personalized AI Recommendations for ${userName} regarding ${subject}:\n• ${insight.recommendations.join('\n• ')}`;
-            }
-            return `Care Recommendations for ${userName} regarding ${subject}:\n` +
-                `1. Keep routine outdoor activity to early mornings or late evenings during high thermal index days.\n` +
-                `2. Verify that ${subject}'s collar node is snug (two fingers fit beneath strap) for accurate SpO2 sensor readings.\n` +
-                `3. Ensure adequate rest between play/exercise cycles.`;
-        }
-
-        // 8. General Dynamic Response using live context
-        return `Regarding "${query}" for ${subject}:\n` +
-            `• Caregiver: ${userName}\n` +
-            `• Risk Level: ${insight?.riskLevel || 'HEALTHY'}\n` +
-            `• Dynamic Summary: ${insight?.summary || `Continuous digital twin modeling confirms ${subject}'s physiological stability.`}`;
-    };
-
-    const handleSendMessage = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (!chatInput.trim()) return;
-
-        const userMsg: ChatMessage = {
-            sender: 'user',
-            text: chatInput,
-            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        };
-
-        const queryText = chatInput;
-        setMessages(prev => [...prev, userMsg]);
-        setChatInput('');
-
-        // Generate dynamic AI response
-        setTimeout(() => {
-            const aiReplyText = generateAIResponse(queryText);
-
-            setMessages(prev => [
-                ...prev,
-                {
-                    sender: 'ai',
-                    text: aiReplyText,
-                    timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                }
-            ]);
-        }, 500);
-    };
-
     if (!animalId) return null;
 
     const rawRisk = insight?.riskLevel?.toLowerCase() || '';
@@ -204,7 +56,6 @@ export const AICopilotCard: React.FC<AICopilotCardProps> = ({ animalId, animalNa
     const isModerate = rawRisk.includes('mod') || rawRisk.includes('warn') || rawRisk.includes('elevated');
     const isGood = rawRisk.includes('low') || rawRisk.includes('good') || rawRisk.includes('normal') || rawRisk.includes('optimal') || rawRisk.includes('healthy');
 
-    // Clean, professional triage badge styling
     let triageLabel = 'Triage: Evaluating';
     let badgeStyle = 'bg-teal-50 border-teal-200 text-teal-800';
     let dotColor = 'bg-teal-500';
@@ -231,15 +82,14 @@ export const AICopilotCard: React.FC<AICopilotCardProps> = ({ animalId, animalNa
         <div className={`bento-card p-6 sm:p-7 w-full bg-white border transition-all duration-300 ${
             isCritical ? 'border-rose-200/90 shadow-rose-500/5' : 'border-slate-200/90'
         } shadow-sm space-y-5`}>
-            
-            {/* Header: Clean Full-Width Top Bar */}
+
+            {/* Header */}
             <div className="space-y-1.5 pb-4 border-b border-slate-100">
                 <div className="flex items-center justify-between gap-4 flex-wrap">
-                    {/* Left: Stethoscope & Title */}
                     <div className="flex items-center gap-3 min-w-0">
                         <div className={`h-10 w-10 rounded-2xl flex items-center justify-center border shrink-0 transition-transform hover:scale-105 ${
-                            isCritical 
-                                ? 'bg-rose-50 text-rose-600 border-rose-200/80 shadow-xs' 
+                            isCritical
+                                ? 'bg-rose-50 text-rose-600 border-rose-200/80 shadow-xs'
                                 : isModerate
                                 ? 'bg-amber-50 text-amber-600 border-amber-200/80 shadow-xs'
                                 : 'bg-teal-50 text-teal-700 border-teal-200/80 shadow-xs'
@@ -259,15 +109,12 @@ export const AICopilotCard: React.FC<AICopilotCardProps> = ({ animalId, animalNa
                         </div>
                     </div>
 
-                    {/* Right: Symmetrically Aligned Triage Pill + Model Engine Badge + Refresh */}
                     <div className="flex items-center gap-2.5 shrink-0 flex-wrap">
-                        {/* Engine Source Badge (Clean text, no emojis) */}
                         <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200">
                             <Cpu className="h-3 w-3 text-slate-500" />
                             <span>{modelSource}</span>
                         </div>
 
-                        {/* Triage Badge (Static dot, no animation) */}
                         <div className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase border shadow-2xs whitespace-nowrap ${badgeStyle}`}>
                             <span className={`h-2 w-2 rounded-full ${dotColor}`} />
                             <span>{triageLabel}</span>
@@ -285,10 +132,8 @@ export const AICopilotCard: React.FC<AICopilotCardProps> = ({ animalId, animalNa
                 </div>
             </div>
 
-            {/* 2-Column Horizontal Split across Full Width */}
+            {/* 2-Column Split */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-                
-                {/* Left Column (7 cols): Clinical Telemetry Synthesis Narrative & Differential Diagnosis */}
                 <div className="lg:col-span-7 space-y-4">
                     <div>
                         <div className="flex items-center justify-between mb-1.5">
@@ -314,7 +159,6 @@ export const AICopilotCard: React.FC<AICopilotCardProps> = ({ animalId, animalNa
                         </div>
                     </div>
 
-                    {/* Differential Diagnosis Tags */}
                     {insight?.differentialDiagnosis && insight.differentialDiagnosis.length > 0 && (
                         <div className="space-y-1.5">
                             <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
@@ -334,7 +178,6 @@ export const AICopilotCard: React.FC<AICopilotCardProps> = ({ animalId, animalNa
                     )}
                 </div>
 
-                {/* Right Column (5 cols): Recommended Care Protocol Box */}
                 <div className="lg:col-span-5 space-y-2">
                     <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
                         Recommended Care Protocol
@@ -364,7 +207,7 @@ export const AICopilotCard: React.FC<AICopilotCardProps> = ({ animalId, animalNa
                 </div>
             </div>
 
-            {/* Mobile Model Source Footer */}
+            {/* Mobile Footer */}
             <div className="sm:hidden pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
                 <span>Active Engine:</span>
                 <span className="font-semibold text-slate-700">{modelSource}</span>

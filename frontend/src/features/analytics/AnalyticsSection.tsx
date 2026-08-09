@@ -208,15 +208,7 @@ export const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ animals }) =
 
     const minChartWidth = Math.max(500, barData.length * 65);
 
-    const handleExportCSV = () => {
-        exportAnimalsToCSV(animals);
-        showToast('Exported telemetry records as CSV file.', 'success');
-    };
 
-    const handleExportJSON = () => {
-        exportAnimalsToJSON(animals);
-        showToast('Exported telemetry stream as JSON dataset.', 'success');
-    };
 
     return (
         <div className="space-y-6 animate-in fade-in duration-300">
