@@ -1,207 +1,328 @@
-# MAVIS: MultiModel Animal Vitality Intelligence System
+# M.A.V.I.S. (Multi-Modal Animal Vitality Intelligence System)
 
-**MAVIS** is an event-driven IoT backend platform designed for real-time tracking of animal health metrics. The system ingests streaming multi-modal biometric and environmental telemetry data from smart hardware collars, executes real-time evaluation using an decoupled health engine, and manages automated high-priority alert lifecycles.
+M.A.V.I.S. is an end-to-end, on-premises Internet of Things (IoT) and clinical telemetry platform designed for continuous monitoring of animal and livestock health. The system captures streaming biometric and environmental data from ESP32-based smart collars, executes real-time multi-modal vital evaluations, maintains adaptive individual baselines, coordinates alert lifecycles, and synthesizes localized clinical assessments via on-device Small Language Models (SLMs) with zero cloud dependency.
 
 ---
 
-## System Architecture & Modularity
+## System Architecture
 
-MAVIS rejects monolithic formatting in favor of a strictly decoupled **Feature-First Layered Architecture**. Each capability is an isolated, self-contained domain located within the `backend/features/` directory.
+The platform is structured into three primary tiers: Edge Hardware, Local Gateway Backend, and Client Dashboard.
 
-### Structural Directory Tree
+```mermaid
+graph TD
+    subgraph Edge Hardware
+        S1[MAX30102 Pulse Oximeter] -->|I2C / 100 Hz| ESP32[ESP32 Smart Collar MCU]
+        S2[DS18B20 Digital Temp] -->|OneWire| ESP32
+        S3[MPU6050 6-Axis IMU] -->|I2C| ESP32
+        S4[Battery Voltage ADC] -->|Analog| ESP32
+    end
+
+    subgraph Backend Gateway & Engine
+        ESP32 -->|HTTP POST /api/sensors 3s Cycle| API[Express.js REST Gateway]
+        API --> VAL[Joi Schema Validation]
+        VAL --> INGEST[Sensor Ingestion Service]
+        INGEST --> BASELINE[Adaptive Baseline Engine EMA]
+        INGEST --> DB[(MongoDB / In-Memory Fallback)]
+        INGEST --> HEALTH[Clinical Health Engine]
+        HEALTH --> CIRC[Circadian Rhythm Service]
+        HEALTH --> HERD[Herd Graph Epidemiology]
+        HEALTH --> ALERTS[Alert Lifecycle Service]
+        ALERTS --> SIO[Socket.IO Event Hub]
+    end
+
+    subgraph Local Inference & Storage
+        AI_SVC[AI Insights Service] <-->|HTTP / 11434| OLLAMA[Ollama Local SLM Cascade\nLlama 3.2 / Phi-3]
+        AI_SVC -.->|Fallback| DET_ENG[Deterministic Clinical Safety Engine]
+    end
+
+    subgraph Frontend Client
+        SIO -->|Real-Time Telemetry & Alerts| REACT[React 18 + TypeScript SPA]
+        REACT -->|REST Requests| API
+        REACT -->|Clinical Audit Export| PDF[Client-Side PDF Generator]
+    end
+
+    API <--> AI_SVC
+```
+
+---
+
+## Telemetry Ingestion & Evaluation Pipeline
+
+The sequence below illustrates the lifecycle of a sensor transmission from hardware sampling to client dashboard rendering.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Hardware as ESP32 Collar
+    participant Backend as Node.js Gateway
+    participant DB as MongoDB
+    participant Engine as Health Engine
+    participant SIO as Socket.IO
+    participant Client as React Dashboard
+
+    Hardware->>Backend: POST /api/sensors (JSON payload)
+    Backend->>Backend: Validate schema (Joi)
+    Backend->>DB: Store raw time-series sensor document
+    Backend->>Engine: Run vital evaluation against individual baseline
+    Engine->>Engine: Calculate weighted composite risk score (0-100)
+    
+    alt Baseline Calibration Active (Readings < 10)
+        Engine->>DB: Accumulate calibration data
+    else Baseline Calibrated (Readings >= 10)
+        Engine->>DB: Update rolling baseline via Exponential Moving Average
+    end
+
+    alt Anomaly / Threshold Violation Detected
+        Engine->>DB: Create / Update Alert (Severity: Warning | Critical)
+        Engine->>SIO: Broadcast alert event
+        SIO->>Client: Push real-time alert + Audio chime
+    end
+
+    Backend->>SIO: Broadcast live telemetry packet
+    SIO->>Client: Update real-time charts & digital twin
+    Backend-->>Hardware: HTTP 201 Created (Release edge transmitter)
+```
+
+---
+
+## Core Capabilities
+
+### 1. Edge Hardware & Sensor Ingestion
+- **Sampling & Smoothing**: High-frequency sampling (100 Hz MAX30102 PPG) with non-blocking event loops, 10-point moving average temperature smoothing, and motion detection.
+- **Transmission Cycle**: Structured JSON payload sent every 3 seconds over Wi-Fi / HTTP POST.
+- **Power Efficiency**: Instant acknowledgment response enables low-power radio duty cycles.
+
+### 2. Adaptive Baseline & Clinical Health Engine
+- **Per-Subject Calibration**: Tracks individual baseline averages over an initial 10-reading calibration window.
+- **Dynamic EMA Learning**: After calibration, updates resting baselines dynamically using Exponential Moving Average ($\alpha = 0.05$).
+- **Circadian Rhythm Normalization**: Adjusts core body temperature and heart rate evaluations according to diurnal time-of-day cycles.
+- **Herd Graph Epidemiology**: Monitors correlated febrile spikes across subjects to detect contagious herd outbreak waves.
+- **Multi-Species Thresholds**: Species-specific decision matrices for Bovine (cattle), Canine (dogs), and Feline (cats).
+
+### 3. Local-First AI Inference (100% On-Premises)
+- **Local SLM Cascade**: Queries local Ollama inference server (`127.0.0.1:11434`) using model priority:
+  1. `llama3.2:3b` / `llama3.2:1b`
+  2. `phi3:mini` / `phi3`
+  3. `gemma2:2b` / `qwen2.5:3b` / `mistral`
+- **Zero-Cloud Fallback**: If local LLM runtimes are unavailable, automatically falls back to an in-memory **Deterministic Clinical Safety Engine**.
+- **Clinical Prompts**: Veterinary prompts produce plain-language diagnostic summaries, differential considerations, and actionable directives.
+
+### 4. Alert Lifecycle State Machine
+- **State Progression**: `active` &rarr; `acknowledged` &rarr; `resolved`.
+- **Deduplication**: Suppresses redundant alert spam by updating existing active alerts instead of generating duplicates.
+
+```mermaid
+stateDiagram-v2
+    [*] --> Active: Anomaly Detected
+    Active --> Acknowledged: Caregiver Acknowledges
+    Acknowledged --> Resolved: Vitals Restabilize / Operator Closes
+    Active --> Resolved: Auto-resolved on Vitals Normalization
+    Resolved --> [*]
+```
+
+### 5. Client Dashboard & Clinical Tools
+- **Live Telemetry & Digital Twin**: Real-time vital metrics, posture indicators, and interactive 24-hour historical trend charts (Recharts).
+- **Role-Based Access**: Role switching between Caregiver (`User`) and Infrastructure (`Admin`) modes.
+- **Veterinary PDF Reports**: 2-page clinical audit report generator with vital summaries, range analysis, and print-ready formatting (`jspdf` / `html2canvas`).
+- **Telemetry Scenario Studio**: Built-in scenario injection suite (Calibration, Homeostasis, Tachypnea, Hyperthermia, Herd Outbreak, Low Battery).
+
+---
+
+## Repository Structure
 
 ```text
 MAVIS/
 ├── backend/
-│   ├── config/               # Database and global event configurations
+│   ├── config/               # Database connection and runtime constants
 │   ├── features/
-│   │   ├── animals/         # Profiles, CRUD, and current health status computation
-│   │   ├── sensors/         # High-throughput data ingestion & historical lookups
-│   │   ├── health-engine/   # Isolated algorithmic business logic & matrix matching
-│   │   └── alerts/          # Event-driven notification persistence & state updates
-│   ├── middlewares/          # Joi validation, error boundary handlers, and CORS
-│   ├── utils/                # Standardized AppError classes and response helpers
-│   ├── scripts/              # Python automation suite for database simulation
-│   ├── data/                 # Dynamic mappings and data storage buffers
-│   └── server.js             # Express application initialization & server orchestration
-├── frontend/                 # [Planned] Dashboard workspace
-├── docker-compose.yml        # Multi-container multi-environment configuration
+│   │   ├── ai-insights/      # Ollama SLM cascade and clinical fallback engine
+│   │   ├── alerts/           # Alert repository, controller, and lifecycle service
+│   │   ├── animals/          # Animal profiles, baseline storage, and status aggregation
+│   │   ├── auth/             # JWT auth routes, bcrypt hashing, and User model
+│   │   ├── health-engine/    # Multi-modal evaluators, circadian service, and herd graph
+│   │   ├── sensors/          # Ingestion pipeline, Joi validation, and time-series model
+│   │   └── simulation/       # Autonomous TelemetryDaemon background service
+│   ├── middlewares/          # Global error handler and authentication middleware
+│   ├── scripts/              # Verification suites and scenario simulation runners
+│   ├── utils/                # Standardized AppError and Winston logger
+│   ├── Dockerfile            # Container definition for backend gateway
+│   └── server.js             # Express server entry point and Socket.IO wiring
+├── frontend/
+│   ├── public/               # Favicon and logo assets
+│   ├── src/
+│   │   ├── features/
+│   │   │   ├── admin/        # Admin command overview and hardware diagnostics
+│   │   │   ├── alerts/       # Alert center and emergency dispatch modal
+│   │   │   ├── analytics/    # Multi-species correlation charts and distributions
+│   │   │   ├── animals/      # Animal registry and 24h VitalsModal
+│   │   │   ├── auth/         # Authentication views and user profile modal
+│   │   │   ├── dashboard/    # User telemetry dashboard overview
+│   │   │   ├── digital-twin/ # Biological digital twin monitor and AI Copilot card
+│   │   │   ├── geofence/     # GPS perimeter guard component
+│   │   │   ├── landing/      # Product landing page with live interactive demo
+│   │   │   ├── reports/      # Veterinary audit PDF modal generator
+│   │   │   └── simulation/   # Scenario simulation studio
+│   │   ├── shared/           # Reusable components, Toast context, API client, types
+│   │   ├── App.tsx           # Route layout and Socket.IO connection manager
+│   │   └── index.css         # Tailwind tokens and clinical theme styles
+│   └── package.json
+├── hardware/
+│   └── esp32_collar/
+│       └── esp32_collar.ino  # Production ESP32 firmware for MAX30102, DS18B20, MPU6050
+├── docker-compose.yml        # Multi-container deployment specification
 └── README.md
-
 ```
 
-### Layer Interaction Flow
+---
 
-Every independent feature enforces a strict, unidirectional data pipeline that ensures low code coupling and predictable test boundaries:
+## API Reference
 
+All requests and responses use JSON format. Failed requests return standardized error payloads: `{ "status": "fail", "message": "<reason>" }`.
 
-$$\text{Route} \longrightarrow \text{Validator (Joi)} \longrightarrow \text{Controller} \longrightarrow \text{Service} \longrightarrow \text{Repository} \longrightarrow \text{Model (Mongoose)}$$
+### Animals
 
-* **Controllers**: Lean orchestration layers responsible exclusively for parsing HTTP parameters, invoking underlying core services, and outputting standardized JSON signatures.
-* **Services**: The programmatic boundary containing your core domain rules, mutations, and internal event flows.
-* **Repositories**: Complete data-access abstraction separating Mongoose-specific query structures from standard business operations.
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/api/animals` | Register a new animal subject |
+| `GET` | `/api/animals` | Retrieve all registered animals |
+| `GET` | `/api/animals/:id` | Fetch animal profile by ID |
+| `PATCH` | `/api/animals/:id` | Update animal profile details |
+| `DELETE` | `/api/animals/:id` | Remove animal record |
+| `GET` | `/api/animals/:id/health` | Compute real-time health aggregation |
+
+### Sensor Telemetry
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/api/sensors` | Ingest sensor data packet |
+| `GET` | `/api/sensors/latest/:animalId` | Fetch latest sensor reading |
+| `GET` | `/api/sensors/history/:animalId` | Query time-series telemetry (`from`, `to`) |
+
+### Alerts
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/alerts/active` | Fetch all unresolved alerts |
+| `GET` | `/api/alerts/animal/:animalId` | Fetch alert history for specific subject |
+| `PATCH` | `/api/alerts/:alertId/status` | Mutate alert status (`active`, `acknowledged`, `resolved`) |
+
+### Clinical AI Insights
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/ai/:animalId` | Generate on-demand clinical assessment for subject |
+
+### Authentication
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/api/auth/register` | Create user or admin account |
+| `POST` | `/api/auth/login` | Authenticate and obtain JWT token |
+| `GET` | `/api/auth/me` | Fetch authenticated user profile |
+| `PATCH` | `/api/auth/settings` | Update user notification/collar settings |
 
 ---
 
-## Asynchronous Event-Driven Pipeline
+## WebSocket Events (Socket.IO)
 
-To maximize battery optimization for edge IoT hardware units, MAVIS completely decouples data storage from evaluation computation using a local, non-blocking Node.js `EventEmitter` pattern.
+The backend broadcasts real-time events over WebSocket at `ws://localhost:5000`:
 
-1. **Ingestion Loop**: Hardware targets dispatch data to `POST /api/sensor`. The sensor layer logs the raw row buffer instantly to MongoDB and drops an asynchronous `SENSOR_DATA_RECEIVED` packet on the local system event bus.
-2. **Immediate Release**: The controller dispatches a `200 OK` network confirmation code back to the collar within milliseconds, permitting the edge device to drop its high-power transmitter interfaces into low-power sleep loops immediately.
-3. **Background Processing**: The `alerts` engine intercepts the queued packet on the event bus, transparently invokes the `health-engine` matrix evaluators to establish risk, checks boundaries, and commits active validation issues to the database safely in the background.
-
----
-
-## Core Modules & Capabilities
-
-### 1. Health Engine & Analytics
-
-Executes comparative matrix-analysis across mixed inputs:
-
-* **Vitals Evaluator**: Analyzes Heart Rate (BPM), SpO2 saturation percentages, and core temperatures.
-* **Environmental Aggregator**: Generates live Thermal Humidity Indexes (THI) using ambient environmental sensors.
-* **Risk Score Clamping**: Computes aggregate status scales transforming numerical telemetry streams into explicitly tracked categorical health indices (`Healthy`, `Warning`, `Critical`).
-
-### 2. Alerts Management
-
-Provides actionable tracking of anomaly metrics with an adjustable operational state machine:
-
-* **Lifecycle State Tracking**: Alerts travel sequentially through `active` $\rightarrow$ `acknowledged` $\rightarrow$ `resolved`.
-* **Index Performance**: Automated query isolation using Mongoose composite indexing on tracking statuses and `animalId` keys.
+| Event Name | Direction | Description |
+|---|---|---|
+| `sensor:update` | Server &rarr; Client | Real-time vital metrics packet broadcast every 3 seconds |
+| `alert` | Server &rarr; Client | Anomaly or threshold violation alert notification |
+| `alert:updated` | Server &rarr; Client | Alert status mutation (acknowledged or resolved) |
+| `animal:created` | Server &rarr; Client | New subject profile registered on mesh |
 
 ---
 
-## Detailed API Documentation
-
-All request parameters, headers, and payloads undergo automatic Joi validation. Malformed properties generate standardized `400 Bad Request` exceptions immediately.
-
-### Animals Interface
-
-| Method | Endpoint | Description | Payload Constraints |
-| --- | --- | --- | --- |
-| `POST` | `/api/animals` | Register a new tracking entity | Body: name, species, tagNumber |
-| `GET` | `/api/animals` | Retrieve full registry matrix | Query options supported |
-| `GET` | `/api/animals/:id` | Fetch specific profile properties | URL parameter must be valid Hex ObjectId |
-| `PUT` | `/api/animals/:id` | Modify an existing registration | Body: fields to update |
-| `DELETE` | `/api/animals/:id` | Complete deletion of entity profile | Cascade warnings retained |
-| `GET` | `/api/animals/:id/health` | Compute real-time analytics aggregation | Generates structural runtime profile status |
-
-### Sensor Ingestion Interface
-
-| Method | Endpoint | Description | Payload Constraints |
-| --- | --- | --- | --- |
-| `POST` | `/api/sensor` | Ingest edge hardware metrics | Body: `animalId` (Valid ObjectId), vitals map |
-| `GET` | `/api/sensor/latest/:animalId` | Fetch latest cached vital points | Real-time tracking pipeline hook |
-| `GET` | `/api/sensor/history/:animalId` | Fetch time-series historical array | Query: `from` (ISO8601), `to` (ISO8601) |
-
-### Alerts Interface
-
-| Method | Endpoint | Description | Payload Constraints |
-| --- | --- | --- | --- |
-| `GET` | `/api/alerts/active` | Global active dashboard alert pull | Sorted chronologically (`createdAt: -1`) |
-| `GET` | `/api/alerts/animal/:animalId` | Full audit history trail per entity | Targeted medical validation support |
-| `PATCH` | `/api/alerts/:alertId/status` | Mutate alert state assignment | Body: `status` (`"active" | "acknowledged" | "resolved"`) |
-
----
-
-## Step-by-Step Installation & Local Execution
+## Getting Started
 
 ### Prerequisites
+- **Node.js**: `v18.0.0` or higher
+- **npm**: `v9.0.0` or higher
+- *(Optional)* **Ollama**: For local SLM inference (`llama3.2`, `phi3`)
+- *(Optional)* **Docker & Docker Compose**: For containerized deployment
 
-* **Node.js**: Environment runtime version `v18.0.0` or higher.
-* **Docker Engine**: Core platform configuration engine with `docker-compose` utilities installed.
-* **Database**: Access link to a managed MongoDB instance (Atlas or clean external cluster setup).
+---
 
-### 1. Environment Deployment
+### Method 1: Local Development Run (Recommended)
 
-Clone your repository code and create a production-ignored environment profile configuration:
-
+#### 1. Clone the repository
 ```bash
-git clone https://github.com/your-username/MAVIS.git
-cd MAVIS/backend
-touch .ENV
-
+git clone https://github.com/Dheemanth07/M.A.V.I.S.git
+cd M.A.V.I.S
 ```
 
-Populate `.ENV` with the following configuration keys:
-
-```env
-PORT=5000
-MONGO_URI=mongodb+srv://<db_user>:<db_password>@<your_cluster_address>.mongodb.net/mavis
-
-```
-
-### 2. Launch Sequence
-
-#### Option A: Containerized Runtime (Recommended)
-
-Boot the complete, encapsulated platform configuration from the project root directory:
-
-```bash
-docker compose up --build
-
-```
-
-#### Option B: Standalone Native Process Development
-
-If debugging components natively without Docker orchestration infrastructure:
-
+#### 2. Start Backend
 ```bash
 cd backend
 npm install
 npm run dev
-
 ```
 
-*Note: The local development scripts are configured to ignore mutations occurring on internal system data files, ensuring runtime processes don't loop-restart during continuous automation seeding processes.*
+> **Database Note**: The backend connects to MongoDB if available via `MONGO_URI` (or `mongodb://127.0.0.1:27017/mavis`). If no MongoDB instance is running, it automatically starts an **in-memory MongoDB database** with zero extra setup required.
+
+#### 3. Start Frontend (in a separate terminal)
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+#### 4. Access the Application
+Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ---
 
-## Database Simulation & Testing Pipeline
+### Method 2: Docker Compose Deployment
 
-MAVIS features a dedicated, scriptable evaluation workbench written in Python to mock incoming active hardware telemetry fields accurately without real-world deployable collar hardware components attached to the endpoints.
-
-To seed and stress-test the environment, navigate inside the `backend/` space and invoke the sequence sequentially:
+To deploy all services using Docker:
 
 ```bash
-# Step 1: Instantiates tracking records and profiles directly via the local API instance
-python scripts/seed_animals.py
-
-# Step 2: Formulates valid structured time-series metrics linked directly to valid generated ObjectIds
-python scripts/GenerateSample.py
-
-# Step 3: Continuously stream-injects the generated data matrices straight into /api/sensor
-python scripts/UploadDataset.py
-
+docker compose up --build
 ```
 
-### Automation Log Execution Flow
+---
 
-1. `seed_animals.py` writes live-generated MongoDB ObjectIds to local context buffers (`data/animal_ids.json` & `data/animal_mapping.json`).
-2. `GenerateSample.py` monitors these active map arrays to build real, relational target links into `data/sensor_data.json`.
-3. `UploadDataset.py` hits the Express execution loops, validating structural performance and triggering immediate background calculation checks across every entry.
+## Hardware Configuration & Pinout
+
+The collar firmware runs on standard ESP32 development boards with the following pin assignments:
+
+| Sensor Module | Function | ESP32 Pin | Interface |
+|---|---|---|---|
+| **MAX30102** | PPG Heart Rate & SpO2 | SDA (GPIO 21), SCL (GPIO 22) | I2C (100 Hz) |
+| **DS18B20** | Subcutaneous Body Temp | Data (GPIO 4) + 4.7kΩ Pull-up | OneWire |
+| **MPU6050** | 3-Axis Accelerometer / Gyro | SDA (GPIO 21), SCL (GPIO 22) | I2C |
+| **Voltage Divider** | Battery Depletion Monitor | ADC (GPIO 34) | Analog IN |
+
+### Firmware Deployment
+1. Open `hardware/esp32_collar/esp32_collar.ino` in the Arduino IDE.
+2. Install required libraries: `SparkFun MAX3010x`, `DallasTemperature`, `OneWire`, `Adafruit MPU6050`, `ArduinoJson`.
+3. Configure Wi-Fi SSID, password, and gateway IP address in the configuration block.
+4. Flash to the ESP32 board over USB.
 
 ---
 
-## Global Exception and Security Architecture
+## Verification & Scenario Simulation
 
-* **Central Error Filter**: Outfitted with a standardized runtime exception mechanism (`backend/middlewares/error.middleware.js`). All program failures are intercepted and safely parsed using a custom `AppError` signature to prevent detailed application trace exposure.
-* **CORS Scope Policy**: Configured broadly across baseline local execution frameworks for immediate cross-origin configuration with local dev engines; scoped configurations are required before pushing to live public web target arrays.
-* **Strict Foreign Identity Matching**: Any ingested row targeting missing or historical string keys (e.g. legacy test values like `dog_1`) is automatically rejected by the validator layers; all sensor inputs must map tightly to authentic, verified parent entity profiles.
+To verify all system subsystems and test anomaly handling without physical hardware attached, run the automated scenario runner:
 
----
+```bash
+cd backend
+node scripts/simulate_all_scenarios.js
+```
 
-## Engineering Status & Near-Term Roadmap
-
-The core processing platform, architecture flow layers, and internal relational database automation engines are structurally complete and fully verified.
-
-* [ ] **Frontend Dashboard Ecosystem**: Initializing client-facing React web interface mapping visual real-time telemetry tables using Canvas trackers.
-* [ ] **Native Socket.IO Client Interactivity**: Attaching real-time frontend triggers to broadcast notifications instantly as internal state changes shift.
-* [ ] **Industrial IoT Protocols**: Integrating secondary direct MQTT processing loops to manage network pipelines over ultra-low bandwidth radio spaces.
+This suite sequentially tests:
+1. **10-Step Baseline Calibration Stream** (locking in individualized baselines)
+2. **Healthy Homeostasis Transmission** (verifying zero false alerts)
+3. **Acute Respiratory Distress Injection** (SpO2 drop, tachypnea alert trigger)
+4. **Thermal Hyperthermia Overload** (41.6°C febrile alert trigger)
+5. **Multi-Subject Correlated Herd Outbreak Wave** (cluster contagion detection)
+6. **Hardware Low Battery Warning** (<15% supply threshold)
 
 ---
 
 ## License
 
-This system architecture is distributed openly under the provisions of the **MIT License**.
+This project is licensed under the terms of the **MIT License**.
