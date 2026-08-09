@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import aiService from "./ai.service.js";
 import AnimalData from "../animals/animal.model.js";
 import SensorData from "../sensors/sensor.model.js";
+import { evaluateHealth } from "../health-engine/healthEngine.service.js";
 import { sendSuccess } from "../../utils/httpResponse.js";
 
 export const getAIInsight = async (req, res, next) => {
@@ -28,13 +29,39 @@ export const getAIInsight = async (req, res, next) => {
         }
 
         let vitals = {};
+        let healthReport = {};
+
         if (animal._id && mongoose.Types.ObjectId.isValid(animal._id)) {
             const latestSensor = await SensorData.findOne({ animalId: animal._id }).sort({ createdAt: -1 });
-            if (latestSensor) vitals = latestSensor.physiology;
+            if (latestSensor) {
+                vitals = {
+                    ...(latestSensor.physiology || {}),
+                    motion: latestSensor.behavior?.motion ?? true,
+                    lyingDown: latestSensor.behavior?.lyingDown ?? false,
+                    ambientTemperature: latestSensor.environment?.ambientTemperature,
+                    humidity: latestSensor.environment?.humidity,
+                    battery: latestSensor.device?.batteryLevel,
+                };
+
+                // Run deterministic multi-modal HealthEngine evaluation
+                try {
+                    healthReport = evaluateHealth({
+                        temperature: vitals.temperature,
+                        heartRate: vitals.heartRate,
+                        oxygen: vitals.bloodOxygen,
+                        humidity: vitals.humidity,
+                        battery: vitals.battery,
+                        motion: vitals.motion,
+                        lyingDown: vitals.lyingDown
+                    });
+                } catch {
+                    healthReport = {};
+                }
+            }
         }
 
-        const insight = aiService.generateAnimalInsight(animal, vitals);
-        sendSuccess(res, 200, insight, "AI insights generated successfully");
+        const insight = await aiService.generateAnimalInsight(animal, vitals, healthReport);
+        sendSuccess(res, 200, insight, "Clinical insights generated successfully");
     } catch (err) {
         next(err);
     }
