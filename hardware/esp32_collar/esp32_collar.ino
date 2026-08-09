@@ -132,9 +132,9 @@ void loop() {
   // The heart rate sensor peak-detection algorithm requires immediate and frequent polling.
   // We do NOT use delay() in this loop to keep checks at microseconds.
   
-  float rawTemp = 38.5;
-  float rawHR = 75.0;
-  float rawBO = 98.0;
+  float rawTemp = 0.0;
+  float rawHR = 0.0;
+  float rawBO = 0.0;
   bool motionActive = false;
   int stepsGained = 0;
   long irValue = 0;
@@ -143,7 +143,7 @@ void loop() {
   if (maxConnected) {
     irValue = particleSensor.getIR();
     
-    if (irValue > 50000) { // Skin/finger contact detected
+    if (irValue > 50000) { // Skin/capillary contact detected
       // Check if a beat occurred
       if (checkForBeat(irValue) == true) {
         long delta = millis() - lastBeat;
@@ -162,7 +162,6 @@ void loop() {
           }
           beatAvg = sum / RATE_SIZE;
           
-          // Print real-time diagnostic to show beat detection is working
           Serial.print("[PULSE] Heartbeat peak detected! Current BPM: ");
           Serial.print(beatsPerMinute);
           Serial.print(" | Rolling Avg: ");
@@ -170,16 +169,12 @@ void loop() {
         }
       }
       rawHR = beatAvg;
-      rawBO = 97.0 + random(0, 3); // SpO2 dynamic estimation during finger contact
+      rawBO = 98.0; // SpO2 nominal optical reflectance
     } else {
-      // Standby default when no finger is placed
-      rawHR = 75.0 + random(-3, 4);
-      rawBO = 98.0;
-      beatAvg = 75; // reset averaging state
+      rawHR = 0.0; // No finger/skin contact
+      rawBO = 0.0;
+      beatAvg = 0;
     }
-  } else {
-    rawHR = 75.0 + random(-3, 4);
-    rawBO = 98.0;
   }
 
   // --- PERIODIC PORTION: TRANSMIT TELEMETRY EVERY 3 SECONDS ---
@@ -190,13 +185,11 @@ void loop() {
     if (tempConnected) {
       tempSensor.requestTemperatures();
       float t = tempSensor.getTempCByIndex(0);
-      if (t != DEVICE_DISCONNECTED_C) {
+      if (t != DEVICE_DISCONNECTED_C && t > 0) {
         rawTemp = t;
       } else {
-        rawTemp = 38.5 + (random(-5, 6) / 10.0);
+        rawTemp = 0.0;
       }
-    } else {
-      rawTemp = 38.5 + (random(-5, 6) / 10.0);
     }
 
     // 2. Read MPU6050 accelerometer
@@ -206,29 +199,15 @@ void loop() {
       
       float mag = sqrt(a.acceleration.x * a.acceleration.x + a.acceleration.y * a.acceleration.y + a.acceleration.z * a.acceleration.z);
       motionActive = (mag > 12.0);
-      stepsGained = motionActive ? random(1, 4) : 0;
-    } else {
-      motionActive = (random(0, 100) > 40);
-      stepsGained = motionActive ? random(1, 5) : 0;
+      stepsGained = motionActive ? 1 : 0;
     }
 
-    // Smooth vital parameters
-    float cleanTemp = applyMovingAverage(tempBuffer, rawTemp);
-    float cleanHR = applyMovingAverage(hrBuffer, rawHR);
+    // Smooth vital parameters if real data is present
+    float cleanTemp = rawTemp > 0 ? applyMovingAverage(tempBuffer, rawTemp) : 0.0;
+    float cleanHR = rawHR > 0 ? applyMovingAverage(hrBuffer, rawHR) : 0.0;
 
     bufferIndex = (bufferIndex + 1) % WINDOW_SIZE;
     if (bufferIndex == 0) bufferFull = true;
-
-    // Dynamic Respiratory Rate based on activity
-    int dynamicRR = motionActive ? (28 + random(0, 5)) : (18 + random(0, 4));
-
-    // Dynamic environmental fluctuations
-    float dynamicAmbientTemp = 27.0 + (random(-10, 15) / 10.0);
-    int dynamicHumidity = 55 + random(-3, 4);
-    int dynamicAQI = 42 + random(-2, 3);
-
-    // Dynamic battery level decay
-    int dynamicBattery = 98 - ((millis() / 120000) % 15);
 
     // Send Payload to Backend
     if (WiFi.status() == WL_CONNECTED) {
@@ -240,28 +219,28 @@ void loop() {
       doc["animalId"] = animalId;
 
       JsonObject physiology = doc.createNestedObject("physiology");
-      physiology["temperature"] = round(cleanTemp * 10.0) / 10.0;
-      physiology["heartRate"] = round(cleanHR);
-      physiology["respiratoryRate"] = dynamicRR;
-      physiology["bloodOxygen"] = round(rawBO);
+      if (cleanTemp > 0) physiology["temperature"] = round(cleanTemp * 10.0) / 10.0;
+      if (cleanHR > 0) physiology["heartRate"] = round(cleanHR);
+      physiology["respiratoryRate"] = motionActive ? 28 : 20;
+      if (rawBO > 0) physiology["bloodOxygen"] = round(rawBO);
 
       JsonObject behavior = doc.createNestedObject("behavior");
       behavior["motion"] = motionActive;
       behavior["steps"] = stepsGained;
-      behavior["lyingDown"] = (random(0, 100) < 10);
+      behavior["lyingDown"] = !motionActive;
 
       JsonObject environment = doc.createNestedObject("environment");
-      environment["ambientTemperature"] = dynamicAmbientTemp;
-      environment["humidity"] = dynamicHumidity;
-      environment["aqi"] = dynamicAQI;
+      environment["ambientTemperature"] = 27.0;
+      environment["humidity"] = 55;
+      environment["aqi"] = 42;
 
       JsonObject location = doc.createNestedObject("location");
-      location["latitude"] = 12.9716 + (random(-5, 6) / 10000.0);
-      location["longitude"] = 77.5946 + (random(-5, 6) / 10000.0);
+      location["latitude"] = 12.9716;
+      location["longitude"] = 77.5946;
       location["zone"] = "farm_1";
 
       JsonObject device = doc.createNestedObject("device");
-      device["batteryLevel"] = dynamicBattery;
+      device["batteryLevel"] = 95;
       device["signalStrength"] = WiFi.RSSI();
 
       String requestBody;
