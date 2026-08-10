@@ -17,6 +17,55 @@ import { AnalyticsSection } from './features/analytics/AnalyticsSection';
 import { DigitalTwinMonitor } from './features/digital-twin/DigitalTwinMonitor';
 import { AlertCenter } from './features/alerts/AlertCenter';
 
+function ProtectedLayout({
+    isAuthenticated,
+    accountRole,
+    activeRole,
+    handleSetRole,
+    alerts,
+    connected,
+    activeToastAlert,
+    setActiveToastAlert,
+    children,
+}: {
+    isAuthenticated: boolean;
+    accountRole: 'user' | 'admin';
+    activeRole: 'user' | 'admin';
+    handleSetRole: (newRole: 'user' | 'admin') => void;
+    alerts: AlertItem[];
+    connected: boolean;
+    activeToastAlert: AlertItem | null;
+    setActiveToastAlert: (alert: AlertItem | null) => void;
+    children: React.ReactNode;
+}) {
+    if (!isAuthenticated) {
+        return <Navigate to="/login" replace />;
+    }
+
+    const currentRole = accountRole === 'admin' ? activeRole : 'user';
+
+    return (
+        <div className="min-h-screen clinical-grid-canvas text-slate-900 flex flex-col font-sans selection:bg-teal-500/20 selection:text-teal-900 pt-3 sm:pt-4">
+            <Navbar
+                activeAlertCount={alerts.filter(a => a && a.status === 'active').length}
+                role={currentRole}
+                accountRole={accountRole}
+                setRole={handleSetRole}
+                connected={connected}
+            />
+
+            <AlertBanner
+                alert={activeToastAlert}
+                onDismiss={() => setActiveToastAlert(null)}
+            />
+
+            <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-8">
+                {children}
+            </main>
+        </div>
+    );
+}
+
 function AppContent() {
     const { user, isAuthenticated } = useAuth();
     const { showToast } = useToast();
@@ -171,64 +220,119 @@ function AppContent() {
         };
     }, [isAuthenticated, user?.collarSettings?.syncInterval, user?.alertSettings?.soundAlerts]);
 
-    if (!isAuthenticated) {
-        return (
-            <Routes>
-                <Route path="/" element={<LandingPage />} />
-                <Route path="/login" element={<AuthPage />} />
-                <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-        );
-    }
-
     const currentRole = accountRole === 'admin' ? activeRole : 'user';
 
     return (
-        <div className="min-h-screen clinical-grid-canvas text-slate-900 flex flex-col font-sans selection:bg-teal-500/20 selection:text-teal-900 pt-3 sm:pt-4">
-            <Navbar
-                activeAlertCount={alerts.filter(a => a && a.status === 'active').length}
-                role={currentRole}
-                accountRole={accountRole}
-                setRole={handleSetRole}
-                connected={connected}
+        <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/landing" element={<LandingPage />} />
+            <Route
+                path="/login"
+                element={isAuthenticated ? <Navigate to="/dashboard" replace /> : <AuthPage />}
             />
 
-            <AlertBanner
-                alert={activeToastAlert}
-                onDismiss={() => setActiveToastAlert(null)}
+            {/* Protected Dashboard & App Routes */}
+            <Route
+                path="/dashboard"
+                element={
+                    <ProtectedLayout
+                        isAuthenticated={isAuthenticated}
+                        accountRole={accountRole}
+                        activeRole={activeRole}
+                        handleSetRole={handleSetRole}
+                        alerts={alerts}
+                        connected={connected}
+                        activeToastAlert={activeToastAlert}
+                        setActiveToastAlert={setActiveToastAlert}
+                    >
+                        {currentRole === 'admin' ? (
+                            <AdminOverview animals={animals} onRefresh={loadInitialData} />
+                        ) : (
+                            <UserDashboardOverview animals={animals} alerts={alerts} />
+                        )}
+                    </ProtectedLayout>
+                }
+            />
+            <Route
+                path="/animals"
+                element={
+                    <ProtectedLayout
+                        isAuthenticated={isAuthenticated}
+                        accountRole={accountRole}
+                        activeRole={activeRole}
+                        handleSetRole={handleSetRole}
+                        alerts={alerts}
+                        connected={connected}
+                        activeToastAlert={activeToastAlert}
+                        setActiveToastAlert={setActiveToastAlert}
+                    >
+                        {currentRole === 'admin' ? (
+                            <AdminSubjectRegistry animals={animals} onRefresh={loadInitialData} />
+                        ) : (
+                            <UserAnimalsView animals={animals} onRefresh={loadInitialData} />
+                        )}
+                    </ProtectedLayout>
+                }
+            />
+            <Route
+                path="/analytics"
+                element={
+                    <ProtectedLayout
+                        isAuthenticated={isAuthenticated}
+                        accountRole={accountRole}
+                        activeRole={activeRole}
+                        handleSetRole={handleSetRole}
+                        alerts={alerts}
+                        connected={connected}
+                        activeToastAlert={activeToastAlert}
+                        setActiveToastAlert={setActiveToastAlert}
+                    >
+                        <AnalyticsSection animals={animals} />
+                    </ProtectedLayout>
+                }
+            />
+            <Route
+                path="/twin"
+                element={
+                    <ProtectedLayout
+                        isAuthenticated={isAuthenticated}
+                        accountRole={accountRole}
+                        activeRole={activeRole}
+                        handleSetRole={handleSetRole}
+                        alerts={alerts}
+                        connected={connected}
+                        activeToastAlert={activeToastAlert}
+                        setActiveToastAlert={setActiveToastAlert}
+                    >
+                        <DigitalTwinMonitor animals={animals} role={currentRole} />
+                    </ProtectedLayout>
+                }
+            />
+            <Route
+                path="/alerts"
+                element={
+                    <ProtectedLayout
+                        isAuthenticated={isAuthenticated}
+                        accountRole={accountRole}
+                        activeRole={activeRole}
+                        handleSetRole={handleSetRole}
+                        alerts={alerts}
+                        connected={connected}
+                        activeToastAlert={activeToastAlert}
+                        setActiveToastAlert={setActiveToastAlert}
+                    >
+                        <AlertCenter alerts={alerts} onRefresh={loadInitialData} />
+                    </ProtectedLayout>
+                }
             />
 
-            <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-8">
-                <Routes>
-                    <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                    <Route path="/landing" element={<LandingPage />} />
-                    <Route
-                        path="/dashboard"
-                        element={
-                            currentRole === 'admin' ? (
-                                <AdminOverview animals={animals} onRefresh={loadInitialData} />
-                            ) : (
-                                <UserDashboardOverview animals={animals} alerts={alerts} />
-                            )
-                        }
-                    />
-                    <Route
-                        path="/animals"
-                        element={
-                            currentRole === 'admin' ? (
-                                <AdminSubjectRegistry animals={animals} onRefresh={loadInitialData} />
-                            ) : (
-                                <UserAnimalsView animals={animals} onRefresh={loadInitialData} />
-                            )
-                        }
-                    />
-                    <Route path="/analytics" element={<AnalyticsSection animals={animals} />} />
-                    <Route path="/twin" element={<DigitalTwinMonitor animals={animals} role={currentRole} />} />
-                    <Route path="/alerts" element={<AlertCenter alerts={alerts} onRefresh={loadInitialData} />} />
-                    <Route path="*" element={<Navigate to="/dashboard" replace />} />
-                </Routes>
-            </main>
-        </div>
+            {/* Fallback */}
+            <Route
+                path="*"
+                element={<Navigate to={isAuthenticated ? "/dashboard" : "/"} replace />}
+            />
+        </Routes>
     );
 }
 

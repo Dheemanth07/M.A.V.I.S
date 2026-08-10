@@ -15,7 +15,7 @@ class AlertRepository {
      */
     async findActiveAlerts() {
         return await this.model.find({ status: { $in: ["active", "acknowledged"] } })
-            .populate("animalId", "name species tagNumber")
+            .populate("animalId", "name species breed deviceId tagNumber")
             .sort({ createdAt: -1 });
     }
 
@@ -27,7 +27,7 @@ class AlertRepository {
             status: { $in: ["active", "acknowledged"] },
             animalId: { $in: animalIds }
         })
-            .populate("animalId", "name species tagNumber")
+            .populate("animalId", "name species breed deviceId tagNumber")
             .sort({ createdAt: -1 });
     }
 

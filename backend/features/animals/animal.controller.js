@@ -51,11 +51,7 @@ class AnimalController {
         const service = this.#service;
 
         try {
-            let filter = {};
-            if (req.user && req.user.role !== 'admin') {
-                filter = { owner: req.user.id };
-            }
-            const animals = await service.getAnimals(filter);
+            const animals = await service.getAnimals({});
             sendSuccess(res, 200, animals, "Animals fetched successfully");
         } catch (err) {
             next(err);

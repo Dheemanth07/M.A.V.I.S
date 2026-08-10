@@ -4,6 +4,7 @@ const demoAnimals = [
     { name: "Mavis Cow 01", species: "Cattle", breed: "Gir", age: 4, weight: 360 },
     { name: "Mavis Goat 02", species: "Goat", breed: "Jamunapari", age: 2, weight: 42 },
     { name: "Mavis Dog 03", species: "Dog", breed: "Indian Pariah", age: 5, weight: 21 },
+    { name: "Mavis Dog 04", species: "Dog", breed: "Golden Retriever", age: 3, weight: 28 },
 ];
 
 const randomBetween = (min, max) => Number((Math.random() * (max - min) + min).toFixed(1));

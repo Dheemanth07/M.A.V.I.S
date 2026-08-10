@@ -33,7 +33,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeAlertCount, role, accountR
     const handleLogout = () => {
         logout();
         showToast('Logged out successfully. Session ended.', 'info');
-        navigate('/login');
+        navigate('/');
     };
 
     const navItems: NavItem[] = [

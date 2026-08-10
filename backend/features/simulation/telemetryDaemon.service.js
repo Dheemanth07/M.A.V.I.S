@@ -38,12 +38,16 @@ class TelemetryDaemon {
      */
     async #seedDatasetIfNeeded() {
         const count = await AnimalData.countDocuments();
+        const alertCount = await AlertData.countDocuments();
         const hasCompound = await AnimalData.findOne({ species: / - / });
-        const hasDog = await AnimalData.findOne({ species: 'Dog' });
+        const dogCount = await AnimalData.countDocuments({ species: 'Dog' });
         const hasHorse = await AnimalData.findOne({ species: 'Horse' });
+        const oliver = await AnimalData.findOne({ name: /Oliver-07/ });
+        const rocky = await AnimalData.findOne({ name: /Rocky-08/ });
+        const outOfOrder = oliver && rocky && rocky._id < oliver._id;
 
-        // If we don't have multi-species or have old compound strings or old horse entries, seed clean dataset
-        if (count < 6 || hasCompound || !hasDog || hasHorse) {
+        // If we don't have multi-species or have fewer than 3 dogs or animals are out of order or no alerts exist, seed clean dataset
+        if (count < 8 || alertCount === 0 || hasCompound || dogCount < 3 || hasHorse || outOfOrder) {
             logger.info("Auto-provisioning multi-species clinical herd (Cow, Dog, Cat)...");
             
             await AnimalData.deleteMany({});
@@ -177,6 +181,25 @@ class TelemetryDaemon {
                         temperature: 38.4,
                         heartRate: 140,
                         respiratoryRate: 28,
+                        bloodOxygen: 99
+                    }
+                },
+                // 🐕 Added Dog (Rocky-08) appended at the end
+                {
+                    name: "Rocky-08 (Golden)",
+                    species: "Dog",
+                    breed: "Golden Retriever",
+                    age: 2,
+                    weight: 29,
+                    zone: "K9-Wing",
+                    deviceId: "COLLAR-D08",
+                    healthStatus: "healthy",
+                    isActive: true,
+                    baselineReadingsCount: 10,
+                    baselines: {
+                        temperature: 38.5,
+                        heartRate: 82,
+                        respiratoryRate: 22,
                         bloodOxygen: 99
                     }
                 }

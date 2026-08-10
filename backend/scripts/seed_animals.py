@@ -26,6 +26,14 @@ animals = [
         "location": {"lat": 12.9720, "lng": 77.5950},
     },
     {
+        "name": "Dog 3",
+        "species": "Dog",
+        "breed": "Golden Retriever",
+        "age": 2,
+        "weight": 28,
+        "location": {"lat": 12.9725, "lng": 77.5955},
+    },
+    {
         "name": "Cat 1",
         "species": "Cat",
         "breed": "Persian",

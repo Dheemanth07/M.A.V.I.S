@@ -157,8 +157,8 @@ export const LandingPage: React.FC = () => {
             a: "When a critical threshold is breached, MAVIS generates an immediate clinical summary. On desktop, it offers 1-click clipboard copying and WhatsApp Web dispatch without opening unwanted OS apps. On mobile devices, it automatically provides 1-tap direct phone dialing and native SMS drafting."
         },
         {
-            q: "Can multiple caregivers manage separate herds securely on the same system?",
-            a: "Yes. MAVIS features strict multi-tenant data isolation. Each farm account strictly manages its own registered animals, collar nodes, and alert queues, while authorized veterinarians or administrators retain global oversight."
+            q: "Can multiple caregivers manage herds collaboratively on the same system?",
+            a: "Yes. MAVIS features unified real-time data synchronization with zero data silos. All registered herd animals, collar telemetry streams, digital twins, and active clinical alert queues are shared live across caregiver, owner, and veterinarian views."
         }
     ];
 
@@ -247,10 +247,10 @@ export const LandingPage: React.FC = () => {
                         {/* Hero Action Buttons */}
                         <div className="flex items-center gap-3.5 pt-2 flex-wrap">
                             <button
-                                onClick={() => navigate('/login')}
+                                onClick={() => navigate(isAuthenticated ? '/dashboard' : '/login')}
                                 className="h-12 px-7 rounded-full bg-teal-700 hover:bg-teal-800 text-white text-sm font-bold transition flex items-center gap-2 shadow-lg shadow-teal-700/25 hover:scale-[1.02] cursor-pointer"
                             >
-                                <span>Get Started</span>
+                                <span>{isAuthenticated ? 'Go to Dashboard' : 'Get Started'}</span>
                                 <ArrowRight className="h-4 w-4" />
                             </button>
                             <a
@@ -834,10 +834,10 @@ export const LandingPage: React.FC = () => {
 
                     {/* CTA Button */}
                     <button
-                        onClick={() => navigate('/login')}
+                        onClick={() => navigate(isAuthenticated ? '/dashboard' : '/login')}
                         className="z-10 h-13 px-9 rounded-full bg-teal-600 hover:bg-teal-500 text-white text-sm font-bold transition shadow-xl shadow-teal-900/40 hover:scale-[1.03] cursor-pointer flex items-center gap-2"
                     >
-                        Launch Dashboard
+                        <span>{isAuthenticated ? 'Open Dashboard' : 'Get Started'}</span>
                         <ArrowRight className="h-4 w-4" />
                     </button>
                 </div>

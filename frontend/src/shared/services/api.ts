@@ -22,13 +22,37 @@ function getAuthHeaders(): Record<string, string> {
     return headers;
 }
 
+export function sortAnimalsInOrder(animals: Animal[]): Animal[] {
+    if (!Array.isArray(animals)) return [];
+    return [...animals].sort((a, b) => {
+        // Extract sequence numbers like -01, -02, -07, -08, #01, etc.
+        const matchA = a.name?.match(/(?:[-_#\s]0*(\d+))/);
+        const matchB = b.name?.match(/(?:[-_#\s]0*(\d+))/);
+        if (matchA && matchB) {
+            const numA = parseInt(matchA[1], 10);
+            const numB = parseInt(matchB[1], 10);
+            if (numA !== numB) return numA - numB;
+        } else if (matchA && !matchB) {
+            return -1; // Numbered seed animals come first in sequence
+        } else if (!matchA && matchB) {
+            return 1; // Unnumbered newly added animals append at the end
+        }
+
+        if (a.createdAt && b.createdAt) {
+            return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+        }
+        return 0;
+    });
+}
+
 export async function fetchAnimals(): Promise<Animal[]> {
     const res = await fetch(`${API_BASE}/animals`, {
         headers: getAuthHeaders()
     });
     if (!res.ok) throw new Error('Failed to fetch animals');
     const json = await res.json();
-    return json.data || json;
+    const list: Animal[] = json.data || json;
+    return sortAnimalsInOrder(list);
 }
 
 export async function createAnimal(animalData: Partial<Animal>): Promise<Animal> {

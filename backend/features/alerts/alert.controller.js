@@ -15,14 +15,7 @@ class AlertController {
      */
     getActiveAlerts = async (req, res, next) => {
         try {
-            let alerts = [];
-            if (req.user && req.user.role !== 'admin') {
-                const userAnimals = await Animal.find({ owner: req.user.id }).select('_id');
-                const animalIds = userAnimals.map(a => a._id);
-                alerts = await this.alertService.getActiveAlertsForAnimals(animalIds);
-            } else {
-                alerts = await this.alertService.getActiveAlerts();
-            }
+            const alerts = await this.alertService.getActiveAlerts();
 
             res.status(200).json({
                 status: "success",

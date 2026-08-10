@@ -28,7 +28,7 @@ class AnimalRepository {
      * @returns {Promise<Object[]>} Matching animal documents.
      */
     async findAll(filter = {}) {
-        return await this.#model.find(filter);
+        return await this.#model.find(filter).sort({ createdAt: 1, _id: 1 });
     }
 
     /**

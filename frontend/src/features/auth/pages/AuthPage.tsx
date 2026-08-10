@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../../../shared/context/ToastContext';
-import { ShieldCheck, UserCheck, Lock, Mail, User as UserIcon, ArrowRight } from 'lucide-react';
+import { ShieldCheck, UserCheck, Lock, Mail, User as UserIcon, ArrowRight, ArrowLeft } from 'lucide-react';
 
 export const AuthPage: React.FC = () => {
     const [isLogin, setIsLogin] = useState(true);
@@ -13,9 +13,15 @@ export const AuthPage: React.FC = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const { login, register } = useAuth();
+    const { login, register, isAuthenticated } = useAuth();
     const { showToast } = useToast();
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            navigate('/dashboard', { replace: true });
+        }
+    }, [isAuthenticated, navigate]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -44,11 +50,11 @@ export const AuthPage: React.FC = () => {
         <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans selection:bg-emerald-500/20 selection:text-emerald-900">
             <div className="w-full max-w-md space-y-6 animate-in fade-in zoom-in duration-300">
                 {/* Brand Logo Header */}
-                <div className="text-center space-y-2">
+                <div className="text-center space-y-2 cursor-pointer group" onClick={() => navigate('/')}>
                     <img 
                         src="/logo.svg" 
                         alt="MAVIS Logo" 
-                        className="h-16 w-16 rounded-full shadow-lg shadow-teal-700/25 mx-auto transition-transform hover:scale-105" 
+                        className="h-16 w-16 rounded-full shadow-lg shadow-teal-700/25 mx-auto transition-transform group-hover:scale-105" 
                     />
                     <h1 className="text-2xl font-bold text-slate-900 tracking-tight m-0 font-display">M.A.V.I.S</h1>
                     <p className="text-xs text-slate-500 font-medium m-0">Multi Model Animal Vitality Intelligence System</p>
@@ -173,6 +179,17 @@ export const AuthPage: React.FC = () => {
                             )}
                         </button>
                     </form>
+
+                    <div className="text-center pt-2 border-t border-slate-100">
+                        <button
+                            type="button"
+                            onClick={() => navigate('/')}
+                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-teal-700 transition cursor-pointer"
+                        >
+                            <ArrowLeft className="h-3.5 w-3.5" />
+                            <span>Back to Landing Page</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
