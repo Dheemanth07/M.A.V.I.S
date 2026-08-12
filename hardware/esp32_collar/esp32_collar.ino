@@ -12,8 +12,8 @@
 // --- Wi-Fi & Backend URL ---
 const char* ssid = "RNSIT-STUDENTS";
 const char* password = "Students@2025";
-const char* serverUrl = "http://172.16.0.214:5000/api/sensor";
-const char* animalId = "69f484b7533232bcb34008ca";  // Link to animal ID from react dashboard
+const char* serverUrl = "http://172.16.3.23:5000/api/sensor";
+const char* animalId = "6a7ad37a373c5495c40c8d5b";  // Link to animal ID from react dashboard
 
 // --- Pin Assignments ---
 #define ONE_WIRE_BUS 4  // DS18B20 Data pin on GPIO4
