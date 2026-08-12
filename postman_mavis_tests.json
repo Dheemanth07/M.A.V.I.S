@@ -1,7 +1,0 @@
-{
-  "info": "MAVIS Sensor API - Copy payloads to Postman",
-  "post_sensor": {
-    "method": "POST",
-    "url": "http://localhost:5000/api/sensor",
-    "headers": {
-      "Content-Type": "application/json
