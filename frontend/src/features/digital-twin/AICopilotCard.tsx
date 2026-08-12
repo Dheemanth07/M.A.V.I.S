@@ -56,24 +56,24 @@ export const AICopilotCard: React.FC<AICopilotCardProps> = ({ animalId, animalNa
     const isModerate = rawRisk.includes('mod') || rawRisk.includes('warn') || rawRisk.includes('elevated');
     const isGood = rawRisk.includes('low') || rawRisk.includes('good') || rawRisk.includes('normal') || rawRisk.includes('optimal') || rawRisk.includes('healthy');
 
-    let triageLabel = 'Triage: Evaluating';
+    let triageLabel = 'Care Priority: Evaluating';
     let badgeStyle = 'bg-teal-50 border-teal-200 text-teal-800';
     let dotColor = 'bg-teal-500';
 
     if (isCritical) {
-        triageLabel = 'Triage: High (Critical)';
+        triageLabel = 'Care Priority: Urgent (Critical)';
         badgeStyle = 'bg-rose-50 border-rose-200 text-rose-700';
         dotColor = 'bg-rose-500';
     } else if (isModerate) {
-        triageLabel = 'Triage: Moderate (Warning)';
+        triageLabel = 'Care Priority: Moderate (Warning)';
         badgeStyle = 'bg-amber-50 border-amber-200 text-amber-800';
         dotColor = 'bg-amber-500';
     } else if (isGood) {
-        triageLabel = 'Triage: Low (Optimal)';
+        triageLabel = 'Care Priority: Low (Healthy)';
         badgeStyle = 'bg-emerald-50 border-emerald-200 text-emerald-800';
         dotColor = 'bg-emerald-500';
     } else if (insight?.riskLevel) {
-        triageLabel = `Triage: ${insight.riskLevel}`;
+        triageLabel = `Care Priority: ${insight.riskLevel}`;
     }
 
     const modelSource = insight?.source || 'Deterministic Clinical Safety Engine';

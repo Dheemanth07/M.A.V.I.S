@@ -104,7 +104,7 @@ export const UserDashboardOverview: React.FC<UserDashboardOverviewProps> = ({
                         <Activity className="h-4 w-4" />
                     </div>
                     <div className="min-w-0 leading-relaxed">
-                        <strong className="text-teal-950 font-bold mr-1.5 whitespace-nowrap">Clinical Triage Summary:</strong>
+                        <strong className="text-teal-950 font-bold mr-1.5 whitespace-nowrap">Clinical Care Summary:</strong>
                         <span className="text-slate-700 font-normal">{dynamicInsightText}</span>
                     </div>
                 </div>

@@ -30,6 +30,10 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
     React.useEffect(() => {
         if (selectedAnimalId) {
             loadTwinData(selectedAnimalId);
+            const interval = setInterval(() => {
+                loadTwinData(selectedAnimalId);
+            }, 3000);
+            return () => clearInterval(interval);
         }
     }, [selectedAnimalId]);
 
@@ -265,19 +269,23 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
                                 </div>
                             </div>
 
-                            {/* Active Critical Alerts */}
-                            {healthSummary?.alerts && healthSummary.alerts.length > 0 && (
-                                <div className="mt-6 bg-rose-50 border border-rose-200/80 p-4 rounded-2xl space-y-2">
-                                    <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-rose-700">
-                                        <Zap className="h-4 w-4 text-rose-600" /> Active Telemetry Alerts ({healthSummary.alerts.length})
+                            {/* Active Critical Alerts (Deduplicated) */}
+                            {healthSummary?.alerts && healthSummary.alerts.length > 0 && (() => {
+                                const uniqueAlerts = Array.from(new Set(healthSummary.alerts));
+                                if (uniqueAlerts.length === 0) return null;
+                                return (
+                                    <div className="mt-6 bg-rose-50 border border-rose-200/80 p-4 rounded-2xl space-y-2">
+                                        <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-rose-700">
+                                            <Zap className="h-4 w-4 text-rose-600" /> Active Telemetry Alerts ({uniqueAlerts.length})
+                                        </div>
+                                        <ul className="space-y-1 text-xs text-rose-900 font-normal pl-5 list-disc m-0">
+                                            {uniqueAlerts.map((alt, idx) => (
+                                                <li key={idx}>{alt}</li>
+                                            ))}
+                                        </ul>
                                     </div>
-                                    <ul className="space-y-1 text-xs text-rose-900 font-normal pl-5 list-disc m-0">
-                                        {healthSummary.alerts.map((alt, idx) => (
-                                            <li key={idx}>{alt}</li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            )}
+                                );
+                            })()}
                         </div>
                     </div>
 

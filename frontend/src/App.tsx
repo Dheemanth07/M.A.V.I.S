@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { io, Socket } from 'socket.io-client';
 import type { Animal, AlertItem } from './shared/types';
@@ -73,6 +73,7 @@ function AppContent() {
     const [alerts, setAlerts] = useState<AlertItem[]>([]);
     const [connected, setConnected] = useState(false);
     const [activeToastAlert, setActiveToastAlert] = useState<AlertItem | null>(null);
+    const animalsRef = useRef<Animal[]>([]);
 
     const accountRole = user?.role || 'user';
     const [activeRole, setActiveRole] = useState<'user' | 'admin'>(() => {
@@ -97,13 +98,25 @@ function AppContent() {
     const loadInitialData = async () => {
         try {
             const animalsData = await fetchAnimals();
-            setAnimals(animalsData || []);
+            const list = animalsData || [];
+            setAnimals(list);
+            animalsRef.current = list;
+
             const alertsData = await fetchActiveAlerts();
             setAlerts(alertsData || []);
         } catch (err) {
             console.error('Error fetching backend data:', err);
         }
     };
+
+    // When the authenticated user changes, reset and reload their isolated data
+    useEffect(() => {
+        if (isAuthenticated && user?.id) {
+            setAnimals([]);
+            setAlerts([]);
+            loadInitialData();
+        }
+    }, [user?.id, isAuthenticated]);
 
     useEffect(() => {
         if (!isAuthenticated) return;
@@ -158,6 +171,14 @@ function AppContent() {
 
         socket.on('alert', (newAlert: any) => {
             if (newAlert) {
+                // Multi-tenant check: only process alerts for animals belonging to this user
+                if (newAlert.animalId && animalsRef.current.length > 0) {
+                    const isUserAnimal = animalsRef.current.some(a =>
+                        String(a._id) === String(newAlert.animalId) || a.deviceId === newAlert.collarId
+                    );
+                    if (!isUserAnimal) return;
+                }
+
                 const alertObj: AlertItem = {
                     _id: newAlert.id || String(Date.now()),
                     animalId: newAlert.animalId || 'Live Telemetry Node',
