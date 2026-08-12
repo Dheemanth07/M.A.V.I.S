@@ -1,6 +1,7 @@
 /**
  * @file Express handlers for animal endpoints.
  */
+import mongoose from "mongoose";
 import { sendMessage, sendSuccess } from "../../utils/httpResponse.js";
 
 /**
@@ -51,7 +52,11 @@ class AnimalController {
         const service = this.#service;
 
         try {
-            const animals = await service.getAnimals({});
+            let filter = {};
+            if (req.user && req.user.role !== 'admin' && req.user.id && mongoose.Types.ObjectId.isValid(req.user.id)) {
+                filter = { owner: req.user.id };
+            }
+            const animals = await service.getAnimals(filter);
             sendSuccess(res, 200, animals, "Animals fetched successfully");
         } catch (err) {
             next(err);
@@ -72,6 +77,12 @@ class AnimalController {
         try {
             const { id } = req.params;
             const animal = await service.getAnimal(id);
+            if (!animal) {
+                return res.status(404).json({ status: "fail", message: "Animal not found" });
+            }
+            if (req.user && req.user.role !== 'admin' && animal.owner && String(animal.owner) !== String(req.user.id)) {
+                return res.status(403).json({ status: "fail", message: "Access denied. Animal belongs to another account." });
+            }
             sendSuccess(res, 200, animal, "Animal fetched successfully");
         } catch (err) {
             next(err);
@@ -91,6 +102,13 @@ class AnimalController {
 
         try {
             const { id } = req.params;
+            const existing = await service.getAnimal(id);
+            if (!existing) {
+                return res.status(404).json({ status: "fail", message: "Animal not found" });
+            }
+            if (req.user && req.user.role !== 'admin' && existing.owner && String(existing.owner) !== String(req.user.id)) {
+                return res.status(403).json({ status: "fail", message: "Access denied. Animal belongs to another account." });
+            }
             const updatedAnimal = await service.updateAnimal(id, req.body);
             sendSuccess(res, 200, updatedAnimal, "Animal updated successfully");
         } catch (err) {
@@ -111,6 +129,13 @@ class AnimalController {
 
         try {
             const { id } = req.params;
+            const existing = await service.getAnimal(id);
+            if (!existing) {
+                return res.status(404).json({ status: "fail", message: "Animal not found" });
+            }
+            if (req.user && req.user.role !== 'admin' && existing.owner && String(existing.owner) !== String(req.user.id)) {
+                return res.status(403).json({ status: "fail", message: "Access denied. Animal belongs to another account." });
+            }
             const deletedAnimal = await service.deleteAnimal(id);
             sendMessage(res, 200, "Animal deleted successfully", deletedAnimal);
         } catch (err) {
@@ -130,7 +155,15 @@ class AnimalController {
         const service = this.#service;
 
         try {
-            const animal = await service.getHealthStatus(req.params.id);
+            const { id } = req.params;
+            const existing = await service.getAnimal(id);
+            if (!existing) {
+                return res.status(404).json({ status: "fail", message: "Animal not found" });
+            }
+            if (req.user && req.user.role !== 'admin' && existing.owner && String(existing.owner) !== String(req.user.id)) {
+                return res.status(403).json({ status: "fail", message: "Access denied. Animal belongs to another account." });
+            }
+            const animal = await service.getHealthStatus(id);
             sendSuccess(res, 200, animal, "Animal health status fetched successfully");
         } catch (err) {
             next(err);

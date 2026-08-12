@@ -10,12 +10,16 @@ export const getAIInsight = async (req, res, next) => {
         const { animalId } = req.params;
         let animal = null;
 
+        const isUserAdmin = req.user && req.user.role === 'admin';
+        const isValidUserId = req.user?.id && mongoose.Types.ObjectId.isValid(req.user.id);
+        const userFilter = isUserAdmin ? {} : (isValidUserId ? { owner: req.user.id } : {});
+
         if (mongoose.Types.ObjectId.isValid(animalId)) {
-            animal = await AnimalData.findById(animalId);
+            animal = await AnimalData.findOne({ _id: animalId, ...userFilter });
         }
 
         if (!animal) {
-            animal = await AnimalData.findOne();
+            animal = await AnimalData.findOne(userFilter);
         }
 
         if (!animal) {

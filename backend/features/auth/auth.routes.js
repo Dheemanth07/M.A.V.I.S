@@ -1,6 +1,7 @@
 import express from "express";
 import crypto from "crypto";
 import User from "./user.model.js";
+import { seedUserHerdIfNeeded } from "../simulation/userSeed.service.js";
 
 const router = express.Router();
 
@@ -30,6 +31,11 @@ router.post("/register", async (req, res) => {
             password: hashedPassword,
             role: role || "user"
         });
+
+        // Only auto-provision simulation herd if registering the primary demo account
+        if (newUser.email === 'dheemanth1007@gmail.com') {
+            await seedUserHerdIfNeeded(newUser._id);
+        }
 
         const userObj = {
             id: newUser._id,
@@ -66,6 +72,11 @@ router.post("/login", async (req, res) => {
         const hashedPassword = hashPassword(password);
         if (user.password !== hashedPassword) {
             return res.status(401).json({ status: "fail", message: "Invalid email or password" });
+        }
+
+        // Only ensure demo herd exists for the primary demo account
+        if (user.email === 'dheemanth1007@gmail.com') {
+            await seedUserHerdIfNeeded(user._id);
         }
 
         const userObj = {

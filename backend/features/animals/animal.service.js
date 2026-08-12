@@ -180,7 +180,8 @@ class AnimalService {
         }
 
         // Section 6 & 7 Compliance: Herd Interaction Graph Engine R(i) = sum_j (R(j) * W(i,j))
-        const allAnimals = await this.#animalRepository.findAll();
+        const ownerFilter = animal.owner ? { owner: animal.owner } : {};
+        const allAnimals = await this.#animalRepository.findAll(ownerFilter);
         const { herdRiskScore, warnings: herdWarnings } = calculateHerdGraphRisk(animal, allAnimals);
         if (herdWarnings.length > 0) {
             activeAlerts.push(...herdWarnings);
@@ -198,11 +199,13 @@ class AnimalService {
             await this.#animalRepository.update(animalId, { healthStatus: computedHealth });
         }
 
+        const uniqueAlerts = Array.from(new Set(activeAlerts));
+
         return {
             animalId: animal._id,
             name: animal.name,
             status: computedHealth,
-            alerts: activeAlerts,
+            alerts: uniqueAlerts,
             lastReading: latestSensor.timestamp,
             baselineReadingsCount: animal.baselineReadingsCount,
             baselines: animal.baselines,

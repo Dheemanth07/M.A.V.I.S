@@ -10,7 +10,7 @@
  */
 
 const OLLAMA_HOST = process.env.OLLAMA_HOST || "http://127.0.0.1:11434";
-const REQUEST_TIMEOUT_MS = 15000; // 15s max for local model inference
+const REQUEST_TIMEOUT_MS = 30000; // 30s max for local model inference
 
 // Prioritized list of supported local models
 const MODEL_PRIORITY = [
@@ -34,7 +34,7 @@ export class AIService {
     async getAvailableLocalModels() {
         try {
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 1500);
+            const timeoutId = setTimeout(() => controller.abort(), 3000);
 
             const res = await fetch(`${OLLAMA_HOST}/api/tags`, {
                 signal: controller.signal,
@@ -94,7 +94,7 @@ export class AIService {
                     format: "json",
                     options: {
                         temperature: 0.2, // Low temperature for clinical determinism
-                        num_predict: 350
+                        num_predict: 200
                     }
                 })
             });

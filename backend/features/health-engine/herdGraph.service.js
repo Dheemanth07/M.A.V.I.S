@@ -44,16 +44,17 @@ function calculateZoneWeight(animal1, animal2) {
  */
 export function calculateHerdGraphRisk(currentAnimal, allAnimals = []) {
     let herdRiskScore = 0;
-    const warnings = [];
+    const warningsSet = new Set();
 
     if (!currentAnimal || !Array.isArray(allAnimals) || allAnimals.length <= 1) {
-        return { herdRiskScore: 0, warnings };
+        return { herdRiskScore: 0, warnings: [] };
     }
 
-    const neighbors = allAnimals.filter(a => 
-        String(a._id) !== String(currentAnimal._id) && 
-        a.species?.toLowerCase() === currentAnimal.species?.toLowerCase()
-    );
+    const neighbors = allAnimals.filter(a => {
+        if (String(a._id) === String(currentAnimal._id)) return false;
+        if (currentAnimal.owner && a.owner && String(a.owner) !== String(currentAnimal.owner)) return false;
+        return a.species?.toLowerCase() === currentAnimal.species?.toLowerCase();
+    });
 
     for (const neighbor of neighbors) {
         let neighborRisk = 0;
@@ -70,7 +71,7 @@ export function calculateHerdGraphRisk(currentAnimal, allAnimals = []) {
             herdRiskScore += contagionContribution;
 
             if (neighbor.healthStatus === 'critical') {
-                warnings.push(`CONTAGION RISK: High contact exposure from critical ${neighbor.species} (${neighbor.name}).`);
+                warningsSet.add(`CONTAGION RISK: High contact exposure from critical ${neighbor.species} (${neighbor.name}).`);
             }
         }
     }
@@ -80,7 +81,7 @@ export function calculateHerdGraphRisk(currentAnimal, allAnimals = []) {
 
     return {
         herdRiskScore: finalHerdRisk,
-        warnings
+        warnings: Array.from(warningsSet)
     };
 }
 

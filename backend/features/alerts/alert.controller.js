@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import AppError from "../../utils/AppError.js";
 import Animal from "../animals/animal.model.js";
 
@@ -15,7 +16,16 @@ class AlertController {
      */
     getActiveAlerts = async (req, res, next) => {
         try {
-            const alerts = await this.alertService.getActiveAlerts();
+            let alerts = [];
+            if (req.user && req.user.role !== 'admin' && req.user.id && mongoose.Types.ObjectId.isValid(req.user.id)) {
+                const userAnimals = await Animal.find({ owner: req.user.id }).select('_id');
+                const animalIds = userAnimals.map(a => a._id);
+                alerts = await this.alertService.getActiveAlertsForAnimals(animalIds);
+            } else if (req.user && req.user.role !== 'admin') {
+                alerts = [];
+            } else {
+                alerts = await this.alertService.getActiveAlerts();
+            }
 
             res.status(200).json({
                 status: "success",
@@ -34,6 +44,12 @@ class AlertController {
     getAnimalAlerts = async (req, res, next) => {
         try {
             const { animalId } = req.params;
+            if (req.user && req.user.role !== 'admin') {
+                const animal = await Animal.findById(animalId);
+                if (!animal || (animal.owner && String(animal.owner) !== String(req.user.id))) {
+                    return res.status(403).json({ status: "fail", message: "Access denied. Animal belongs to another account." });
+                }
+            }
             const alerts = await this.alertService.getAlertsByAnimal(animalId);
 
             res.status(200).json({

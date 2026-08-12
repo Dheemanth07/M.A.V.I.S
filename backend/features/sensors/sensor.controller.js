@@ -1,7 +1,9 @@
 /**
  * @file Express handlers for sensor reading endpoints.
  */
+import mongoose from "mongoose";
 import { sendSuccess } from "../../utils/httpResponse.js";
+import Animal from "../animals/animal.model.js";
 
 /**
  * Turns sensor HTTP requests into service calls and realtime events.
@@ -52,6 +54,12 @@ class SensorController {
 
         try {
             const { animalId } = req.params;
+            if (req.user && req.user.role !== 'admin') {
+                const animal = await Animal.findById(animalId);
+                if (!animal || (animal.owner && String(animal.owner) !== String(req.user.id))) {
+                    return res.status(403).json({ status: "fail", message: "Access denied. Animal belongs to another account." });
+                }
+            }
             const latest = await service.getLatest(animalId);
 
             sendSuccess(res, 200, latest, "Latest sensor reading fetched successfully");
@@ -73,6 +81,12 @@ class SensorController {
 
         try {
             const { animalId } = req.params;
+            if (req.user && req.user.role !== 'admin') {
+                const animal = await Animal.findById(animalId);
+                if (!animal || (animal.owner && String(animal.owner) !== String(req.user.id))) {
+                    return res.status(403).json({ status: "fail", message: "Access denied. Animal belongs to another account." });
+                }
+            }
             const { fromDate, toDate } = req.validatedQuery;
 
             const history = await service.getLatestByRange(
