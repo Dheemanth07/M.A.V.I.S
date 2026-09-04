@@ -3,14 +3,15 @@ import { clampRisk } from '../utils/clampRisk.js';
 /**
  * Computes an overall clinical risk score using Multi-Modal Synergistic Fusion.
  * 
- * Clinical Synergy Rules:
+ * Clinical Synergy Rules (100% Physical Hardware Sensors):
  * - Base: Sum of individual metric risk contributions.
  * - Febrile Lethargy (1.50x Multiplier): Severe fever + lack of physical motion indicates acute infection rather than physical play.
  * - Cardiorespiratory Distress (1.40x Multiplier): Tachycardia + Oxygenation Hypoxia indicates cardiovascular failure.
- * - Environmental Thermal Overload (1.30x Multiplier): Elevated body temperature + High THI (>=79) indicates heat stroke emergency.
+ * - Systemic Septicemia / SIRS (1.35x Multiplier): High fever + Tachycardia indicates systemic infection entering bloodstream.
+ * - Resting Tachycardia / Acute Pain (1.25x Multiplier): Racing heart rate while motionless with no fever indicates severe trauma or colic.
  * 
  * @param {Object} allMetricEvaluations - Object of evaluated metrics (temperature, heartRate, oxygen, etc.)
- * @param {Object} [context={}] - Behavioral and environmental context (motion, thi, herdRisk)
+ * @param {Object} [context={}] - Behavioral and environmental context (motion, herdRisk)
  * @returns {number} Clamped clinical risk score [0, 100].
  */
 export function calculateRiskScore(allMetricEvaluations = {}, context = {}) {
@@ -32,19 +33,24 @@ export function calculateRiskScore(allMetricEvaluations = {}, context = {}) {
 
   let synergyMultiplier = 1.0;
 
-  // 1. Synergy: Febrile Lethargy (Fever with zero motion)
+  // 1. Synergy: Febrile Lethargy (Fever + Zero Motion) -> DS18B20 + MPU6050 (temp + motion)
   if (isFebrile && (context.motion === false || context.lyingDown === true)) {
     synergyMultiplier = Math.max(synergyMultiplier, 1.50);
   }
 
-  // 2. Synergy: Cardiorespiratory Distress (Tachycardia + Hypoxia)
+  // 2. Synergy: Cardiorespiratory Distress (Tachycardia + Hypoxia) -> MAX30102 (HR + SpO2)
   if (hasTachycardia && isHypoxic) {
     synergyMultiplier = Math.max(synergyMultiplier, 1.40);
   }
 
-  // 3. Synergy: Thermal Overload (Fever + Ambient Heat Stress THI >= 79)
-  if (isFebrile && context.thi && context.thi >= 79) {
-    synergyMultiplier = Math.max(synergyMultiplier, 1.30);
+  // 3. Synergy: Systemic Septicemia / SIRS (Fever + Tachycardia) -> DS18B20 + MAX30102 (temp + heartRate)
+  if (isFebrile && hasTachycardia) {
+    synergyMultiplier = Math.max(synergyMultiplier, 1.35);
+  }
+
+  // 4. Synergy: Resting Tachycardia / Acute Pain (High HR + Zero Motion, No Fever) -> MAX30102 + MPU6050 (heartRate + motion)
+  if (hasTachycardia && (context.motion === false || context.lyingDown === true) && !isFebrile) {
+    synergyMultiplier = Math.max(synergyMultiplier, 1.25);
   }
 
   let finalScore = Math.round(baseScore * synergyMultiplier);
@@ -55,4 +61,4 @@ export function calculateRiskScore(allMetricEvaluations = {}, context = {}) {
   }
 
   return clampRisk(finalScore, 0, 100);
-}
+}

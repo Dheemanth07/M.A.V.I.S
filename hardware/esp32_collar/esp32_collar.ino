@@ -47,6 +47,11 @@ long lastBeat = 0;  // Time in ms of the last detected beat
 float beatsPerMinute = 75.0;
 int beatAvg = 75;
 
+// --- Pulse Oximetry (SpO2) True Physical Calculation Variables ---
+long redMax = 0, redMin = 262144;
+long irMax = 0, irMin = 262144;
+float calculatedSpO2 = 98.0;
+
 // --- Non-Blocking Timing Variables ---
 unsigned long lastTxTime = 0;
 const unsigned long txInterval = 3000;  // Send telemetry every 3 seconds (3000ms)
@@ -142,11 +147,18 @@ void loop() {
   int stepsGained = 0;
   long irValue = 0;
 
-  // Read raw IR value from MAX30102
+  // Read raw IR and Red values from MAX30102 for Heart Rate & SpO2
   if (maxConnected) {
     irValue = particleSensor.getIR();
+    long redValue = particleSensor.getRed();
 
     if (irValue > 50000) {  // Skin/finger contact detected
+      // Track AC peaks and troughs for optical SpO2 calculation
+      if (redValue > redMax) redMax = redValue;
+      if (redValue < redMin) redMin = redValue;
+      if (irValue > irMax) irMax = irValue;
+      if (irValue < irMin) irMin = irValue;
+
       // Check if a beat occurred
       if (checkForBeat(irValue) == true) {
         long delta = millis() - lastBeat;
@@ -158,27 +170,52 @@ void loop() {
           rates[rateSpot++] = (byte)beatsPerMinute;
           rateSpot %= RATE_SIZE;
 
-          // Compute average
+          // Compute average heart rate
           int sum = 0;
           for (byte x = 0; x < RATE_SIZE; x++) {
             sum += rates[x];
           }
           beatAvg = sum / RATE_SIZE;
 
-          // Print real-time diagnostic to show beat detection is working
-          Serial.print("[PULSE] Heartbeat peak detected! Current BPM: ");
+          // Compute true optical SpO2 using AC/DC ratio of Red vs IR
+          float acRed = (float)(redMax - redMin);
+          float dcRed = (float)(redMax + redMin) / 2.0;
+          float acIR  = (float)(irMax - irMin);
+          float dcIR  = (float)(irMax + irMin) / 2.0;
+
+          if (dcRed > 0 && dcIR > 0 && acIR > 0) {
+            float R = (acRed / dcRed) / (acIR / dcIR);
+            // Empirical Maxim Integrated pulse oximetry formula: SpO2 = 110 - 25 * R
+            float spo2Val = 110.0 - 25.0 * R;
+            if (spo2Val > 100.0) spo2Val = 100.0;
+            if (spo2Val < 70.0)  spo2Val = 70.0;
+            calculatedSpO2 = spo2Val;
+          }
+
+          // Reset peak and trough trackers for next heartbeat cycle
+          redMax = 0; redMin = 262144;
+          irMax = 0;  irMin = 262144;
+
+          // Print real-time diagnostic
+          Serial.print("[PULSE] Heartbeat detected! BPM: ");
           Serial.print(beatsPerMinute);
-          Serial.print(" | Rolling Avg: ");
-          Serial.println(beatAvg);
+          Serial.print(" | Avg: ");
+          Serial.print(beatAvg);
+          Serial.print(" | True SpO2: ");
+          Serial.print(calculatedSpO2, 1);
+          Serial.println("%");
         }
       }
       rawHR = beatAvg;
-      rawBO = 97.0 + random(0, 3);  // SpO2 dynamic estimation during finger contact
+      rawBO = calculatedSpO2;
     } else {
       // Standby default when no finger is placed
       rawHR = 75.0 + random(-3, 4);
       rawBO = 98.0;
       beatAvg = 75;  // reset averaging state
+      calculatedSpO2 = 98.0;
+      redMax = 0; redMin = 262144;
+      irMax = 0;  irMin = 262144;
     }
   } else {
     rawHR = 75.0 + random(-3, 4);
