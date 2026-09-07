@@ -9,8 +9,26 @@
       "enabled": true
     },
     {
+      "key": "token",
+      "value": "",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "userId",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
       "key": "animalId",
-      "value": "64f47f8923ec0eba198f80d2",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "alertId",
+      "value": "",
       "type": "default",
       "enabled": true
     },

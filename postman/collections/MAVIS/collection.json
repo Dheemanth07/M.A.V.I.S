@@ -1,16 +1,17 @@
 {
   "info": {
-    "_postman_id": "6bce0a25-c1b7-4f26-9141-mavis-api",
-    "name": "MAVIS API",
-    "description": "Professional API collection for MAVIS backend validation. Run `POST /api/animals` first to create an animal and auto-store `animalId` for sensor requests.",
+    "_postman_id": "6bce0a25-c1b7-4f26-9141-mavis-full-api",
+    "name": "MAVIS API - Complete Test Suite",
+    "description": "Comprehensive, categorized Postman collection for MAVIS (Multi-Model Animal Vitality Intelligence System). Covers Health, Authentication, Animal Registry, Telemetry Ingestion, Clinical Alerts, AI Diagnosis, and Validation Edge Cases.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
-      "name": "Health",
+      "name": "01 Health & Status",
+      "description": "System health and database liveness verification endpoints.",
       "item": [
         {
-          "name": "GET /",
+          "name": "GET / (Health Check)",
           "request": {
             "method": "GET",
             "header": [],
@@ -19,29 +20,18 @@
               "host": ["{{baseUrl}}"],
               "path": [""]
             },
-            "description": "Checks whether the MAVIS backend is running and reports database connection state."
+            "description": "Checks whether the MAVIS backend server is running and reports database connection state."
           },
-          "response": [
-            {
-              "name": "200 - Backend running",
-              "originalRequest": {
-                "method": "GET",
-                "header": [],
-                "url": "{{baseUrl}}/"
-              },
-              "status": "OK",
-              "code": 200,
-              "body": "{\n  \"status\": \"success\",\n  \"message\": \"MAVIS backend running\",\n  \"data\": {\n    \"service\": \"MAVIS backend\",\n    \"database\": \"connected\",\n    \"connectedDatabase\": \"mavis\"\n  }\n}"
-            }
-          ]
+          "response": []
         }
       ]
     },
     {
-      "name": "Animals",
+      "name": "02 Authentication & Profile",
+      "description": "User registration, login, profile management, and notification settings.",
       "item": [
         {
-          "name": "POST /api/animals",
+          "name": "POST /api/auth/register",
           "event": [
             {
               "listen": "test",
@@ -49,8 +39,13 @@
                 "type": "text/javascript",
                 "exec": [
                   "if (pm.response.code === 201) {",
-                  "  const body = pm.response.json();",
-                  "  if (body.data && body.data._id) pm.environment.set('animalId', body.data._id);",
+                  "  const json = pm.response.json();",
+                  "  if (json.data && json.data.user) {",
+                  "    pm.environment.set('userId', json.data.user.id || json.data.user._id);",
+                  "  }",
+                  "  if (json.data && json.data.token) {",
+                  "    pm.environment.set('token', json.data.token);",
+                  "  }",
                   "}"
                 ]
               }
@@ -66,7 +61,186 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Dog 1\",\n  \"species\": \"Dog\",\n  \"breed\": \"Labrador\",\n  \"age\": 3,\n  \"weight\": 22,\n  \"location\": {\n    \"lat\": 12.9716,\n    \"lng\": 77.5946\n  },\n  \"isActive\": true\n}",
+              "raw": "{\n  \"name\": \"Dr. Jane Doe\",\n  \"email\": \"vet.jane@example.com\",\n  \"password\": \"SecurePass123!\",\n  \"role\": \"user\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "register"]
+            },
+            "description": "Registers a new user account on MAVIS and returns a session token."
+          },
+          "response": []
+        },
+        {
+          "name": "POST /api/auth/login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const json = pm.response.json();",
+                  "  if (json.data && json.data.user) {",
+                  "    pm.environment.set('userId', json.data.user.id || json.data.user._id);",
+                  "  }",
+                  "  if (json.data && json.data.token) {",
+                  "    pm.environment.set('token', json.data.token);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"dheemanth1007@gmail.com\",\n  \"password\": \"123456\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Authenticates user credentials and returns user details and session token."
+          },
+          "response": []
+        },
+        {
+          "name": "GET /api/auth/profile/:id",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/profile/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "profile", "{{userId}}"]
+            },
+            "description": "Retrieves profile settings and notification preferences for a user."
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /api/auth/profile/:id",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Dheemanth\",\n  \"vetContact\": \"+91 9876543210\",\n  \"alertSettings\": {\n    \"soundAlerts\": true,\n    \"tempSensitivity\": 1.2,\n    \"hrThreshold\": 110\n  },\n  \"collarSettings\": {\n    \"syncInterval\": 3,\n    \"motionSensitivity\": \"high\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/profile/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "profile", "{{userId}}"]
+            },
+            "description": "Updates profile preferences, emergency vet contact, and collar sync configurations."
+          },
+          "response": []
+        },
+        {
+          "name": "PUT /api/auth/password/:id",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"123456\",\n  \"newPassword\": \"123456\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/password/{{userId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "password", "{{userId}}"]
+            },
+            "description": "Updates account password."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "03 Animals",
+      "description": "Animal registry, profile lifecycle, biometric updates, and real-time health summary endpoints.",
+      "item": [
+        {
+          "name": "POST /api/animals",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "  const body = pm.response.json();",
+                  "  const item = body.data || body;",
+                  "  if (item && item._id) pm.environment.set('animalId', item._id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Bella\",\n  \"species\": \"Canine\",\n  \"breed\": \"Golden Retriever\",\n  \"age\": 3,\n  \"weight\": 28.5,\n  \"location\": {\n    \"lat\": 12.9716,\n    \"lng\": 77.5946\n  },\n  \"isActive\": true\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -78,8 +252,9 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "animals"]
             },
-            "description": "Creates an animal profile. The test script stores the returned `_id` in `animalId`."
-          }
+            "description": "Creates an animal profile and stores the generated ObjectId into `animalId`."
+          },
+          "response": []
         },
         {
           "name": "GET /api/animals",
@@ -91,8 +266,9 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "animals"]
             },
-            "description": "Lists all animal profiles."
-          }
+            "description": "Lists all registered animals in the herd/facility."
+          },
+          "response": []
         },
         {
           "name": "GET /api/animals/:id",
@@ -104,8 +280,9 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "animals", "{{animalId}}"]
             },
-            "description": "Fetches one animal by MongoDB ObjectId."
-          }
+            "description": "Fetches a specific animal profile by ID."
+          },
+          "response": []
         },
         {
           "name": "PUT /api/animals/:id",
@@ -119,7 +296,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"healthStatus\": \"warning\",\n  \"weight\": 23,\n  \"location\": {\n    \"lat\": 12.972,\n    \"lng\": 77.595\n  }\n}",
+              "raw": "{\n  \"weight\": 29.2,\n  \"age\": 4,\n  \"healthStatus\": \"healthy\",\n  \"location\": {\n    \"lat\": 12.9735,\n    \"lng\": 77.5962\n  }\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -131,21 +308,9 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "animals", "{{animalId}}"]
             },
-            "description": "Updates one animal profile. Only changed fields are required."
-          }
-        },
-        {
-          "name": "DELETE /api/animals/:id",
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/api/animals/{{animalId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["api", "animals", "{{animalId}}"]
-            },
-            "description": "Deletes one animal by MongoDB ObjectId. Use carefully during demos."
-          }
+            "description": "Updates animal attributes."
+          },
+          "response": []
         },
         {
           "name": "GET /api/animals/:id/health",
@@ -157,16 +322,37 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "animals", "{{animalId}}", "health"]
             },
-            "description": "Returns the latest computed health status for one animal."
-          }
+            "description": "Computes and returns the overall clinical risk assessment, vital anomalies, and health status."
+          },
+          "response": []
+        },
+        {
+          "name": "DELETE /api/animals/:id",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "x-user-role",
+                "value": "admin"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/animals/{{animalId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "animals", "{{animalId}}"]
+            },
+            "description": "Deletes an animal profile (requires admin header)."
+          },
+          "response": []
         }
       ]
     },
     {
-      "name": "Sensor",
+      "name": "04 Sensors & Telemetry",
+      "description": "High-speed sensor telemetry ingestion (ESP32 / Collar), latest vitals polling, and historical timeseries queries.",
       "item": [
         {
-          "name": "POST /api/sensor",
+          "name": "POST /api/sensor (Ingest Telemetry)",
           "request": {
             "method": "POST",
             "header": [
@@ -177,7 +363,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"animalId\": \"{{animalId}}\",\n  \"physiology\": {\n    \"temperature\": 38.7,\n    \"heartRate\": 92,\n    \"respiratoryRate\": 24,\n    \"bloodOxygen\": 97\n  },\n  \"behavior\": {\n    \"motion\": true,\n    \"steps\": 125,\n    \"lyingDown\": false\n  },\n  \"environment\": {\n    \"ambientTemperature\": 29,\n    \"humidity\": 62,\n    \"aqi\": 45\n  },\n  \"location\": {\n    \"latitude\": 12.9716,\n    \"longitude\": 77.5946,\n    \"zone\": \"farm-1\"\n  },\n  \"device\": {\n    \"batteryLevel\": 82,\n    \"signalStrength\": -67\n  },\n  \"timestamp\": \"2026-04-17T10:30:00.000Z\"\n}",
+              "raw": "{\n  \"animalId\": \"{{animalId}}\",\n  \"physiology\": {\n    \"temperature\": 38.6,\n    \"heartRate\": 82,\n    \"respiratoryRate\": 21,\n    \"bloodOxygen\": 98\n  },\n  \"behavior\": {\n    \"motion\": true,\n    \"steps\": 4,\n    \"lyingDown\": false\n  },\n  \"device\": {\n    \"signalStrength\": -68\n  }\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -189,8 +375,9 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "sensor"]
             },
-            "description": "Creates a sensor reading for an existing animal ObjectId."
-          }
+            "description": "Ingests a live telemetry reading matching the ESP32 collar hardware data schema."
+          },
+          "response": []
         },
         {
           "name": "GET /api/sensor/latest/:animalId",
@@ -202,8 +389,9 @@
               "host": ["{{baseUrl}}"],
               "path": ["api", "sensor", "latest", "{{animalId}}"]
             },
-            "description": "Gets the most recent sensor reading for one animal."
-          }
+            "description": "Gets the most recent telemetry packet for an animal."
+          },
+          "response": []
         },
         {
           "name": "GET /api/sensor/history/:animalId",
@@ -218,48 +406,207 @@
                 {
                   "key": "from",
                   "value": "{{from}}",
-                  "description": "Start datetime in ISO format"
+                  "description": "Start ISO datetime"
                 },
                 {
                   "key": "to",
                   "value": "{{to}}",
-                  "description": "End datetime in ISO format"
+                  "description": "End ISO datetime"
                 }
               ]
             },
-            "description": "Gets historical sensor readings for one animal between two ISO date values."
-          }
+            "description": "Gets historical telemetry readings for charts."
+          },
+          "response": []
         }
       ]
     },
     {
-      "name": "Negative Cases",
+      "name": "05 Alerts & Notifications",
+      "description": "Critical vital anomalies, rule violations, triage status management, and veterinary notifications.",
       "item": [
         {
-          "name": "GET /api/animals/:id - Invalid ObjectId",
+          "name": "GET /api/alerts/active",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const body = pm.response.json();",
+                  "  const alerts = body.data || body;",
+                  "  if (Array.isArray(alerts) && alerts.length > 0) {",
+                  "    pm.environment.set('alertId', alerts[0]._id);",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ],
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/animals/not-a-valid-id",
+              "raw": "{{baseUrl}}/api/alerts/active",
               "host": ["{{baseUrl}}"],
-              "path": ["api", "animals", "not-a-valid-id"]
+              "path": ["api", "alerts", "active"]
             },
-            "description": "Expected 400 response using the global error format."
-          }
+            "description": "Retrieves all currently active, unresolved clinical alerts."
+          },
+          "response": []
         },
         {
-          "name": "GET /api/sensor/history/:animalId - Missing Dates",
+          "name": "GET /api/alerts/animal/:animalId",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{baseUrl}}/api/sensor/history/{{animalId}}",
+              "raw": "{{baseUrl}}/api/alerts/animal/{{animalId}}",
               "host": ["{{baseUrl}}"],
-              "path": ["api", "sensor", "history", "{{animalId}}"]
+              "path": ["api", "alerts", "animal", "{{animalId}}"]
             },
-            "description": "Expected 400 because `from` and `to` are required."
-          }
+            "description": "Retrieves the alert history for a specific animal."
+          },
+          "response": []
+        },
+        {
+          "name": "PATCH /api/alerts/:alertId/status",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"acknowledged\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/alerts/{{alertId}}/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "alerts", "{{alertId}}", "status"]
+            },
+            "description": "Updates status of an alert ('active', 'acknowledged', or 'resolved')."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "06 AI Insights",
+      "description": "Veterinary clinical diagnosis, multi-parameter risk evaluation, and triage recommendations powered by Google Gemini AI.",
+      "item": [
+        {
+          "name": "GET /api/ai/:animalId",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/ai/{{animalId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "ai", "{{animalId}}"]
+            },
+            "description": "Generates AI clinical triage notes, confidence score, risk factors, and recommended interventions using Gemini AI."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "07 Validation & Negative Tests",
+      "description": "Validation error scenarios (400 Bad Request), authentication failures (401 Unauthorized), and not found conditions (404).",
+      "item": [
+        {
+          "name": "GET /api/animals/:id (Invalid ID Format - 400)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/animals/not-a-valid-object-id",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "animals", "not-a-valid-object-id"]
+            },
+            "description": "Expected 400 Bad Request error when passing a malformed MongoDB ObjectId."
+          },
+          "response": []
+        },
+        {
+          "name": "POST /api/sensor (Missing Physiology Fields - 400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"animalId\": \"{{animalId}}\",\n  \"physiology\": {\n    \"temperature\": 38.5\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/sensor",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "sensor"]
+            },
+            "description": "Expected 400 Bad Request error when required physiology vitals are omitted."
+          },
+          "response": []
+        },
+        {
+          "name": "POST /api/auth/login (Invalid Credentials - 401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"dheemanth1007@gmail.com\",\n  \"password\": \"WrongPassword123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            },
+            "description": "Expected 401 Unauthorized error when providing incorrect login password."
+          },
+          "response": []
+        },
+        {
+          "name": "GET /api/animals/:id (Animal Not Found - 404)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/animals/000000000000000000000000",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "animals", "000000000000000000000000"]
+            },
+            "description": "Expected 404 Not Found error when querying an animal ID that does not exist in the database."
+          },
+          "response": []
         }
       ]
     }
@@ -270,7 +617,7 @@
       "script": {
         "type": "text/javascript",
         "exec": [
-          "pm.test('response is JSON', function () {",
+          "pm.test('Response is JSON', function () {",
           "  pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json');",
           "});"
         ]
@@ -281,10 +628,6 @@
     {
       "key": "baseUrl",
       "value": "http://localhost:5000"
-    },
-    {
-      "key": "animalId",
-      "value": "64f47f8923ec0eba198f80d2"
     }
   ]
 }

@@ -1,8 +1,0 @@
-{
-  "name": "GET /",
-  "request": {
-    "method": "GET",
-    "url": "{{baseUrl}}/",
-    "description": "Checks whether the MAVIS backend is running and reports database connection state."
-  }
-}

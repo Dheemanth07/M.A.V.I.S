@@ -1,4 +1,0 @@
-{
-  "name": "Sensor",
-  "description": "Sensor ingestion, latest reading, and history requests. Use the root collection.json for the full importable collection."
-}
