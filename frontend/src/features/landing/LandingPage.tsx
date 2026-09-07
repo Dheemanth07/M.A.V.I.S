@@ -167,7 +167,7 @@ export const LandingPage: React.FC = () => {
             
             {/* ── DYNAMIC TOP SCROLL PROGRESS BAR ────────────────────────── */}
             <div 
-                className="fixed top-0 left-0 h-[3px] bg-gradient-to-r from-teal-600 via-emerald-400 to-teal-500 z-[100] transition-all duration-75 ease-out shadow-sm shadow-teal-500/50"
+                className="fixed top-0 left-0 h-0.75 bg-linear-to-r from-teal-600 via-emerald-400 to-teal-500 z-100 transition-all duration-75 ease-out shadow-sm shadow-teal-500/50"
                 style={{ width: `${scrollProgress}%` }}
             />
 
@@ -281,7 +281,7 @@ export const LandingPage: React.FC = () => {
 
                     {/* Hero Right: Live Interactive Telemetry Preview Card */}
                     <div className="lg:col-span-5 relative reveal-on-scroll">
-                        <div className="absolute -inset-2 bg-gradient-to-tr from-teal-500/20 via-emerald-500/10 to-transparent rounded-3xl blur-xl -z-10" />
+                        <div className="absolute -inset-2 bg-linear-to-tr from-teal-500/20 via-emerald-500/10 to-transparent rounded-3xl blur-xl -z-10" />
                         
                         <div className="bento-card p-6 sm:p-7 bg-white border border-slate-200/90 shadow-xl space-y-5 rounded-3xl transition-all duration-300 hover:shadow-2xl">
                             {/* Live Preview Header */}
@@ -351,7 +351,7 @@ export const LandingPage: React.FC = () => {
                                     {[30, 45, 20, 80, 25, 95, 35, 40, 30, 75, 20, 90, 40, 30, 85, 25, 95, 30, 40, 20, 80, 30].map((h, i) => (
                                         <div
                                             key={i}
-                                            className="w-1 bg-gradient-to-t from-teal-500 to-emerald-400 rounded-full transition-all duration-300"
+                                            className="w-1 bg-linear-to-t from-teal-500 to-emerald-400 rounded-full transition-all duration-300"
                                             style={{ height: `${h}%` }}
                                         />
                                     ))}
@@ -404,7 +404,7 @@ export const LandingPage: React.FC = () => {
 
                 <div className="relative grid grid-cols-1 md:grid-cols-3 gap-6">
                     {/* Connector line — desktop only */}
-                    <div className="hidden md:block absolute top-[2.75rem] left-[calc(16.67%+1.5rem)] right-[calc(16.67%+1.5rem)] h-px bg-slate-200 z-0" />
+                    <div className="hidden md:block absolute top-11 left-[calc(16.67%+1.5rem)] right-[calc(16.67%+1.5rem)] h-px bg-slate-200 z-0" />
 
                     {/* Step 1 */}
                     <div className="bento-card p-7 bg-white border border-slate-200/90 rounded-3xl shadow-sm flex flex-col gap-4 hover:shadow-md hover:-translate-y-1 transition duration-300 reveal-on-scroll z-10">
@@ -815,7 +815,7 @@ export const LandingPage: React.FC = () => {
             <section className="py-16 px-4 sm:px-8 max-w-7xl mx-auto w-full">
                 <div className="bg-[#0f172a] text-white px-8 sm:px-16 py-14 sm:py-20 rounded-3xl shadow-2xl flex flex-col items-center text-center gap-7 relative overflow-hidden reveal-on-scroll">
                     {/* subtle background glow */}
-                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[300px] bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
+                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-125 h-75 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
 
                     {/* Transparent eyebrow label — no pill, no border */}
                     <p className="text-xs font-bold tracking-[0.18em] uppercase text-teal-400 z-10">

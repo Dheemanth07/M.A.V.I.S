@@ -54,7 +54,7 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
     return (
         <div className="space-y-6 animate-in fade-in duration-300">
             {/* Clinical Baseline Calibration Banner */}
-            <div className="bento-card p-5 bg-gradient-to-r from-slate-900 via-teal-950 to-slate-900 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-teal-800/50">
+            <div className="bento-card p-5 bg-linear-to-r from-slate-900 via-teal-950 to-slate-900 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-teal-800/50">
                 <div className="flex items-center gap-3.5">
                     <div className="p-3 rounded-2xl bg-teal-500/20 text-teal-300 border border-teal-400/30 shrink-0">
                         <Activity className="h-5 w-5" />

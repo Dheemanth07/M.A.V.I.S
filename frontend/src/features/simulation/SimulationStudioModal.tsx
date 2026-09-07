@@ -389,7 +389,7 @@ export const SimulationStudioModal: React.FC<SimulationStudioModalProps> = ({ on
             <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-5xl w-full overflow-hidden flex flex-col max-h-[92vh] transition-all animate-in fade-in zoom-in-95 duration-200">
                 
                 {/* Modal Header */}
-                <div className="bg-gradient-to-r from-slate-900 via-teal-950 to-slate-900 text-white px-6 py-4 flex items-center justify-between border-b border-teal-800/40">
+                <div className="bg-linear-to-r from-slate-900 via-teal-950 to-slate-900 text-white px-6 py-4 flex items-center justify-between border-b border-teal-800/40">
                     <div className="flex items-center gap-3">
                         <div className="h-10 w-10 rounded-full bg-teal-500/20 border border-teal-400/30 flex items-center justify-center text-teal-400 shadow-inner">
                             <Zap className="h-5 w-5 animate-pulse" />
@@ -733,7 +733,7 @@ export const SimulationStudioModal: React.FC<SimulationStudioModalProps> = ({ on
                     </div>
 
                     {/* Right Column: Live Diagnostic Terminal Log (5 cols) */}
-                    <div className="lg:col-span-5 flex flex-col bg-slate-900 rounded-2xl border border-slate-800 text-slate-200 overflow-hidden shadow-inner h-[480px]">
+                    <div className="lg:col-span-5 flex flex-col bg-slate-900 rounded-2xl border border-slate-800 text-slate-200 overflow-hidden shadow-inner h-120">
                         
                         {/* Terminal Header */}
                         <div className="bg-slate-950 px-4 py-2.5 border-b border-slate-800 flex items-center justify-between text-xs">

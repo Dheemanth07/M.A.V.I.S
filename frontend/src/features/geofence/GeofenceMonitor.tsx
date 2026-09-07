@@ -28,7 +28,7 @@ export const GeofenceMonitor: React.FC<GeofenceMonitorProps> = () => {
             {/* Coming Soon Card */}
             <div className="bento-card bg-white border border-slate-200/90 overflow-hidden">
                 {/* Top accent strip */}
-                <div className="h-1 w-full bg-gradient-to-r from-indigo-400 via-purple-400 to-indigo-400" />
+                <div className="h-1 w-full bg-linear-to-r from-indigo-400 via-purple-400 to-indigo-400" />
 
                 <div className="p-10 sm:p-14 flex flex-col items-center text-center gap-6">
                     {/* Icon cluster */}

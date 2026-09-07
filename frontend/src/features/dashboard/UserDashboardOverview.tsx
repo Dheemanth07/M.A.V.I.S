@@ -70,7 +70,7 @@ export const UserDashboardOverview: React.FC<UserDashboardOverviewProps> = ({
     return (
         <div className="space-y-6 animate-in fade-in duration-300">
             {/* Top Welcome Banner */}
-            <div className="bento-card p-8 bg-gradient-to-r from-slate-900 via-teal-950 to-slate-900 text-white relative overflow-hidden border border-slate-800">
+            <div className="bento-card p-8 bg-linear-to-r from-slate-900 via-teal-950 to-slate-900 text-white relative overflow-hidden border border-slate-800">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
                     <div className="space-y-2">
                         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/20 border border-teal-400/30 text-teal-200 text-xs font-semibold tracking-wider uppercase">

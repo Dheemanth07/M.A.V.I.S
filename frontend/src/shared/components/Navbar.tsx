@@ -83,7 +83,7 @@ export const Navbar: React.FC<NavbarProps> = ({ activeAlertCount, role, accountR
                     <nav className="relative hidden md:flex items-center gap-1 bg-slate-100/80 p-1 rounded-full border border-slate-200/80">
                         {/* Smooth Sliding Active Highlight Window */}
                         <div
-                            className="absolute h-[calc(100%-8px)] rounded-full bg-white shadow-sm border border-slate-200/90 transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] pointer-events-none"
+                            className="absolute h-[calc(100%-8px)] rounded-full bg-white shadow-sm border border-slate-200/90 transition-all duration-300 ease-in-out pointer-events-none"
                             style={{
                                 left: `${pillStyle.left}px`,
                                 width: `${pillStyle.width}px`,
