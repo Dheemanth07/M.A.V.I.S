@@ -1,4 +1,4 @@
-// <> - Searches the system and installed library folders first, used for for standard Arduino libraries or third-party libraries installed globally via the Library Manager.
+// <> - Searches the system and installed library folders first, used for standard Arduino libraries or third-party libraries installed globally via the Library Manager.
 // "" - Searches the current project folder (where your sketch is) first. If it doesn't find it there, it falls back to the system folders. For local files you wrote yourself, or custom libraries you dropped directly into your sketch folder.
 
 #include <WiFi.h>
@@ -36,10 +36,11 @@ bool maxConnected = false;
 const int WINDOW_SIZE = 10;
 float tempBuffer[WINDOW_SIZE];
 float hrBuffer[WINDOW_SIZE];
+float rrBuffer[WINDOW_SIZE];
 int bufferIndex = 0;
 bool bufferFull = false;
 
-// --- Heart-Rate Algorithm Variables ---
+// --- Heart-Rate & Pulse Oximetry Variables ---
 const byte RATE_SIZE = 4;  // Averaging buffer size for heart rate
 byte rates[RATE_SIZE];
 byte rateSpot = 0;
@@ -47,7 +48,7 @@ long lastBeat = 0;  // Time in ms of the last detected beat
 float beatsPerMinute = 75.0;
 int beatAvg = 75;
 
-// --- Pulse Oximetry (SpO2) True Physical Calculation Variables ---
+// --- Optical SpO2 Physical Calculation Variables ---
 long redMax = 0, redMin = 262144;
 long irMax = 0, irMin = 262144;
 float calculatedSpO2 = 98.0;
@@ -71,10 +72,10 @@ void setup() {
   delay(1000);
   Serial.println("\n=== MAVIS ESP32 SMART COLLAR INITIALIZATION ===");
 
-  // Initialize I2C Bus
+  // Initialize I2C Bus (SDA = GPIO 21, SCL = GPIO 22)
   Wire.begin(21, 22);
 
-  // 1. Initialize DS18B20 Temp Sensor
+  // 1. Initialize DS18B20 Temperature Sensor
   tempSensor.begin();
   if (tempSensor.getDeviceCount() > 0) {
     tempConnected = true;
@@ -94,7 +95,7 @@ void setup() {
     Serial.println("[WARNING] No MPU6050 Motion Sensor found. Using fallback mock.");
   }
 
-  // 3. Initialize MAX30102 Pulse Sensor
+  // 3. Initialize MAX30102 Pulse & SpO2 Sensor
   if (particleSensor.begin(Wire, I2C_SPEED_FAST)) {
     maxConnected = true;
     // Configure sensor with default settings for heart rate / SpO2
@@ -130,6 +131,7 @@ void setup() {
   // Clear filters and average arrays
   memset(tempBuffer, 0, sizeof(tempBuffer));
   memset(hrBuffer, 0, sizeof(hrBuffer));
+  memset(rrBuffer, 0, sizeof(rrBuffer));
   for (byte i = 0; i < RATE_SIZE; i++) {
     rates[i] = 75;
   }
@@ -138,35 +140,36 @@ void setup() {
 void loop() {
   // --- REAL-TIME PORTION: CONTINUOUS SENSOR POLLING ---
   // The heart rate sensor peak-detection algorithm requires immediate and frequent polling.
-  // We do NOT use delay() in this loop to keep checks at microseconds.
+  // We do NOT use delay() in this loop to keep checks fast and non-blocking.
 
   float rawTemp = 38.5;
   float rawHR = 75.0;
   float rawBO = 98.0;
   bool motionActive = false;
+  bool lyingDownState = false;
   int stepsGained = 0;
   long irValue = 0;
 
-  // Read raw IR and Red values from MAX30102 for Heart Rate & SpO2
+  // 1. Read raw IR and Red values from MAX30102 for Heart Rate & SpO2
   if (maxConnected) {
     irValue = particleSensor.getIR();
     long redValue = particleSensor.getRed();
 
-    if (irValue > 50000) {  // Skin/finger contact detected
+    if (irValue > 50000) {  // Skin/tissue contact detected
       // Track AC peaks and troughs for optical SpO2 calculation
       if (redValue > redMax) redMax = redValue;
       if (redValue < redMin) redMin = redValue;
       if (irValue > irMax) irMax = irValue;
       if (irValue < irMin) irMin = irValue;
 
-      // Check if a beat occurred
+      // Check if a pulse beat occurred
       if (checkForBeat(irValue) == true) {
         long delta = millis() - lastBeat;
         lastBeat = millis();
 
         beatsPerMinute = 60 / (delta / 1000.0);
 
-        if (beatsPerMinute < 255 && beatsPerMinute > 20) {
+        if (beatsPerMinute < 240 && beatsPerMinute > 30) {
           rates[rateSpot++] = (byte)beatsPerMinute;
           rateSpot %= RATE_SIZE;
 
@@ -185,7 +188,7 @@ void loop() {
 
           if (dcRed > 0 && dcIR > 0 && acIR > 0) {
             float R = (acRed / dcRed) / (acIR / dcIR);
-            // Empirical Maxim Integrated pulse oximetry formula: SpO2 = 110 - 25 * R
+            // Empirical pulse oximetry formula: SpO2 = 110 - 25 * R
             float spo2Val = 110.0 - 25.0 * R;
             if (spo2Val > 100.0) spo2Val = 100.0;
             if (spo2Val < 70.0)  spo2Val = 70.0;
@@ -209,16 +212,16 @@ void loop() {
       rawHR = beatAvg;
       rawBO = calculatedSpO2;
     } else {
-      // Standby default when no finger is placed
-      rawHR = 75.0 + random(-3, 4);
+      // Standby default when no contact is detected
+      rawHR = 75.0 + random(-2, 3);
       rawBO = 98.0;
-      beatAvg = 75;  // reset averaging state
+      beatAvg = 75;
       calculatedSpO2 = 98.0;
       redMax = 0; redMin = 262144;
       irMax = 0;  irMin = 262144;
     }
   } else {
-    rawHR = 75.0 + random(-3, 4);
+    rawHR = 75.0 + random(-2, 3);
     rawBO = 98.0;
   }
 
@@ -226,51 +229,59 @@ void loop() {
   if (millis() - lastTxTime >= txInterval) {
     lastTxTime = millis();
 
-    // 1. Read temperature sensor
+    // 1. Read DS18B20 Temperature Sensor
     if (tempConnected) {
       tempSensor.requestTemperatures();
       float t = tempSensor.getTempCByIndex(0);
-      if (t != DEVICE_DISCONNECTED_C) {
+      if (t != DEVICE_DISCONNECTED_C && t > 25.0 && t < 45.0) {
         rawTemp = t;
       } else {
-        rawTemp = 38.5 + (random(-5, 6) / 10.0);
+        rawTemp = 38.5 + (random(-3, 4) / 10.0);
       }
     } else {
-      rawTemp = 38.5 + (random(-5, 6) / 10.0);
+      rawTemp = 38.5 + (random(-3, 4) / 10.0);
     }
 
-    // 2. Read MPU6050 accelerometer
+    // 2. Read MPU6050 Motion & Posture
     if (mpuConnected) {
       sensors_event_t a, g, temp;
       mpu.getEvent(&a, &g, &temp);
 
-      float mag = sqrt(a.acceleration.x * a.acceleration.x + a.acceleration.y * a.acceleration.y + a.acceleration.z * a.acceleration.z);
+      float mag = sqrt(a.acceleration.x * a.acceleration.x + 
+                       a.acceleration.y * a.acceleration.y + 
+                       a.acceleration.z * a.acceleration.z);
+
       motionActive = (mag > 12.0);
       stepsGained = motionActive ? random(1, 4) : 0;
+
+      // Physical posture detection: if animal is stationary and tilted horizontally
+      lyingDownState = (!motionActive && (abs(a.acceleration.x) > 6.0 || abs(a.acceleration.y) > 6.0));
     } else {
-      motionActive = (random(0, 100) > 40);
-      stepsGained = motionActive ? random(1, 5) : 0;
+      motionActive = (random(0, 100) > 60);
+      stepsGained = motionActive ? random(1, 4) : 0;
+      lyingDownState = (random(0, 100) < 15);
     }
 
-    // Smooth vital parameters
+    // 3. Smooth Vital Parameters
     float cleanTemp = applyMovingAverage(tempBuffer, rawTemp);
     float cleanHR = applyMovingAverage(hrBuffer, rawHR);
 
+    // 4. Derive Respiratory Rate (RR) mathematically from Heart Rate + Activity Level
+    // Mammalian cardio-respiratory ratio: ~4:1 (HR to RR) with exertion modulation
+    float derivedRR = cleanHR / 4.0;
+    if (motionActive) {
+      derivedRR += 6.0;  // Respiration rate increases during active motion
+    }
+    // Clamp to physiological safe limits (12 to 60 breaths/min)
+    if (derivedRR < 12.0) derivedRR = 12.0;
+    if (derivedRR > 60.0) derivedRR = 60.0;
+    float cleanRR = applyMovingAverage(rrBuffer, derivedRR);
+
+    // Advance filter buffer index
     bufferIndex = (bufferIndex + 1) % WINDOW_SIZE;
     if (bufferIndex == 0) bufferFull = true;
 
-    // Dynamic Respiratory Rate based on activity
-    // int dynamicRR = motionActive ? (28 + random(0, 5)) : (18 + random(0, 4));
-
-    // // Dynamic environmental fluctuations
-    // float dynamicAmbientTemp = 27.0 + (random(-10, 15) / 10.0);
-    // int dynamicHumidity = 55 + random(-3, 4);
-    // int dynamicAQI = 42 + random(-2, 3);
-
-    // // Dynamic battery level decay
-    // int dynamicBattery = 98 - ((millis() / 120000) % 15);
-
-    // Send Payload to Backend
+    // 5. Send Telemetry Payload to Backend
     if (WiFi.status() == WL_CONNECTED) {
       HTTPClient http;
       http.begin(serverUrl);
@@ -282,26 +293,15 @@ void loop() {
       JsonObject physiology = doc.createNestedObject("physiology");
       physiology["temperature"] = round(cleanTemp * 10.0) / 10.0;
       physiology["heartRate"] = round(cleanHR);
-      physiology["respiratoryRate"] = dynamicRR;
+      physiology["respiratoryRate"] = round(cleanRR);
       physiology["bloodOxygen"] = round(rawBO);
 
       JsonObject behavior = doc.createNestedObject("behavior");
       behavior["motion"] = motionActive;
       behavior["steps"] = stepsGained;
-      behavior["lyingDown"] = (random(0, 100) < 10);
-
-      // JsonObject environment = doc.createNestedObject("environment");
-      // environment["ambientTemperature"] = dynamicAmbientTemp;
-      // environment["humidity"] = dynamicHumidity;
-      // environment["aqi"] = dynamicAQI;
-
-      // JsonObject location = doc.createNestedObject("location");
-      // location["latitude"] = 12.9716 + (random(-5, 6) / 10000.0);
-      // location["longitude"] = 77.5946 + (random(-5, 6) / 10000.0);
-      // location["zone"] = "farm_1";
+      behavior["lyingDown"] = lyingDownState;
 
       JsonObject device = doc.createNestedObject("device");
-      device["batteryLevel"] = dynamicBattery;
       device["signalStrength"] = WiFi.RSSI();
 
       String requestBody;
@@ -319,22 +319,26 @@ void loop() {
 
       if (maxConnected) {
         if (irValue > 50000) {
-          Serial.printf(" [HR/SpO2]  Contact: ON  | Heart Rate: %d BPM | SpO2: %d%%\n", (int)round(cleanHR), (int)round(rawBO));
+          Serial.printf(" [HR/SpO2]  Contact: ON  | Heart Rate: %d BPM | SpO2: %d%% | Derived RR: %d bpm\n", 
+                        (int)round(cleanHR), (int)round(rawBO), (int)round(cleanRR));
         } else {
-          Serial.printf(" [HR/SpO2]  Contact: OFF | Standby Rate: %d BPM | SpO2: 98%%\n", (int)round(cleanHR));
+          Serial.printf(" [HR/SpO2]  Contact: OFF | Standby Rate: %d BPM | SpO2: 98%% | Derived RR: %d bpm\n", 
+                        (int)round(cleanHR), (int)round(cleanRR));
         }
       } else {
-        Serial.printf(" [HR/SpO2]  Sensor: OFF | Simulated HR: %d BPM | SpO2: 98%%\n", (int)round(cleanHR));
+        Serial.printf(" [HR/SpO2]  Sensor: OFF | Simulated HR: %d BPM | SpO2: 98%% | Derived RR: %d bpm\n", 
+                      (int)round(cleanHR), (int)round(cleanRR));
       }
 
       if (mpuConnected) {
-        Serial.printf(" [MOTION]   Sensor: ON  | Moving: %s | Steps Added: %d\n", motionActive ? "YES" : "NO", stepsGained);
+        Serial.printf(" [MOTION]   Sensor: ON  | Moving: %s | Lying Down: %s | Steps: %d\n", 
+                      motionActive ? "YES" : "NO", lyingDownState ? "YES" : "NO", stepsGained);
       } else {
-        Serial.printf(" [MOTION]   Sensor: OFF | Simulated Moving: %s | Steps: %d\n", motionActive ? "YES" : "NO", stepsGained);
+        Serial.printf(" [MOTION]   Sensor: OFF | Simulated Moving: %s | Lying Down: %s | Steps: %d\n", 
+                      motionActive ? "YES" : "NO", lyingDownState ? "YES" : "NO", stepsGained);
       }
 
-      //Serial.printf(" [ENV]      Ambient Temp: %.1f C | Humidity: %d%% | AQI: %d\n", dynamicAmbientTemp, dynamicHumidity, dynamicAQI);
-      Serial.printf(" [DEVICE]   WiFi RSSI: %d dBm | Battery: %d%%\n", WiFi.RSSI(), dynamicBattery);
+      Serial.printf(" [DEVICE]   WiFi RSSI: %d dBm\n", WiFi.RSSI());
       Serial.println("-------------------------------------------------------");
       Serial.printf(" [TX] Transmitting payload to backend for Animal: %s\n", animalId);
 
