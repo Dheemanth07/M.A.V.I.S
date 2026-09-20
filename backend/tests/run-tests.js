@@ -1,5 +1,10 @@
 import assert from "node:assert/strict";
 import { analyzeSensorReading } from "../utils/riskEngine.js";
+import { 
+    calculateHerdGraphRisk, 
+    calculateZoneWeight, 
+    calculateSpeciesWeight 
+} from "../features/health-engine/herdGraph.service.js";
 
 const healthyReading = {
     physiology: {
@@ -127,6 +132,140 @@ const tests = [
             assert.equal(result.alerts.length, 0);
         },
     },
+    {
+        name: "detects 6-axis febrile ruminal cessation synergy (mastitis/acidosis)",
+        run: () => {
+            const result = analyzeSensorReading({
+                ...healthyReading,
+                physiology: {
+                    ...healthyReading.physiology,
+                    temperature: 40.4, // +35 (fever)
+                },
+                behavior: {
+                    motion: false,
+                    lyingDown: true, // +10
+                    rumination: false, // +15 (ruminal cessation during fever)
+                },
+            });
+            assert.equal(result.riskLevel, "warning");
+            assert.equal(result.riskScore, 60); // 35 + 10 + 15 = 60
+            assert.ok(result.alerts.some((a) => a.type === "RUMINAL_CESSATION"));
+            assert.ok(result.alerts.some((a) => a.type === "FEVER"));
+        },
+    },
+    {
+        name: "detects 6-axis behavioral agitation with tachycardia",
+        run: () => {
+            const result = analyzeSensorReading({
+                ...healthyReading,
+                physiology: {
+                    ...healthyReading.physiology,
+                    heartRate: 148, // +20
+                },
+                behavior: {
+                    motion: true,
+                    headShaking: true, // +15 (parasitic / neurological agitation)
+                },
+            });
+            assert.equal(result.riskLevel, "warning");
+            assert.equal(result.riskScore, 35); // 20 + 15 = 35
+            assert.ok(result.alerts.some((a) => a.type === "AGITATION_DISTRESS"));
+            assert.ok(result.alerts.some((a) => a.type === "HEART_RATE"));
+        },
+    },
+    {
+        name: "detects depressed HRV autonomic stress (< 20ms)",
+        run: () => {
+            const result = analyzeSensorReading({
+                ...healthyReading,
+                physiology: {
+                    ...healthyReading.physiology,
+                    hrv: 14, // +20 (Severe pain / autonomic stress)
+                },
+            });
+            assert.equal(result.riskLevel, "healthy"); // 20 points is under warning (< 30)
+            assert.equal(result.riskScore, 20);
+            assert.ok(result.alerts.some((a) => a.type === "AUTONOMIC_STRESS"));
+        },
+    },
+    // Herd Graph & Epidemiological Topology Tests (Zero Phantom GPS)
+    {
+        name: "calculates species-specific susceptibility weight accurately",
+        run: () => {
+            assert.equal(calculateSpeciesWeight("cow", "cow"), 1.00);      // Same species
+            assert.equal(calculateSpeciesWeight("cow", "goat"), 0.35);     // Cross-ruminant
+            assert.equal(calculateSpeciesWeight("bovine", "sheep"), 0.35);  // Cross-ruminant
+            assert.equal(calculateSpeciesWeight("cow", "dog"), 0.05);      // Non-transmissible
+        },
+    },
+    {
+        name: "implicitly assigns unassigned animals to same closed space (weight 0.90) and isolates different places / quarantine",
+        run: () => {
+            const animalA = { name: "Bessie" };
+            const animalB = { name: "Clarabelle" };
+            // Implicit single closed space / herd when unassigned
+            assert.equal(calculateZoneWeight(animalA, animalB), 0.90);
+
+            // Same explicit closed space / barn
+            const cowPen1 = { name: "Cow1", herd: "Barn-A" };
+            const cowPen2 = { name: "Cow2", herd: "Barn-A" };
+            assert.equal(calculateZoneWeight(cowPen1, cowPen2), 0.90);
+
+            // Different places / separate enclosures
+            const cowHerdNorth = { name: "CowNorth", herd: "Place-1" };
+            const cowHerdSouth = { name: "CowSouth", herd: "Place-2" };
+            assert.equal(calculateZoneWeight(cowHerdNorth, cowHerdSouth), 0.05);
+
+            // Quarantine ward isolation
+            const sickQuarantine = { name: "SickCow", herd: "Quarantine-Ward" };
+            assert.equal(calculateZoneWeight(cowHerdNorth, sickQuarantine), 0.05);
+        },
+    },
+    {
+        name: "calculates herd contagion risk and triggers epidemiological exposure warnings",
+        run: () => {
+            const targetAnimal = {
+                _id: "60d5ec49f1b2c8b1f8e4e1a1",
+                name: "Target Cow",
+                species: "cow",
+                herd: "Barn-Alpha",
+                healthStatus: "healthy"
+            };
+
+            const sickBarnNeighbor = {
+                _id: "60d5ec49f1b2c8b1f8e4e1a2",
+                name: "Sick Neighbor",
+                species: "cow",
+                herd: "Barn-Alpha", // Same closed space
+                healthStatus: "critical" // Neighbor risk = 80 -> 80 * (1.0 * 0.90) = 72
+            };
+
+            const isolatedCow = {
+                _id: "60d5ec49f1b2c8b1f8e4e1a3",
+                name: "Quarantined Cow",
+                species: "cow",
+                herd: "Quarantine-Ward",
+                healthStatus: "critical" // 80 * (1.0 * 0.05) = 4
+            };
+
+            // Test 1: In same closed space with critical neighbor
+            const resultSameHerd = calculateHerdGraphRisk(targetAnimal, [targetAnimal, sickBarnNeighbor]);
+            assert.equal(resultSameHerd.herdRiskScore, 72);
+            assert.ok(resultSameHerd.warnings.some(w => w.includes("CONTAGION RISK")));
+
+            // Test 2: In quarantine ward, contagion transmission is suppressed
+            const targetQuarantined = { ...targetAnimal, herd: "Place-West" };
+            const resultQuarantine = calculateHerdGraphRisk(targetQuarantined, [targetQuarantined, isolatedCow]);
+            assert.ok(resultQuarantine.herdRiskScore <= 5, `Expected quarantined risk <= 5, got ${resultQuarantine.herdRiskScore}`);
+
+            // Test 3: Implicit single herd default
+            const implicitA = { _id: "1", name: "A", species: "cow", healthStatus: "healthy" };
+            const implicitB = { _id: "2", name: "B", species: "cow", healthStatus: "critical" };
+            const resultImplicit = calculateHerdGraphRisk(implicitA, [implicitA, implicitB]);
+            assert.equal(resultImplicit.herdRiskScore, 72);
+            assert.ok(resultImplicit.warnings.length > 0);
+        },
+    },
 ];
 
 let passed = 0;
@@ -137,5 +276,6 @@ for (const test of tests) {
 }
 
 console.log(`\n========================================`);
-console.log(`All ${passed} Risk Engine Unit Tests Passed!`);
+console.log(`All ${passed} Risk Engine & Herd Graph Unit Tests Passed!`);
 console.log(`========================================`);
+

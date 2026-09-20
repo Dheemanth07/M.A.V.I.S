@@ -68,20 +68,36 @@ class TelemetryDaemon {
                     let bo = 98;
                     let battery = 92;
 
+                    let hrv = Math.round(55 + sin * 6);
+                    let isRuminating = true;
+                    let rumRate = 54;
+                    let isShaking = false;
+                    let isLying = false;
+
                     if (isLuna) {
                         temp = 39.8;
                         hr = 104;
                         rr = 48;
                         bo = 88;
+                        hrv = 24;
+                        isShaking = true; // Agitation
+                        isRuminating = false;
+                        rumRate = 0;
                     } else if (isBella) {
                         temp = 40.2;
                         hr = 92;
                         rr = 32;
+                        hrv = 18; // Autonomic stress
+                        isRuminating = false; // Febrile ruminal cessation
+                        rumRate = 0;
+                        isLying = true;
                     } else if (isDaisy) {
                         battery = 12;
                     } else if (isBuddy) {
                         temp = 39.0;
                         hr = 104;
+                        hrv = 45;
+                        rumRate = 62;
                     }
 
                     const payload = {
@@ -91,16 +107,22 @@ class TelemetryDaemon {
                             temperature: parseFloat(temp.toFixed(1)),
                             heartRate: hr,
                             respiratoryRate: rr,
-                            bloodOxygen: bo
+                            bloodOxygen: bo,
+                            hrv: hrv
                         },
                         behavior: {
-                            motion: true,
-                            steps: Math.round(150 + this.#tick * 2),
-                            lyingDown: false
+                            motion: !isLying,
+                            lyingDown: isLying,
+                            rumination: isRuminating,
+                            ruminationRate: rumRate,
+                            headShaking: isShaking,
+                            posture: isLying ? "lying_down" : "standing"
                         },
                         device: {
                             batteryLevel: battery,
-                            signalStrength: -62
+                            signalStrength: -62,
+                            sensorStatus: "optimal",
+                            contactDetected: true
                         },
                         timestamp: new Date().toISOString()
                     };

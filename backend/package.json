@@ -5,6 +5,7 @@
     "main": "server.js",
     "scripts": {
         "test": "node tests/run-tests.js",
+        "benchmark:slm": "node scripts/benchmark_all_slms.js",
         "start": "node server.js",
         "dev": "nodemon -L --ext js,mjs,cjs --ignore data/sensor_data.json --ignore data/animal_ids.json --ignore data/animal_mapping.json server.js"
     },

@@ -56,6 +56,23 @@ const animalSchema = new mongoose.Schema(
             lng: Number
         },
 
+        herd: {
+            type: String,
+            trim: true,
+            default: 'Main Herd'
+        },
+
+        zone: {
+            type: String,
+            trim: true,
+            default: 'Main Herd'
+        },
+
+        pen: {
+            type: String,
+            trim: true
+        },
+
         isActive: {
             type: Boolean,
             default: true

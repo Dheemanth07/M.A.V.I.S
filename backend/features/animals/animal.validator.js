@@ -20,6 +20,8 @@ class AnimalValidator {
             weight: Joi.number().min(0).optional(),
             deviceId: Joi.string().trim().optional(),
             zone: Joi.string().trim().optional(),
+            herd: Joi.string().trim().optional(),
+            pen: Joi.string().trim().optional(),
             healthStatus: Joi.string().valid("healthy", "warning", "critical").optional(),
             location: Joi.object({
                 lat: Joi.number().optional(),
