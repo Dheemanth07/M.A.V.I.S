@@ -113,7 +113,6 @@ export const SimulationStudioModal: React.FC<SimulationStudioModalProps> = ({ on
             physiology,
             behavior: {
                 motion: true,
-                steps: 120,
                 lyingDown: false
             },
             device: {

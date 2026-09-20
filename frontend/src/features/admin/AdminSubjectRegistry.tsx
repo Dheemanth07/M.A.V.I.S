@@ -12,7 +12,7 @@ interface AdminSubjectRegistryProps {
 
 export const AdminSubjectRegistry: React.FC<AdminSubjectRegistryProps> = ({ animals, onRefresh }) => {
     const { showToast } = useToast();
-    const [formData, setFormData] = useState({ name: '', species: 'Cow', breed: 'Holstein', age: 3, weight: 500 });
+    const [formData, setFormData] = useState({ name: '', species: 'Cow', breed: 'Holstein', age: 3, weight: 500, herd: 'Main Herd' });
     const [selectedTargetId, setSelectedTargetId] = useState<string>('');
     const [pairedNodeId, setPairedNodeId] = useState('ESP32-COLLAR-01');
     const [submitting, setSubmitting] = useState(false);
@@ -26,7 +26,7 @@ export const AdminSubjectRegistry: React.FC<AdminSubjectRegistryProps> = ({ anim
         try {
             await createAnimal(formData);
             showToast(`Subject '${formData.name}' registered to Admin Registry.`, 'success');
-            setFormData({ name: '', species: 'Cow', breed: 'Holstein', age: 3, weight: 500 });
+            setFormData({ name: '', species: 'Cow', breed: 'Holstein', age: 3, weight: 500, herd: 'Main Herd' });
             onRefresh();
         } catch (err: any) {
             console.error('Failed to register subject profile:', err);
@@ -127,6 +127,16 @@ export const AdminSubjectRegistry: React.FC<AdminSubjectRegistryProps> = ({ anim
                                     />
                                 </div>
                             </div>
+                            <div>
+                                <label className="text-xs font-semibold text-slate-600 mb-1 block">Herd / Enclosure / Pen</label>
+                                <input
+                                    type="text"
+                                    value={formData.herd}
+                                    onChange={(e) => setFormData({ ...formData, herd: e.target.value })}
+                                    placeholder="e.g. Main Herd, Barn Alpha, Pasture West, Quarantine"
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3.5 py-2 text-sm font-medium text-slate-900 focus:outline-none focus:border-indigo-600"
+                                />
+                            </div>
                             <button
                                 type="submit"
                                 disabled={submitting}
@@ -198,6 +208,7 @@ export const AdminSubjectRegistry: React.FC<AdminSubjectRegistryProps> = ({ anim
                                     <tr className="bg-slate-50 border-b border-slate-200 text-xs uppercase tracking-wider text-slate-500 font-semibold">
                                         <th className="py-3.5 px-4">Name</th>
                                         <th className="py-3.5 px-4">Species</th>
+                                        <th className="py-3.5 px-4">Herd / Zone</th>
                                         <th className="py-3.5 px-4">Status</th>
                                         <th className="py-3.5 px-4">Actions</th>
                                     </tr>
@@ -207,6 +218,11 @@ export const AdminSubjectRegistry: React.FC<AdminSubjectRegistryProps> = ({ anim
                                         <tr key={animal._id} className="hover:bg-slate-50 transition">
                                             <td className="py-3.5 px-4 font-semibold text-slate-900">{animal.name}</td>
                                             <td className="py-3.5 px-4">{animal.species}</td>
+                                            <td className="py-3.5 px-4">
+                                                <span className="bg-indigo-50 border border-indigo-100 text-indigo-700 px-2 py-0.5 rounded-md text-[10px] font-semibold tracking-wide uppercase">
+                                                    {animal.herd || animal.zone || 'Main Herd'}
+                                                </span>
+                                            </td>
                                             <td className="py-3.5 px-4">
                                                 <span className={`status-pill-${animal.healthStatus || 'healthy'} px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider`}>
                                                     {animal.healthStatus || 'healthy'}

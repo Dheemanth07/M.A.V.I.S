@@ -43,7 +43,7 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals, onRef
 
     // Modal state for adding a new pet/animal
     const [showAddModal, setShowAddModal] = useState(false);
-    const [formData, setFormData] = useState({ name: '', species: 'Dog', breed: 'Labrador Retriever', age: 2, weight: 15 });
+    const [formData, setFormData] = useState({ name: '', species: 'Dog', breed: 'Labrador Retriever', age: 2, weight: 15, herd: 'Main Herd' });
     const [submitting, setSubmitting] = useState(false);
 
     const handleAddAnimal = async (e: React.FormEvent) => {
@@ -52,7 +52,7 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals, onRef
         try {
             await createAnimal(formData);
             showToast(`Subject '${formData.name}' registered & linked to telemetry mesh.`, 'success');
-            setFormData({ name: '', species: 'Dog', breed: 'Labrador Retriever', age: 2, weight: 15 });
+            setFormData({ name: '', species: 'Dog', breed: 'Labrador Retriever', age: 2, weight: 15, herd: 'Main Herd' });
             setShowAddModal(false);
             if (onRefresh) onRefresh();
         } catch (err: any) {
@@ -325,6 +325,18 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals, onRef
                                         ))}
                                     </select>
                                 </div>
+                            </div>
+
+                            <div>
+                                <label className="text-xs font-semibold text-slate-700 mb-1 block">Herd / Enclosure / Pasture</label>
+                                <input
+                                    type="text"
+                                    value={formData.herd}
+                                    onChange={(e) => setFormData({ ...formData, herd: e.target.value })}
+                                    placeholder="e.g. Main Herd, Barn Alpha, Pasture West, Quarantine"
+                                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 text-sm font-medium focus:outline-none focus:border-emerald-600"
+                                />
+                                <p className="text-[11px] text-slate-400 mt-1">Default is 'Main Herd' (all unassigned animals share one herd). Specify a distinct name for separate pens or quarantine.</p>
                             </div>
 
                             <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">

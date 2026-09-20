@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import type { Animal, HealthStatusResponse } from '../../shared/types';
 import { fetchHealthStatus } from '../../shared/services/api';
-import { RefreshCw, Thermometer, Heart, Wind, Battery, Zap, Activity } from 'lucide-react';
+import { RefreshCw, Thermometer, Heart, Wind, Battery, Zap, Activity, ShieldCheck, AlertCircle, Compass } from 'lucide-react';
 import { AICopilotCard } from './AICopilotCard';
 
 interface DigitalTwinMonitorProps {
@@ -266,6 +266,59 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
                                         )}
                                     </div>
                                     <p className="text-[10px] text-slate-500 font-normal m-0">Remaining Battery Life</p>
+                                </div>
+                            </div>
+
+                            {/* 6-Axis Behavioral & Sensor Contact Quality Telemetry */}
+                            <div className="mt-5 p-4 rounded-2xl bg-linear-to-r from-slate-50 via-teal-50/40 to-slate-50 border border-slate-200/90 grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                <div className="space-y-1">
+                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+                                        <Activity className="h-3 w-3 text-teal-600" /> Rumination
+                                    </span>
+                                    <div className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                                        <span className={`h-2 w-2 rounded-full ${healthSummary?.currentMetrics?.rumination ? 'bg-emerald-500' : 'bg-slate-300'}`} />
+                                        {healthSummary?.currentMetrics?.rumination ? 'Chewing / Active' : 'Resting'}
+                                    </div>
+                                    <span className="text-[9px] text-slate-400 block">
+                                        {healthSummary?.currentMetrics?.ruminationRate ? `${healthSummary.currentMetrics.ruminationRate} cpm` : 'Gyroscope Z-Axis'}
+                                    </span>
+                                </div>
+
+                                <div className="space-y-1">
+                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+                                        <AlertCircle className="h-3 w-3 text-amber-600" /> Agitation
+                                    </span>
+                                    <div className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                                        <span className={`h-2 w-2 rounded-full ${healthSummary?.currentMetrics?.headShaking ? 'bg-rose-500 animate-pulse' : 'bg-emerald-500'}`} />
+                                        {healthSummary?.currentMetrics?.headShaking ? 'Head Shaking Alert' : 'Calm / Normal'}
+                                    </div>
+                                    <span className="text-[9px] text-slate-400 block">Angular Velocity</span>
+                                </div>
+
+                                <div className="space-y-1">
+                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+                                        <Compass className="h-3 w-3 text-blue-600" /> Posture
+                                    </span>
+                                    <div className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                                        <span className="h-2 w-2 rounded-full bg-blue-500" />
+                                        {healthSummary?.currentMetrics?.posture 
+                                            ? (healthSummary.currentMetrics.posture === 'lying_down' ? 'Lying Down' : 'Standing')
+                                            : (healthSummary?.currentMetrics?.motion ? 'Locomotive' : 'Stationary')}
+                                    </div>
+                                    <span className="text-[9px] text-slate-400 block">Gravity Vector</span>
+                                </div>
+
+                                <div className="space-y-1">
+                                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
+                                        <ShieldCheck className="h-3 w-3 text-emerald-600" /> Optical Sensor
+                                    </span>
+                                    <div className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                                        <span className={`h-2 w-2 rounded-full ${healthSummary?.currentMetrics?.sensorStatus === 'occluded' ? 'bg-amber-500' : 'bg-emerald-500'}`} />
+                                        {healthSummary?.currentMetrics?.sensorStatus 
+                                            ? healthSummary.currentMetrics.sensorStatus.toUpperCase() 
+                                            : 'OPTIMAL'}
+                                    </div>
+                                    <span className="text-[9px] text-slate-400 block">Contact Guard</span>
                                 </div>
                             </div>
 

@@ -299,7 +299,14 @@ export const UserDashboardOverview: React.FC<UserDashboardOverviewProps> = ({
                                 return (
                                     <tr key={animal._id} className="hover:bg-slate-50/80 transition">
                                         <td className="py-3.5 pr-4">
-                                            <div className="font-bold text-slate-900 text-sm font-display">{animal.name}</div>
+                                            <div className="font-bold text-slate-900 text-sm font-display flex items-center gap-2">
+                                                <span>{animal.name}</span>
+                                                {(animal.herd || animal.zone) && (
+                                                    <span className="text-[9px] font-semibold text-indigo-700 bg-indigo-50 border border-indigo-200/80 px-1.5 py-0.5 rounded uppercase">
+                                                        {animal.herd || animal.zone}
+                                                    </span>
+                                                )}
+                                            </div>
                                             <div className="text-[11px] text-slate-500">{animal.species} • {animal.breed || 'Standard Breed'}</div>
                                         </td>
                                         <td className="py-3.5 px-3">

@@ -6,6 +6,8 @@ export interface Animal {
     age?: number;
     weight?: number;
     zone?: string;
+    herd?: string;
+    pen?: string;
     deviceId?: string;
     collarId?: string;
     healthStatus: 'healthy' | 'warning' | 'critical';
@@ -28,6 +30,12 @@ export interface CurrentMetrics {
     motion: boolean;
     ambientTemperature: number | string;
     battery: number | string;
+    rumination?: boolean;
+    ruminationRate?: number;
+    headShaking?: boolean;
+    posture?: string;
+    sensorStatus?: string;
+    contactDetected?: boolean;
 }
 
 export interface Deviations {

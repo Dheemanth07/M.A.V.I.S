@@ -54,8 +54,13 @@ export const AnimalCard: React.FC<AnimalCardProps> = ({ animal, onViewVitals, on
                 <h3 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 mb-1 font-display">
                     {animal.name}
                 </h3>
-                <p className="text-xs text-slate-500 font-medium mb-5">
-                    {cleanSpecies} • <span className="text-slate-700 font-semibold">{cleanBreed}</span>
+                <p className="text-xs text-slate-500 font-medium mb-5 flex items-center flex-wrap gap-1.5">
+                    <span>{cleanSpecies} • <span className="text-slate-700 font-semibold">{cleanBreed}</span></span>
+                    {(animal.herd || animal.zone) && (
+                        <span className="text-indigo-700 bg-indigo-50 border border-indigo-200/80 px-2 py-0.5 rounded-md text-[10px] font-semibold tracking-wide uppercase">
+                            {animal.herd || animal.zone}
+                        </span>
+                    )}
                 </p>
 
                 {/* Vitals Grid */}
