@@ -27,6 +27,8 @@ const MODEL_PRIORITY = [
 ];
 
 export class AIService {
+    #insightCache = new Map();
+
     /**
      * Discovers which supported models are currently installed in the local Ollama instance.
      * @returns {Promise<string[]>} List of installed model names matching priority order.
@@ -133,6 +135,8 @@ export class AIService {
 
         const tempDev = (baseTemp && temp) ? (temp - baseTemp).toFixed(1) : "0.0";
         const hrDev = (baseHR && hr) ? (hr - baseHR).toFixed(0) : "0";
+        const rumination = vitals?.rumination ?? vitals?.behavior?.rumination;
+        const headShaking = vitals?.headShaking ?? vitals?.behavior?.headShaking;
 
         const systemPrompt = `You are the M.A.V.I.S Vitality Intelligence Assistant.
 You translate live collar sensor telemetry and baseline trends into simple, clear, and professional health summaries that any animal owner or caregiver can easily understand.
@@ -164,6 +168,8 @@ Live Sensor Telemetry:
 - Blood Oxygen (SpO2): ${spo2 !== undefined ? `${spo2}%` : 'N/A'}
 - Physical Motion: ${motion ? 'Active Motion' : 'Resting / Sitting'}
 - Posture: ${lyingDown ? 'Lying Down' : 'Standing'}
+- Rumination State: ${rumination !== undefined ? (rumination ? 'Active Normal Chewing' : 'Ceased / Depressed Rumination') : 'N/A'}
+- Behavioral Agitation: ${headShaking ? 'Persistent Head Shaking / Ear Agitation' : 'Calm / Normal'}
 - Environmental Temp: ${ambientTemp ? `${ambientTemp}°C` : 'N/A'}
 - Humidity: ${humidity ? `${humidity}%` : 'N/A'}
 
@@ -310,7 +316,27 @@ Generate the simple, clear health assessment JSON now.`;
             };
         }
 
-        // 2. Discover available local Ollama models on the machine
+        // 2. Check Differential Vital Cache (returns in <1ms if vitals have not significantly shifted)
+        const cacheKey = String(animal._id || animal.id || animal.name);
+        const cached = this.#insightCache.get(cacheKey);
+        if (cached && (Date.now() - cached.cachedAt < 60000)) {
+            const prev = cached.vitals;
+            const tempDiff = Math.abs((latestVitals.temperature || 0) - (prev.temperature || 0));
+            const hrDiff = Math.abs((latestVitals.heartRate || 0) - (prev.heartRate || 0));
+            const motionSame = (latestVitals.motion === prev.motion);
+            const ruminationSame = (latestVitals.rumination === prev.rumination);
+            const shakingSame = (latestVitals.headShaking === prev.headShaking);
+
+            if (tempDiff <= 0.25 && hrDiff <= 5 && motionSame && ruminationSame && shakingSame) {
+                return {
+                    ...cached.insight,
+                    cached: true,
+                    latencyMs: Date.now() - startTime
+                };
+            }
+        }
+
+        // 3. Discover available local Ollama models on the machine
         const availableModels = await this.getAvailableLocalModels();
 
         // 3. Attempt local SLM cascade in priority order
@@ -321,7 +347,7 @@ Generate the simple, clear health assessment JSON now.`;
                 try {
                     const result = await this.queryOllamaModel(model, systemPrompt, userPrompt);
                     if (result && result.summary && result.riskLevel) {
-                        return {
+                        const slmInsight = {
                             timestamp: new Date().toISOString(),
                             animalName: animal.name,
                             species: animal.species,
@@ -332,6 +358,8 @@ Generate the simple, clear health assessment JSON now.`;
                             source: `Local SLM: ${model}`,
                             latencyMs: Date.now() - startTime
                         };
+                        this.#insightCache.set(cacheKey, { vitals: { ...latestVitals }, insight: slmInsight, cachedAt: Date.now() });
+                        return slmInsight;
                     }
                 } catch {
                     // Try next model in cascade
@@ -342,13 +370,15 @@ Generate the simple, clear health assessment JSON now.`;
 
         // 4. Ultimate Fallback: Deterministic Clinical Safety Engine
         const fallback = this.generateDeterministicFallback(animal, latestVitals, healthReport);
-        return {
+        const fallbackInsight = {
             timestamp: new Date().toISOString(),
             animalName: animal.name,
             species: animal.species,
             latencyMs: Date.now() - startTime,
             ...fallback
         };
+        this.#insightCache.set(cacheKey, { vitals: { ...latestVitals }, insight: fallbackInsight, cachedAt: Date.now() });
+        return fallbackInsight;
     }
 }
 
