@@ -19,11 +19,16 @@ const sensorSchema = new mongoose.Schema(
             heartRate: { type: Number, required: true },
             respiratoryRate: { type: Number, required: true },
             bloodOxygen: { type: Number, required: true },
+            hrv: { type: Number },
         },
         behavior: {
             motion: { type: Boolean, required: true },
             steps: { type: Number },
             lyingDown: { type: Boolean },
+            rumination: { type: Boolean },
+            ruminationRate: { type: Number },
+            headShaking: { type: Boolean },
+            posture: { type: String },
         },
         environment: {
             ambientTemperature: { type: Number },
@@ -38,6 +43,8 @@ const sensorSchema = new mongoose.Schema(
         device: {
             batteryLevel: { type: Number },
             signalStrength: { type: Number },
+            sensorStatus: { type: String },
+            contactDetected: { type: Boolean },
         },
         timestamp: {
             type: Date,

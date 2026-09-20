@@ -53,6 +53,16 @@ export function calculateRiskScore(allMetricEvaluations = {}, context = {}) {
     synergyMultiplier = Math.max(synergyMultiplier, 1.25);
   }
 
+  // 5. Synergy: Febrile Ruminal Cessation (Fever + Dropped Rumination) -> DS18B20 + MPU6050 Gyro
+  if (isFebrile && context.rumination === false && context.motion === false) {
+    synergyMultiplier = Math.max(synergyMultiplier, 1.45);
+  }
+
+  // 6. Synergy: Neuro-Parasitic Agitation (Tachycardia + Persistent Head Shaking) -> MAX30102 + MPU6050 Gyro
+  if (hasTachycardia && context.headShaking === true) {
+    synergyMultiplier = Math.max(synergyMultiplier, 1.30);
+  }
+
   let finalScore = Math.round(baseScore * synergyMultiplier);
 
   // 4. Herd Contagion Pressure Contribution

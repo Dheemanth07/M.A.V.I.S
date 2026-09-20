@@ -31,10 +31,12 @@ export function evaluateHealth(payload = {}) {
     thi: thiValue === undefined ? null : evaluateTHI(Number(thiValue)),
   };
 
-  // 2. Run the aggregators using the evaluated data & multi-modal context
   const context = {
     motion: payload.motion ?? payload.behavior?.motion,
     lyingDown: payload.lyingDown ?? payload.behavior?.lyingDown,
+    rumination: payload.rumination ?? payload.behavior?.rumination,
+    headShaking: payload.headShaking ?? payload.behavior?.headShaking,
+    sensorStatus: payload.sensorStatus ?? payload.device?.sensorStatus,
     thi: thiValue,
     herdRiskScore: payload.herdRiskScore
   };

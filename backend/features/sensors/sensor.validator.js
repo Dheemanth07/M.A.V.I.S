@@ -24,12 +24,17 @@ class SensorValidator {
                 heartRate: Joi.number().min(20).max(240).required(),
                 respiratoryRate: Joi.number().min(5).max(120).required(),
                 bloodOxygen: Joi.number().min(50).max(100).required(),
+                hrv: Joi.number().min(0).max(300).optional(),
             }).required(),
 
             behavior: Joi.object({
                 motion: Joi.boolean().required(),
                 steps: Joi.number().min(0).optional(),
                 lyingDown: Joi.boolean().optional(),
+                rumination: Joi.boolean().optional(),
+                ruminationRate: Joi.number().min(0).max(120).optional(),
+                headShaking: Joi.boolean().optional(),
+                posture: Joi.string().valid("standing", "lying_down", "transitioning").optional(),
             }).required(),
 
             environment: Joi.object({
@@ -47,6 +52,8 @@ class SensorValidator {
             device: Joi.object({
                 batteryLevel: Joi.number().min(0).max(100).optional(),
                 signalStrength: Joi.number().optional(),
+                sensorStatus: Joi.string().valid("optimal", "occluded", "detached", "degraded").optional(),
+                contactDetected: Joi.boolean().optional(),
             }).optional(),
 
             timestamp: Joi.date().max("now").optional(),

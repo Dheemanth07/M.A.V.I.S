@@ -70,6 +70,27 @@ export const analyzeSensorReading = (reading) => {
         "BATTERY",
         "Low wearable battery level",
     );
+    riskScore += addRisk(
+        alerts,
+        behavior.rumination === false && physiology.temperature >= 40,
+        15,
+        "RUMINAL_CESSATION",
+        "Rumination cessation during febrile state (Acute Mastitis / Acidosis risk)",
+    );
+    riskScore += addRisk(
+        alerts,
+        behavior.headShaking === true && (physiology.heartRate >= 140 || physiology.heartRate <= 45),
+        15,
+        "AGITATION_DISTRESS",
+        "Persistent head shaking with abnormal heart rate (Parasitic / Neurological Distress)",
+    );
+    riskScore += addRisk(
+        alerts,
+        physiology.hrv !== undefined && physiology.hrv < 20,
+        20,
+        "AUTONOMIC_STRESS",
+        "Depressed Heart Rate Variability detected (Severe Autonomic Stress / Acute Pain)",
+    );
 
     riskScore = clamp(riskScore, 0, 100);
 
