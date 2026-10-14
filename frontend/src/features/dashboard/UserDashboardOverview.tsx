@@ -67,48 +67,54 @@ export const UserDashboardOverview: React.FC<UserDashboardOverviewProps> = ({
         }
     };
 
+    const hideHero = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('hero') === 'false';
+
     return (
         <div className="space-y-6 animate-in fade-in duration-300">
             {/* Top Welcome Banner */}
-            <div className="bento-card p-8 bg-linear-to-r from-slate-900 via-teal-950 to-slate-900 text-white relative overflow-hidden border border-slate-800">
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
-                    <div className="space-y-2">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/20 border border-teal-400/30 text-teal-200 text-xs font-semibold tracking-wider uppercase">
-                            <Activity className="h-3.5 w-3.5" />
-                            <span>Livestock &amp; Companion Health Monitoring</span>
+            {!hideHero && (
+                <>
+                    <div className="bento-card p-8 bg-linear-to-r from-slate-900 via-teal-950 to-slate-900 text-white relative overflow-hidden border border-slate-800">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+                            <div className="space-y-2">
+                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/20 border border-teal-400/30 text-teal-200 text-xs font-semibold tracking-wider uppercase">
+                                    <Activity className="h-3.5 w-3.5" />
+                                    <span>Livestock &amp; Companion Health Monitoring</span>
+                                </div>
+                                <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white m-0 font-display">
+                                    Welcome back, {user?.name ? user.name.split(' ')[0] : 'Caregiver'}
+                                </h2>
+                                <p className="text-sm text-slate-300 max-w-xl font-normal m-0 leading-relaxed">
+                                    Continuous real-time physiological telemetry, baseline calibration, and epidemiological contagion tracking active.
+                                </p>
+                            </div>
+
+                            <div className="bg-slate-800/80 backdrop-blur-md p-4 rounded-2xl border border-slate-700 flex items-center gap-4 shrink-0">
+                                <div className="p-3 rounded-xl bg-teal-500/20 text-teal-300">
+                                    <Heart className="h-6 w-6" />
+                                </div>
+                                <div>
+                                    <div className="text-2xl font-bold tracking-tight text-white">{healthyCount} / {animals.length || 0}</div>
+                                    <div className="text-xs text-slate-300 font-medium">Optimal Baseline Status</div>
+                                </div>
+                            </div>
                         </div>
-                        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white m-0 font-display">
-                            Welcome back, {user?.name ? user.name.split(' ')[0] : 'Caregiver'}
-                        </h2>
-                        <p className="text-sm text-slate-300 max-w-xl font-normal m-0 leading-relaxed">
-                            Continuous real-time physiological telemetry, baseline calibration, and epidemiological contagion tracking active.
-                        </p>
                     </div>
 
-                    <div className="bg-slate-800/80 backdrop-blur-md p-4 rounded-2xl border border-slate-700 flex items-center gap-4 shrink-0">
-                        <div className="p-3 rounded-xl bg-teal-500/20 text-teal-300">
-                            <Heart className="h-6 w-6" />
+                    {/* Clinical Telemetry Summary Banner */}
+                    <div className="bento-card p-4 sm:p-4.5 bg-white border border-slate-200/90 shadow-2xs flex items-center justify-between gap-3 text-xs">
+                        <div className="flex items-center gap-3 min-w-0">
+                            <div className="p-2 rounded-xl bg-teal-50 text-teal-700 border border-teal-100/80 shrink-0">
+                                <Activity className="h-4 w-4" />
+                            </div>
+                            <div className="min-w-0 leading-relaxed">
+                                <strong className="text-teal-950 font-bold mr-1.5 whitespace-nowrap">Clinical Care Summary:</strong>
+                                <span className="text-slate-700 font-normal">{dynamicInsightText}</span>
+                            </div>
                         </div>
-                        <div>
-                            <div className="text-2xl font-bold tracking-tight text-white">{healthyCount} / {animals.length || 0}</div>
-                            <div className="text-xs text-slate-300 font-medium">Optimal Baseline Status</div>
-                        </div>
                     </div>
-                </div>
-            </div>
-
-            {/* Clinical Telemetry Summary Banner */}
-            <div className="bento-card p-4 sm:p-4.5 bg-white border border-slate-200/90 shadow-2xs flex items-center justify-between gap-3 text-xs">
-                <div className="flex items-center gap-3 min-w-0">
-                    <div className="p-2 rounded-xl bg-teal-50 text-teal-700 border border-teal-100/80 shrink-0">
-                        <Activity className="h-4 w-4" />
-                    </div>
-                    <div className="min-w-0 leading-relaxed">
-                        <strong className="text-teal-950 font-bold mr-1.5 whitespace-nowrap">Clinical Care Summary:</strong>
-                        <span className="text-slate-700 font-normal">{dynamicInsightText}</span>
-                    </div>
-                </div>
-            </div>
+                </>
+            )}
 
             {/* 4 Core KPI Summary Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">

@@ -19,32 +19,30 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 32px 24px;
+    padding: 24px;
     width: 1360px;
-    height: 720px;
+    box-sizing: border-box;
     margin: 0 auto;
   }
 
   .canvas {
-    width: 1300px;
-    height: 656px;
+    width: 1312px;
     background: #ffffff;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
   }
 
   /* Header */
   .header {
     text-align: center;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
   }
   .title {
     font-size: 26px;
     font-weight: 800;
     color: #0f172a;
     letter-spacing: -0.5px;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
   }
   .subtitle {
     font-size: 14px;
@@ -55,22 +53,22 @@
   /* Main Flow Container */
   .pipeline-grid {
     display: grid;
-    grid-template-columns: 215px 40px 225px 40px 240px 40px 200px 40px 210px;
-    align-items: center;
-    height: 380px;
+    grid-template-columns: 215px 40px 225px 40px 245px 40px 200px 40px 210px;
+    align-items: stretch;
   }
 
   .stage-card {
     background: #ffffff;
     border-radius: 12px;
-    padding: 16px 14px;
+    padding: 16px 14px 14px;
     border: 1.5px solid;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 340px;
+    height: 425px;
     box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03), 0 2px 4px -2px rgba(0,0,0,0.03);
     position: relative;
+    box-sizing: border-box;
   }
 
   /* Stage Color Coding */
@@ -109,25 +107,25 @@
   .items-list {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 10px;
     flex-grow: 1;
   }
 
   .item-box {
     background: #ffffff;
     border-radius: 8px;
-    padding: 8px 10px;
+    padding: 10px 10px;
     border: 1px solid #e2e8f0;
     font-size: 11px;
     color: #334155;
-    line-height: 1.35;
+    line-height: 1.4;
   }
 
   .item-box strong {
     color: #0f172a;
     display: block;
     font-size: 11.5px;
-    margin-bottom: 2px;
+    margin-bottom: 3px;
   }
 
   .stage-footer {
@@ -163,61 +161,25 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-    height: 340px;
+    height: 425px;
     justify-content: space-between;
   }
 
   .sub-card {
     background: #ffffff;
     border-radius: 10px;
-    padding: 12px 10px;
+    padding: 14px 12px;
     border: 1.5px solid;
-    height: 164px;
+    height: 206px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     box-shadow: 0 2px 4px -1px rgba(0,0,0,0.03);
+    box-sizing: border-box;
   }
 
   .sub-db    { border-color: #10b981; background: #f7fdfa; }
   .sub-event { border-color: #0284c7; background: #f8fbfe; }
-
-  /* Supporting Pipelines Footer */
-  .supporting-bar {
-    background: #f8fafc;
-    border-radius: 10px;
-    border: 1px solid #e2e8f0;
-    padding: 10px 18px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 11px;
-    color: #475569;
-  }
-
-  .supporting-tag {
-    font-weight: 700;
-    color: #0f172a;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .dot-demo {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #0284c7;
-    display: inline-block;
-  }
-
-  .dot-ai {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #8b5cf6;
-    display: inline-block;
-  }
 </style>
 </head>
 <body>
@@ -326,7 +288,7 @@
           <span class="stage-badge badge-emerald">Storage</span>
           <div style="font-size: 13px; font-weight: 800; color: #047857; margin-bottom: 4px;">MongoDB Database</div>
         </div>
-        <div style="font-size: 10.5px; color: #334155; line-height: 1.35;">
+        <div style="font-size: 10.5px; color: #334155; line-height: 1.4;">
           Persists animal profiles, historical time-series telemetry, and alert audit records.<br>
           <em style="color: #64748b; font-size: 9.5px; display: block; margin-top: 4px;">(Supports in-memory fallback for local dev)</em>
         </div>
@@ -337,7 +299,7 @@
           <span class="stage-badge badge-cyan">Broadcast</span>
           <div style="font-size: 13px; font-weight: 800; color: #0369a1; margin-bottom: 4px;">Socket.IO Events</div>
         </div>
-        <div style="font-size: 10.5px; color: #334155; line-height: 1.35;">
+        <div style="font-size: 10.5px; color: #334155; line-height: 1.4;">
           Broadcasts real-time events to connected clients:
           <ul style="padding-left: 14px; margin-top: 4px; font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: #0284c7;">
             <li>sensorUpdate</li>
@@ -376,18 +338,6 @@
       <div class="stage-footer">React 19 &bull; TypeScript &bull; Vite</div>
     </div>
 
-  </div>
-
-  <!-- Supporting Workflows Bar -->
-  <div class="supporting-bar">
-    <div>
-      <span class="supporting-tag"><span class="dot-demo"></span> Simulation Workflow:</span>
-      The built-in Telemetry Daemon can generate simulated herd data for development and demonstration without a physical collar connected.
-    </div>
-    <div>
-      <span class="supporting-tag"><span class="dot-ai"></span> Optional Local AI:</span>
-      Ollama integration provides on-demand diagnostic narrative summaries, with automatic fallback to an in-memory rule engine.
-    </div>
   </div>
 </div>
 
