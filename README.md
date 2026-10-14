@@ -35,22 +35,22 @@ The system supports two complementary workflows:
 ## Screenshots
 
 ### Animal Digital Twin & Live Telemetry
-Real-time physiological metrics compared against learned baseline ranges, featuring posture, optical contact status, and cumulative alert breakdowns:
+Individual subject deep-dive (Luna-02 Jersey cow) comparing live collar sensor readings against personalized learned baseline ranges, featuring real-time 3-second telemetry streaming, optical photodiode contact status, behavioral posture indicators, and cumulative alert breakdowns:
 
 ![Digital Twin Monitor](docs/images/digital-twin-monitor.png)
 
 ### Live Herd Telemetry Matrix & Priority Queue
-Multi-animal monitoring overview tracking baseline deviations across the group alongside a priority clinical observation queue:
+Multi-subject clinical triage view tracking real-time vital deviations across the entire group alongside an immediate clinical observation queue with caregiver acknowledgment:
 
 ![Live Herd Telemetry Matrix](docs/images/live-herd-matrix.png)
 
-*Screenshots show the monitoring dashboard using demonstration telemetry. Actual sensor readings depend on hardware setup and connectivity.*
+*Screenshots show the monitoring dashboard running live demonstration telemetry. Real-time collar data updates at 3-second intervals.*
 
 ---
 
 ## System Architecture
 
-The pipeline separates physical sensor acquisition, data ingestion, risk analysis, persistent storage, and client presentation:
+The pipeline separates physical sensor acquisition, REST ingestion, statistical risk evaluation, persistent storage, real-time WebSocket broadcast, and client visualization into five decoupled tiers:
 
 ![M.A.V.I.S. System Architecture](docs/images/architecture.png)
 
@@ -141,6 +141,13 @@ npm install
 npm run dev
 ```
 Open the local URL printed by Vite (typically `http://localhost:5173`).
+
+### 5. Sign In to the Demonstration Herd
+To explore the complete 8-animal multi-species herd, active anomaly alerts, and calibrated baseline profiles shown in the screenshots, sign in with the pre-provisioned demonstration credentials:
+* **Email**: `dheemanth1007@gmail.com`
+* **Password**: `dheemanth@123`
+
+*(Note: Newly registered custom accounts start with an empty dashboard to allow onboarding fresh subjects from scratch.)*
 
 ---
 
