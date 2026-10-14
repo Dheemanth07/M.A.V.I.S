@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/context/AuthContext';
 import {
     Activity, Heart, Thermometer, Wind, Battery,
-    Cpu, Bell, ChevronRight, CheckCircle2, ArrowRight,
-    Layers, TrendingUp
+    Cpu, ChevronRight, CheckCircle2, ArrowRight,
+    Layers, TrendingUp, Users, FileText
 } from 'lucide-react';
 import {
     ResponsiveContainer, AreaChart, Area, XAxis, YAxis,
@@ -95,15 +95,6 @@ export const LandingPage: React.FC = () => {
                 const progress = (window.scrollY / totalHeight) * 100;
                 setScrollProgress(progress);
             }
-
-            // Fallback & direct viewport check for instant responsiveness on scroll
-            const revealElements = document.querySelectorAll('.reveal-on-scroll:not(.is-visible)');
-            revealElements.forEach((el) => {
-                const rect = el.getBoundingClientRect();
-                if (rect.top < window.innerHeight - 60 && rect.bottom > 0) {
-                    el.classList.add('is-visible');
-                }
-            });
         };
 
         window.addEventListener('scroll', handleScroll, { passive: true });
@@ -142,23 +133,27 @@ export const LandingPage: React.FC = () => {
     const faqs = [
         {
             q: "Does M.A.V.I.S require continuous internet access in remote pastures?",
-            a: "No. M.A.V.I.S is engineered for 100% offline-first edge deployment. The ESP32 collar nodes transmit telemetry directly to a local farm gateway. All database storage, mathematical scoring, and AI inferences run on your local network without needing cloud servers."
+            a: "No. M.A.V.I.S is engineered for 100% offline-first edge deployment. The ESP32 collar nodes transmit telemetry directly to a local farm gateway. All database storage, mathematical scoring, and clinical diagnostic inferences run on your local network without needing cloud servers."
         },
         {
             q: "How does the collar hardware detect health deviations before visible symptoms appear?",
-            a: "The collar combines medical-grade optical photoplethysmography (MAX30102), waterproof digital thermal probes (DS18B20), and 6-axis motion sensors (MPU6050). By comparing continuous readings against the animal's individual baseline, MAVIS identifies subtle pulse spikes and subclinical fever hours before physical distress shows."
+            a: "The collar combines optical photoplethysmography (MAX30102), waterproof digital thermal probes (DS18B20), and 6-axis motion sensors (MPU6050). By comparing continuous readings against the animal's individual baseline and species circadian curve, MAVIS identifies subtle pulse spikes and subclinical fever hours before physical distress shows."
         },
         {
             q: "What are the 3 physical sensors integrated inside the collar?",
-            a: "1) MAX30102 optical sensor for heart rate and SpO2; 2) DS18B20 waterproof digital probe for skin and core body temperature; 3) MPU6050 6-axis IMU for rumination posture, movement, and activity classification."
+            a: "1) MAX30102 optical sensor for continuous pulse rate and blood oxygenation (SpO2); 2) DS18B20 waterproof digital probe for ±0.1°C core body temperature; 3) MPU6050 6-axis IMU for rumination motion and posture classification."
         },
         {
-            q: "How does the Emergency Veterinary Dispatch work?",
-            a: "When a critical threshold is breached, MAVIS generates an immediate clinical summary. On desktop, it offers 1-click clipboard copying and WhatsApp Web dispatch without opening unwanted OS apps. On mobile devices, it automatically provides 1-tap direct phone dialing and native SMS drafting."
+            q: "How does the Epidemiological Herd Contagion Graph work?",
+            a: "MAVIS tracks contact exposure indices across shared pens, enclosures, and pastures. When an animal exhibits febrile or respiratory distress, the system automatically evaluates transmission risk to cohort animals and prompts timely pen separation to prevent herd-wide spread."
+        },
+        {
+            q: "Can clinical treatment histories and veterinary audits be exported?",
+            a: "Yes. MAVIS features a 2-page print-optimized Veterinary Clinical Audit Report with differential diagnoses, vital sign trends, and signature sign-offs. Caregivers can also log medications, hydration, and pen transfers with persistent audit trails."
         },
         {
             q: "Can multiple caregivers manage herds collaboratively on the same system?",
-            a: "Yes. MAVIS features unified real-time data synchronization with zero data silos. All registered herd animals, collar telemetry streams, digital twins, and active clinical alert queues are shared live across caregiver, owner, and veterinarian views."
+            a: "Yes. MAVIS features unified real-time data synchronization with zero data silos. All registered herd animals, collar telemetry streams, physiological health profiles, and active clinical alert queues are shared live across caregiver, owner, and veterinarian views."
         }
     ];
 
@@ -241,7 +236,7 @@ export const LandingPage: React.FC = () => {
 
                         {/* Subtitle */}
                         <p className="text-base sm:text-lg text-slate-600 font-normal leading-relaxed max-w-2xl">
-                            M.A.V.I.S combines custom ESP32 collar hardware with on-premises biological digital twins to monitor core body temperature, pulse, respiration rate, and rumination posture in real time — keeping livestock healthy without relying on cloud infrastructure.
+                            M.A.V.I.S combines custom ESP32 collar hardware with on-premises physiological health modeling to monitor core body temperature, pulse, respiration rate, and rumination posture in real time — keeping livestock, herd subjects, and domestic pets healthy without cloud dependencies.
                         </p>
 
                         {/* Hero Action Buttons */}
@@ -285,21 +280,22 @@ export const LandingPage: React.FC = () => {
                         
                         <div className="bento-card p-6 sm:p-7 bg-white border border-slate-200/90 shadow-xl space-y-5 rounded-3xl transition-all duration-300 hover:shadow-2xl">
                             {/* Live Preview Header */}
-                            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-                                <div className="flex items-center gap-3">
-                                    <div className="h-10 w-10 rounded-2xl bg-teal-50 border border-teal-100 flex items-center justify-center text-teal-700 font-bold">
+                            <div className="flex items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                                <div className="flex items-center gap-3 min-w-0">
+                                    <div className="h-10 w-10 rounded-2xl bg-teal-50 border border-teal-100 flex items-center justify-center text-teal-700 font-bold shrink-0">
                                         <Activity className="h-5 w-5 text-teal-700" />
                                     </div>
                                     <div>
                                         <div className="flex items-center gap-2">
-                                            <span className="font-bold text-slate-900 text-sm">Subject #02 (Live Node)</span>
-                                            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
+                                            <span className="font-bold text-slate-900 text-sm whitespace-nowrap">Subject #02 (Holstein)</span>
+                                            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping shrink-0" />
                                         </div>
-                                        <span className="text-xs text-slate-500 font-mono">COLLAR-NODE-02 • 100 Hz Sensor</span>
+                                        <span className="text-xs text-slate-500 font-mono block whitespace-nowrap">Node #02 • 50 Hz Live Stream</span>
                                     </div>
                                 </div>
-                                <div className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] font-bold">
-                                    Normal Stability
+                                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-semibold whitespace-nowrap shrink-0 shadow-2xs">
+                                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                                    <span>Normal Baseline</span>
                                 </div>
                             </div>
 
@@ -345,7 +341,7 @@ export const LandingPage: React.FC = () => {
                                         <Activity className="h-3.5 w-3.5 text-teal-400" />
                                         <span>MAX30102 Photoplethysmogram</span>
                                     </span>
-                                    <span className="text-teal-300">50 Hz Stream</span>
+                                    <span className="text-teal-300">100 Hz PPG Stream</span>
                                 </div>
                                 <div className="h-8 flex items-center justify-between gap-1 overflow-hidden px-1">
                                     {[30, 45, 20, 80, 25, 95, 35, 40, 30, 75, 20, 90, 40, 30, 85, 25, 95, 30, 40, 20, 80, 30].map((h, i) => (
@@ -378,15 +374,15 @@ export const LandingPage: React.FC = () => {
                 <div className="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-slate-200/80 border border-slate-200/80 rounded-2xl bg-white shadow-sm overflow-hidden">
                     <div className="flex flex-col items-center justify-center py-7 px-4 text-center">
                         <span className="text-3xl font-bold text-slate-900 font-mono tracking-tight">100 Hz</span>
-                        <span className="text-xs text-slate-500 font-medium mt-1">MAX30102 Raw Sample Rate</span>
+                        <span className="text-xs text-slate-500 font-medium mt-1">MAX30102 PPG Optical Sampling</span>
                     </div>
                     <div className="flex flex-col items-center justify-center py-7 px-4 text-center">
                         <span className="text-3xl font-bold text-teal-700 font-mono tracking-tight">Every 3s</span>
-                        <span className="text-xs text-slate-500 font-medium mt-1">Telemetry Broadcast Cycle</span>
+                        <span className="text-xs text-slate-500 font-medium mt-1">Collar Telemetry Broadcast Cycle</span>
                     </div>
                     <div className="flex flex-col items-center justify-center py-7 px-4 text-center">
-                        <span className="text-3xl font-bold text-slate-900 font-mono tracking-tight">3</span>
-                        <span className="text-xs text-slate-500 font-medium mt-1">Core Biometric Sensors on Collar</span>
+                        <span className="text-3xl font-bold text-slate-900 font-mono tracking-tight">3 Sensors</span>
+                        <span className="text-xs text-slate-500 font-medium mt-1">MAX30102 • DS18B20 • MPU6050</span>
                     </div>
                     <div className="flex flex-col items-center justify-center py-7 px-4 text-center">
                         <span className="text-3xl font-bold text-teal-700 font-mono tracking-tight">100%</span>
@@ -430,7 +426,7 @@ export const LandingPage: React.FC = () => {
                         <div>
                             <h4 className="text-base font-bold text-slate-900 font-display mb-1.5">Gateway Processes & Alerts</h4>
                             <p className="text-xs text-slate-600 leading-relaxed">
-                                Every 3 seconds the collar transmits a JSON payload over Wi-Fi to the local Node.js gateway. Anomaly detection, digital twin sync, and threshold-based alert generation run instantly on-premises.
+                                Every 3 seconds the collar transmits a JSON payload over Wi-Fi to the local Node.js gateway. Anomaly detection, baseline synchronization, and threshold-based alert generation run instantly on-premises.
                             </p>
                         </div>
                         <div className="text-[11px] font-mono text-teal-700 font-semibold">Node.js • MongoDB • Socket.IO</div>
@@ -445,7 +441,7 @@ export const LandingPage: React.FC = () => {
                         <div>
                             <h4 className="text-base font-bold text-slate-900 font-display mb-1.5">Dashboard Surfaces Insights</h4>
                             <p className="text-xs text-slate-600 leading-relaxed">
-                                The React dashboard receives live Socket.IO push updates and renders real-time charts, biological digital twin visuals, AI-generated health summaries, and critical alerts — no refresh needed.
+                                The React dashboard receives live Socket.IO push updates and renders real-time charts, continuous physiological telemetry visuals, automated clinical health summaries, and critical alerts — no refresh needed.
                             </p>
                         </div>
                         <div className="text-[11px] font-mono text-teal-700 font-semibold">React • Recharts • Ollama (Llama 3.2 / Phi-3)</div>
@@ -475,71 +471,71 @@ export const LandingPage: React.FC = () => {
                                 <TrendingUp className="h-6 w-6" />
                             </div>
                             <h4 className="text-lg font-bold text-slate-900 font-display m-0">
-                                High-Speed Ingestion
+                                Continuous Collar Telemetry
                             </h4>
                             <p className="text-xs text-slate-600 leading-relaxed m-0">
-                                Live telemetry packets broadcast every 3 seconds via Socket.IO with automatic deduplication, rolling averages, and circuit-breaker battery preservation.
+                                Ingests 3-second live sensor packets over local network via Socket.IO with rolling statistical smoothing, anomaly damping, and battery preservation.
                             </p>
                         </div>
                         <div className="pt-3 border-t border-slate-100 text-[11px] font-semibold text-teal-700 flex items-center gap-1">
-                            <span>Live Signal Pipeline</span>
+                            <span>100 Hz Optical PPG • 3s Stream</span>
                             <ChevronRight className="h-3 w-3" />
                         </div>
                     </div>
 
-                    {/* Pillar 2: Digital Twin Engine */}
+                    {/* Pillar 2: Circadian Baseline Learning */}
                     <div className="bento-card p-6 bg-white border border-slate-200/90 shadow-sm rounded-3xl space-y-4 flex flex-col justify-between hover:shadow-md hover:-translate-y-1 transition duration-300 reveal-on-scroll">
                         <div className="space-y-3">
                             <div className="h-12 w-12 rounded-2xl bg-blue-50 border border-blue-100 text-blue-700 flex items-center justify-center">
                                 <Layers className="h-6 w-6" />
                             </div>
                             <h4 className="text-lg font-bold text-slate-900 font-display m-0">
-                                Biological Digital Twin
+                                Circadian Baseline Learning
                             </h4>
                             <p className="text-xs text-slate-600 leading-relaxed m-0">
-                                Synchronizes real-time sensor streams with learned biological baseline models to track posture, thermal dissipation, and activity levels.
+                                Dynamic baseline calibration adapted to species chronobiology (diurnal cattle, crepuscular cats, canines) and ambient Temperature-Humidity Index (THI).
                             </p>
                         </div>
                         <div className="pt-3 border-t border-slate-100 text-[11px] font-semibold text-blue-700 flex items-center gap-1">
-                            <span>Digital Twin Model</span>
+                            <span>Adaptive EMA (α=0.05) &amp; Welford</span>
                             <ChevronRight className="h-3 w-3" />
                         </div>
                     </div>
 
-                    {/* Pillar 3: Clinical Intelligence */}
+                    {/* Pillar 3: Herd Contagion Graph */}
+                    <div className="bento-card p-6 bg-white border border-slate-200/90 shadow-sm rounded-3xl space-y-4 flex flex-col justify-between hover:shadow-md hover:-translate-y-1 transition duration-300 reveal-on-scroll">
+                        <div className="space-y-3">
+                            <div className="h-12 w-12 rounded-2xl bg-amber-50 border border-amber-100 text-amber-700 flex items-center justify-center">
+                                <Users className="h-6 w-6" />
+                            </div>
+                            <h4 className="text-lg font-bold text-slate-900 font-display m-0">
+                                Herd Contagion Graph
+                            </h4>
+                            <p className="text-xs text-slate-600 leading-relaxed m-0">
+                                Epidemiological contact graph modeling cross-exposure across shared pens and pastures, delivering instant pen quarantine recommendations.
+                            </p>
+                        </div>
+                        <div className="pt-3 border-t border-slate-100 text-[11px] font-semibold text-amber-700 flex items-center gap-1">
+                            <span>Transmission Risk Index</span>
+                            <ChevronRight className="h-3 w-3" />
+                        </div>
+                    </div>
+
+                    {/* Pillar 4: Local SLM Intelligence & Audits */}
                     <div className="bento-card p-6 bg-white border border-slate-200/90 shadow-sm rounded-3xl space-y-4 flex flex-col justify-between hover:shadow-md hover:-translate-y-1 transition duration-300 reveal-on-scroll">
                         <div className="space-y-3">
                             <div className="h-12 w-12 rounded-2xl bg-purple-50 border border-purple-100 text-purple-700 flex items-center justify-center">
-                                <Activity className="h-6 w-6" />
+                                <FileText className="h-6 w-6" />
                             </div>
                             <h4 className="text-lg font-bold text-slate-900 font-display m-0">
-                                On-Device Intelligence
+                                Local SLM Clinical Audits
                             </h4>
                             <p className="text-xs text-slate-600 leading-relaxed m-0">
-                                Evaluates multi-vital trends with zero cloud dependencies. Delivers clear, jargon-free health summaries and practical care steps with 0ms safety fallbacks.
+                                Offline Ollama SLMs synthesize differential diagnoses, track treatment intervention logs, and generate 2-page printable veterinary audit reports.
                             </p>
                         </div>
                         <div className="pt-3 border-t border-slate-100 text-[11px] font-semibold text-purple-700 flex items-center gap-1">
-                            <span>Edge Telemetry Inference</span>
-                            <ChevronRight className="h-3 w-3" />
-                        </div>
-                    </div>
-
-                    {/* Pillar 4: Emergency Dispatch */}
-                    <div className="bento-card p-6 bg-white border border-slate-200/90 shadow-sm rounded-3xl space-y-4 flex flex-col justify-between hover:shadow-md hover:-translate-y-1 transition duration-300 reveal-on-scroll">
-                        <div className="space-y-3">
-                            <div className="h-12 w-12 rounded-2xl bg-rose-50 border border-rose-100 text-rose-700 flex items-center justify-center">
-                                <Bell className="h-6 w-6" />
-                            </div>
-                            <h4 className="text-lg font-bold text-slate-900 font-display m-0">
-                                Instant Vet Dispatch
-                            </h4>
-                            <p className="text-xs text-slate-600 leading-relaxed m-0">
-                                Device-aware alert routing. Seamless 1-click clipboard &amp; WhatsApp Web routing on desktop; native 1-tap phone dialing and pre-drafted SMS on mobile browsers.
-                            </p>
-                        </div>
-                        <div className="pt-3 border-t border-slate-100 text-[11px] font-semibold text-rose-700 flex items-center gap-1">
-                            <span>Emergency Routing</span>
+                            <span>100% Offline • Zero Cloud</span>
                             <ChevronRight className="h-3 w-3" />
                         </div>
                     </div>
@@ -697,8 +693,9 @@ export const LandingPage: React.FC = () => {
                                 <span className="text-slate-500 font-medium">24h Peak:</span>
                                 <span className="font-bold font-mono text-slate-900">{metricConfig.peak}</span>
                             </div>
-                            <div className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 font-bold text-[11px]">
-                                {metricConfig.status}
+                            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 font-semibold text-xs whitespace-nowrap shrink-0 shadow-2xs">
+                                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                                <span>{metricConfig.status}</span>
                             </div>
                         </div>
                     </div>
@@ -756,16 +753,16 @@ export const LandingPage: React.FC = () => {
                     {/* Chart Context Footer Strip */}
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 border-t border-slate-100">
                         <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/70 space-y-0.5">
-                            <span className="text-[11px] font-semibold text-slate-500">Telemetry Frequency</span>
-                            <div className="text-sm font-bold text-slate-900 font-mono">50 Hz Continuous Pulse</div>
+                            <span className="text-[11px] font-semibold text-slate-500">Hardware Sampling</span>
+                            <div className="text-sm font-bold text-slate-900 font-mono">100 Hz PPG / 50 Hz Telemetry</div>
                         </div>
                         <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/70 space-y-0.5">
-                            <span className="text-[11px] font-semibold text-slate-500">Anomaly Detection</span>
-                            <div className="text-sm font-bold text-slate-900 font-mono">&lt; 0.1°C Thermal Sensitivity</div>
+                            <span className="text-[11px] font-semibold text-slate-500">Thermal Resolution</span>
+                            <div className="text-sm font-bold text-slate-900 font-mono">±0.1°C DS18B20 Digital Probe</div>
                         </div>
                         <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200/70 space-y-0.5">
-                            <span className="text-[11px] font-semibold text-slate-500">Historical Logging</span>
-                            <div className="text-sm font-bold text-slate-900 font-mono">Time-Series Telemetry DB</div>
+                            <span className="text-[11px] font-semibold text-slate-500">Algorithmic Baseline</span>
+                            <div className="text-sm font-bold text-slate-900 font-mono">Adaptive EMA &amp; Chronobiology</div>
                         </div>
                     </div>
                 </div>

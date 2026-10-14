@@ -25,7 +25,7 @@ export const UserDashboardOverview: React.FC<UserDashboardOverviewProps> = ({
     const [healthMap, setHealthMap] = useState<Record<string, HealthStatusResponse>>({});
     const [loadingHealth, setLoadingHealth] = useState(false);
 
-    const loadAllVitals = () => {
+    const loadAllVitals = React.useCallback(() => {
         if (animals.length === 0) return;
         setLoadingHealth(true);
         Promise.allSettled(animals.map(a => fetchHealthStatus(a._id)))
@@ -39,11 +39,11 @@ export const UserDashboardOverview: React.FC<UserDashboardOverviewProps> = ({
                 setHealthMap(map);
             })
             .finally(() => setLoadingHealth(false));
-    };
+    }, [animals]);
 
     useEffect(() => {
         loadAllVitals();
-    }, [animals]);
+    }, [loadAllVitals]);
 
     const healthyCount = animals.filter(a => (a.healthStatus || 'healthy') === 'healthy').length;
     const warningCount = animals.filter(a => a.healthStatus === 'warning').length;
@@ -341,9 +341,9 @@ export const UserDashboardOverview: React.FC<UserDashboardOverviewProps> = ({
                                             <button
                                                 onClick={() => navigate('/twin')}
                                                 className="px-3 py-1.5 rounded-xl bg-slate-50 hover:bg-teal-50 text-teal-700 hover:text-teal-900 border border-slate-200 hover:border-teal-200 font-semibold text-xs cursor-pointer transition shadow-2xs inline-flex items-center gap-1"
-                                                title={`View ${animal.name}'s Digital Twin`}
+                                                title={`View ${animal.name}'s Health Profile`}
                                             >
-                                                <span>View Twin</span>
+                                                <span>View Profile</span>
                                                 <ArrowUpRight className="h-3.5 w-3.5" />
                                             </button>
                                         </td>
@@ -395,12 +395,12 @@ export const UserDashboardOverview: React.FC<UserDashboardOverviewProps> = ({
                 >
                     <div className="space-y-2">
                         <div className="flex items-center justify-between mb-3">
-                            <span className="text-xs font-bold uppercase tracking-wider text-indigo-700">Digital Twin Engine</span>
+                            <span className="text-xs font-bold uppercase tracking-wider text-indigo-700">Biometric Health Engine</span>
                             <ArrowUpRight className="h-4 w-4 text-slate-400 group-hover:text-indigo-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition" />
                         </div>
-                        <h4 className="text-lg font-bold tracking-tight text-slate-900 m-0 font-display">Local AI Diagnostics</h4>
+                        <h4 className="text-lg font-bold tracking-tight text-slate-900 m-0 font-display">Clinical Diagnostics</h4>
                         <p className="text-xs text-slate-500 font-normal leading-relaxed m-0">
-                            Deep-dive into 24-hour diurnal circadian rhythms and real-time offline SLM veterinary assessments.
+                            Review 24-hour diurnal circadian rhythms and individualized automated veterinary evaluations.
                         </p>
                     </div>
                 </div>

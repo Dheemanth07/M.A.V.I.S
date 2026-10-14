@@ -164,7 +164,7 @@ function AppContent() {
                 gain.connect(ctx.destination);
                 osc.start();
                 osc.stop(ctx.currentTime + 0.35);
-            } catch (e) {
+            } catch {
                 // AudioContext autoplay restrictions
             }
         };
@@ -200,7 +200,7 @@ function AppContent() {
                                 body: alertObj.message,
                                 icon: '/favicon.ico'
                             });
-                        } catch (e) {
+                        } catch {
                             // Ignored if browser policy restricts
                         }
                     }
@@ -239,7 +239,7 @@ function AppContent() {
                 }
             }, 100);
         };
-    }, [isAuthenticated, user?.collarSettings?.syncInterval, user?.alertSettings?.soundAlerts]);
+    }, [isAuthenticated, user?.collarSettings?.syncInterval, user?.alertSettings?.soundAlerts, showToast]);
 
     const currentRole = accountRole === 'admin' ? activeRole : 'user';
 

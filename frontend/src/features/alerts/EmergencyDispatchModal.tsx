@@ -40,7 +40,7 @@ export const EmergencyDispatchModal: React.FC<EmergencyDispatchModalProps> = ({
             setCopiedField(field);
             showToast(field === 'number' ? 'Phone number copied to clipboard!' : 'Clinical alert message copied to clipboard!', 'success');
             setTimeout(() => setCopiedField(null), 2500);
-        } catch (e) {
+        } catch {
             showToast('Failed to copy to clipboard.', 'error');
         }
     };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { 
     Zap, 
     Activity, 
@@ -8,7 +8,6 @@ import {
     Play, 
     Square, 
     Sliders, 
-    Sparkles, 
     Terminal, 
     CheckCircle2, 
     PlusCircle, 
@@ -59,7 +58,7 @@ export const SimulationStudioModal: React.FC<SimulationStudioModalProps> = ({ on
         setLogs(prev => [entry, ...prev].slice(0, 50));
     };
 
-    const loadAnimals = async () => {
+    const loadAnimals = useCallback(async () => {
         try {
             const list = await fetchAnimals();
             setAnimals(list);
@@ -69,7 +68,7 @@ export const SimulationStudioModal: React.FC<SimulationStudioModalProps> = ({ on
         } catch (e: any) {
             addLog('error', 'Failed to load animals list', e.message);
         }
-    };
+    }, [selectedAnimalId]);
 
     useEffect(() => {
         loadAnimals();
@@ -79,7 +78,7 @@ export const SimulationStudioModal: React.FC<SimulationStudioModalProps> = ({ on
                 clearInterval(streamIntervalRef.current);
             }
         };
-    }, []);
+    }, [loadAnimals]);
 
     // 1. Auto-Seed 3 Animals if none exist
     const handleSeedAnimals = async () => {
@@ -218,7 +217,7 @@ export const SimulationStudioModal: React.FC<SimulationStudioModalProps> = ({ on
                 bloodOxygen: 87      // Severe Hypoxia
             }, 88);
 
-            addLog('alert', `🚨 [${target.name}] ANOMALY ALERT TRIGGERED!`, 'T: 39.9°C (Elevated) • RR: 64 BPM (Tachypneic) • SpO2: 87% (Hypoxic) • AI Copilot Auscultation Recommendation dispatched.');
+            addLog('alert', `🚨 [${target.name}] ANOMALY ALERT TRIGGERED!`, 'T: 39.9°C (Elevated) • RR: 64 BPM (Tachypneic) • SpO2: 87% (Hypoxic) • Clinical Auscultation Advisory dispatched.');
         } catch (e: any) {
             addLog('error', 'Respiratory distress scenario error', e.message);
         } finally {
@@ -348,7 +347,7 @@ export const SimulationStudioModal: React.FC<SimulationStudioModalProps> = ({ on
                             bloodOxygen: spo2
                         }, 90);
                         addLog('info', `📡 Stream Pulse #${tick} [${a.name.split(' ')[0]}]`, `T: ${temp}°C • HR: ${hr} BPM • RR: ${rr} • SpO2: ${spo2}%`);
-                    } catch (e) {
+                    } catch {
                         // ignore interval errors
                     }
                 }
@@ -484,7 +483,7 @@ export const SimulationStudioModal: React.FC<SimulationStudioModalProps> = ({ on
                     <div className="lg:col-span-7 space-y-4">
                         <div className="flex items-center justify-between">
                             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                                <Sparkles className="h-3.5 w-3.5 text-teal-600" />
+                                <Sliders className="h-3.5 w-3.5 text-teal-600" />
                                 <span>Preset Clinical Scenarios</span>
                             </h3>
                             <span className="text-[11px] text-slate-400 font-medium">1-Click Instant Transmission</span>
@@ -554,7 +553,7 @@ export const SimulationStudioModal: React.FC<SimulationStudioModalProps> = ({ on
                                     3. Respiratory Distress (SpO2 87%)
                                 </h4>
                                 <p className="text-[11px] text-slate-500 m-0 mt-1">
-                                    Tachypnea (RR 64) + Hypoxia. Fires Anomaly Alert & Copilot Differential.
+                                    Tachypnea (RR 64) + Hypoxia. Fires Anomaly Alert & Clinical Differential.
                                 </p>
                             </button>
 

@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import type { Animal } from '../../shared/types';
-import { createAnimal } from '../../shared/services/api';
+import { createAnimal, updateAnimal } from '../../shared/services/api';
 import { AnimalCard } from './AnimalCard';
 import { VitalsModal } from './VitalsModal';
 import { VeterinaryReportModal } from '../reports/VeterinaryReportModal';
 import { useToast } from '../../shared/context/ToastContext';
-import { ShieldCheck, Search, ChevronLeft, ChevronRight, Plus, X } from 'lucide-react';
+import { ShieldCheck, Search, ChevronLeft, ChevronRight, Plus, X, Edit3 } from 'lucide-react';
 
 interface UserAnimalsViewProps {
     animals: Animal[];
     onRefresh?: () => void;
 }
 
-export const SPECIES_BREED_MAP: Record<string, string[]> = {
+const SPECIES_BREED_MAP: Record<string, string[]> = {
     'Cow': ['Holstein Friesian', 'Jersey', 'Guernsey', 'Ayrshire', 'Brown Swiss', 'Angus', 'Hereford', 'Simmental'],
     'Dog': ['Labrador Retriever', 'German Shepherd', 'Golden Retriever', 'Bulldog', 'Beagle', 'Poodle', 'Rottweiler', 'Husky'],
     'Cat': ['Persian', 'Maine Coon', 'Siamese', 'Bengal', 'Ragdoll', 'British Shorthair', 'Sphynx'],
@@ -20,7 +20,7 @@ export const SPECIES_BREED_MAP: Record<string, string[]> = {
     'Goat': ['Boer', 'Nubian', 'Alpine', 'Saanen', 'Nigerian Dwarf'],
 };
 
-export const normalizeSpecies = (speciesStr: string = ''): string => {
+const normalizeSpecies = (speciesStr: string = ''): string => {
     const s = speciesStr.toLowerCase();
     if (s.includes('cow') || s.includes('bovine') || s.includes('cattle')) return 'Cow';
     if (s.includes('dog') || s.includes('canine')) return 'Dog';
@@ -45,6 +45,39 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals, onRef
     const [showAddModal, setShowAddModal] = useState(false);
     const [formData, setFormData] = useState({ name: '', species: 'Dog', breed: 'Labrador Retriever', age: 2, weight: 15, herd: 'Main Herd' });
     const [submitting, setSubmitting] = useState(false);
+
+    // Modal state for editing an existing animal
+    const [editingAnimal, setEditingAnimal] = useState<Animal | null>(null);
+    const [editFormData, setEditFormData] = useState({ name: '', species: 'Dog', breed: 'Labrador Retriever', herd: 'Main Herd' });
+    const [updating, setUpdating] = useState(false);
+
+    const handleOpenEdit = (animal: Animal) => {
+        const normSp = normalizeSpecies(animal.species);
+        setEditingAnimal(animal);
+        setEditFormData({
+            name: animal.name || '',
+            species: normSp,
+            breed: animal.breed || (SPECIES_BREED_MAP[normSp] ? SPECIES_BREED_MAP[normSp][0] : 'Standard Breed'),
+            herd: animal.herd || 'Main Herd'
+        });
+    };
+
+    const handleUpdateAnimal = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!editingAnimal) return;
+        setUpdating(true);
+        try {
+            await updateAnimal(editingAnimal._id, editFormData);
+            showToast(`Subject '${editFormData.name}' updated successfully.`, 'success');
+            setEditingAnimal(null);
+            if (onRefresh) onRefresh();
+        } catch (err: any) {
+            console.error('Failed to update animal:', err);
+            showToast(err.message || 'Failed to update animal profile.', 'error');
+        } finally {
+            setUpdating(false);
+        }
+    };
 
     const handleAddAnimal = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -174,9 +207,9 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals, onRef
                             className="bg-slate-50 border border-slate-200 text-slate-900 rounded-full px-3.5 py-1.5 text-xs font-semibold focus:outline-none focus:border-teal-600 cursor-pointer shadow-2xs"
                         >
                             <option value="all">All Statuses</option>
-                            <option value="healthy">Healthy Only</option>
-                            <option value="warning">Warning Only</option>
-                            <option value="critical">Critical Only</option>
+                            <option value="healthy">Healthy</option>
+                            <option value="warning">Warning</option>
+                            <option value="critical">Critical</option>
                         </select>
                     </div>
                 </div>
@@ -190,7 +223,7 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals, onRef
                     <div>
                         <h3 className="text-xl font-bold text-slate-900 m-0 font-display">No Animals Registered Yet</h3>
                         <p className="text-xs text-slate-500 mt-1.5 max-w-md mx-auto font-normal leading-relaxed">
-                            Your account is ready. Register your first cattle, canine, or herd subject to connect ESP32 collar telemetry, view continuous vitals, and monitor real-time digital twins.
+                            Your account is ready. Register your first cattle, canine, or herd subject to connect ESP32 collar telemetry, view continuous vitals, and monitor real-time physiological health profiles.
                         </p>
                     </div>
                     <button
@@ -216,6 +249,7 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals, onRef
                                 animal={animal}
                                 onViewVitals={(a) => setSelectedAnimal(a)}
                                 onExportReport={(a) => setReportAnimal(a)}
+                                onEditAnimal={handleOpenEdit}
                             />
                         </div>
                     ))}
@@ -314,7 +348,7 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals, onRef
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="text-xs font-semibold text-slate-700 mb-1 block">Breed ({formData.species} only)</label>
+                                    <label className="text-xs font-semibold text-slate-700 mb-1 block">Breed ({formData.species})</label>
                                     <select
                                         value={formData.breed}
                                         onChange={(e) => setFormData({ ...formData, breed: e.target.value })}
@@ -353,6 +387,103 @@ export const UserAnimalsView: React.FC<UserAnimalsViewProps> = ({ animals, onRef
                                     className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition shadow-xs cursor-pointer disabled:opacity-50"
                                 >
                                     {submitting ? 'Registering...' : 'Register Animal Profile'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Edit Animal Modal */}
+            {editingAnimal && (
+                <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
+                    <div className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-200">
+                        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                            <div className="flex items-center gap-2.5">
+                                <div className="p-2 rounded-xl bg-teal-50 text-teal-700">
+                                    <Edit3 className="h-5 w-5" />
+                                </div>
+                                <div>
+                                    <h3 className="text-lg font-semibold tracking-tight text-slate-900 m-0">Edit Animal Details</h3>
+                                    <p className="text-xs text-slate-500 font-normal m-0">Update identity, breed, or herd enclosure</p>
+                                </div>
+                            </div>
+                            <button onClick={() => setEditingAnimal(null)} className="p-2 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition cursor-pointer">
+                                <X className="h-5 w-5" />
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleUpdateAnimal} className="space-y-4">
+                            <div>
+                                <label className="text-xs font-semibold text-slate-700 mb-1 block">Animal Name</label>
+                                <input
+                                    type="text"
+                                    required
+                                    value={editFormData.name}
+                                    onChange={(e) => setEditFormData({ ...editFormData, name: e.target.value })}
+                                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 text-sm font-medium focus:outline-none focus:border-teal-600"
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label className="text-xs font-semibold text-slate-700 mb-1 block">Animal Type</label>
+                                    <select
+                                        value={editFormData.species}
+                                        onChange={(e) => {
+                                            const sp = e.target.value;
+                                            const defaultBreed = SPECIES_BREED_MAP[sp] ? SPECIES_BREED_MAP[sp][0] : 'Standard Breed';
+                                            setEditFormData({ ...editFormData, species: sp, breed: defaultBreed });
+                                        }}
+                                        className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-full px-3.5 py-2.5 text-xs font-semibold focus:outline-none focus:border-teal-600 cursor-pointer shadow-2xs"
+                                    >
+                                        <option value="Dog">Dog</option>
+                                        <option value="Cat">Cat</option>
+                                        <option value="Cow">Cow</option>
+                                        <option value="Sheep">Sheep</option>
+                                        <option value="Goat">Goat</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="text-xs font-semibold text-slate-700 mb-1 block">Breed</label>
+                                    <select
+                                        value={editFormData.breed}
+                                        onChange={(e) => setEditFormData({ ...editFormData, breed: e.target.value })}
+                                        className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-full px-3.5 py-2.5 text-xs font-semibold focus:outline-none focus:border-teal-600 cursor-pointer shadow-2xs"
+                                    >
+                                        {(SPECIES_BREED_MAP[editFormData.species] || ['Standard Breed']).map((b) => (
+                                            <option key={b} value={b}>{b}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="text-xs font-semibold text-slate-700 mb-1 block">Herd / Enclosure</label>
+                                <input
+                                    type="text"
+                                    value={editFormData.herd}
+                                    onChange={(e) => setEditFormData({ ...editFormData, herd: e.target.value })}
+                                    placeholder="e.g. Main Herd, Pen 01, Quarantine"
+                                    className="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-3.5 py-2.5 text-sm font-medium focus:outline-none focus:border-teal-600"
+                                />
+                                <p className="text-[11px] text-slate-400 mt-1">Animals in distinct herds or pens avoid false contagion contact warnings.</p>
+                            </div>
+
+                            <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+                                <button
+                                    type="button"
+                                    onClick={() => setEditingAnimal(null)}
+                                    className="px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition cursor-pointer"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={updating}
+                                    className="px-5 py-2.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-semibold transition shadow-xs cursor-pointer disabled:opacity-50"
+                                >
+                                    {updating ? 'Saving...' : 'Save Changes'}
                                 </button>
                             </div>
                         </form>

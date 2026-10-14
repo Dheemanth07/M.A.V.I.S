@@ -72,7 +72,7 @@ export const AlertCenter: React.FC<AlertCenterProps> = ({ alerts, onRefresh }) =
                     <div className="bento-card p-12 text-center text-slate-500 bg-white">
                         <ShieldAlert className="h-10 w-10 text-slate-400 mx-auto mb-3" />
                         <p className="text-sm font-semibold text-slate-800 m-0">No active alerts currently recorded.</p>
-                        <p className="text-xs text-slate-500 mt-1 font-normal">Collar sensors and digital twin baselines are operating normally.</p>
+                        <p className="text-xs text-slate-500 mt-1 font-normal">Collar sensors and baseline physiological profiles are operating normally.</p>
                     </div>
                 ) : (
                     <>

@@ -164,16 +164,15 @@ export const VeterinaryReportModal: React.FC<VeterinaryReportModalProps> = ({ an
                                         Multi-Model Animal Vitality Intelligence System • Telemetry Diagnostic Division
                                     </p>
                                 </div>
-                                <div className="text-right sm:text-right text-xs space-y-0.5">
+                                <div className="text-right sm:text-right text-xs space-y-1">
                                     <div className="font-bold text-slate-900 font-mono">{reportRef}</div>
                                     <div className="text-slate-500 font-medium">Issue Date: {currentDate}</div>
-                                    <div className="text-teal-700 font-semibold text-[11px]">ISO 11783-10 Compliant</div>
                                 </div>
                             </div>
 
                             {/* Section 1: Subject Identification */}
-                            <div className="space-y-2">
-                                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 m-0">
+                            <div className="space-y-3.5">
+                                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 m-0 pb-1">
                                     1. Subject & Herd Patient Identification
                                 </h4>
                                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs">
@@ -199,8 +198,8 @@ export const VeterinaryReportModal: React.FC<VeterinaryReportModalProps> = ({ an
                             </div>
 
                             {/* Section 2: Biometric Telemetry Matrix */}
-                            <div className="space-y-2">
-                                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 m-0">
+                            <div className="space-y-3.5">
+                                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 m-0 pb-1">
                                     2. Physiological Biometric Matrix & Measured Deviations
                                 </h4>
                                 <div className="border border-slate-200 rounded-xl overflow-hidden">
@@ -276,8 +275,8 @@ export const VeterinaryReportModal: React.FC<VeterinaryReportModalProps> = ({ an
                             </div>
 
                             {/* Section 3: Diagnostic Narrative */}
-                            <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-1.5">
-                                <h4 className="font-bold text-slate-900 m-0 uppercase tracking-wider text-[11px]">
+                            <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-3">
+                                <h4 className="font-bold text-slate-900 m-0 uppercase tracking-wider text-[11px] pb-1">
                                     3. Attending Clinical Veterinary Evaluation
                                 </h4>
                                 <p className="text-slate-700 leading-relaxed m-0">
@@ -313,8 +312,8 @@ export const VeterinaryReportModal: React.FC<VeterinaryReportModalProps> = ({ an
                             </div>
 
                             {/* Section 4: 24-Hour Telemetry Audit Table */}
-                            <div className="space-y-2">
-                                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 m-0">
+                            <div className="space-y-3.5">
+                                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 m-0 pb-1">
                                     4. 24-Hour Historical Telemetry Log
                                 </h4>
                                 <div className="border border-slate-200 rounded-xl overflow-hidden">
@@ -344,8 +343,8 @@ export const VeterinaryReportModal: React.FC<VeterinaryReportModalProps> = ({ an
                             </div>
 
                             {/* Section 5: Recommended Veterinary Care Protocol */}
-                            <div className="space-y-2">
-                                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 m-0">
+                            <div className="space-y-3.5">
+                                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 m-0 pb-1">
                                     5. Prescribed Veterinary Care Directives
                                 </h4>
                                 <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2 text-xs">
@@ -386,7 +385,7 @@ export const VeterinaryReportModal: React.FC<VeterinaryReportModalProps> = ({ an
                                     <div className="flex justify-end">
                                         <div className="h-24 w-24 rounded-full border-2 border-dashed border-teal-700 bg-teal-50/60 p-2 flex flex-col items-center justify-center text-center text-teal-900 shadow-2xs">
                                             <span className="text-[9px] font-extrabold uppercase tracking-tight leading-tight">
-                                                MAVIS DIGITAL TWIN<br />OFFICIAL SEAL
+                                                MAVIS CLINICAL RECORD<br />OFFICIAL SEAL
                                             </span>
                                             <span className="text-[8px] font-mono text-teal-700 mt-1">{currentDate}</span>
                                         </div>
@@ -447,12 +446,11 @@ export const VeterinaryReportModal: React.FC<VeterinaryReportModalProps> = ({ an
                         <div className="text-right text-xs space-y-0.5">
                             <div className="font-bold text-slate-900 font-mono">{reportRef}</div>
                             <div className="text-slate-500">Date: {currentDate}</div>
-                            <div className="text-teal-700 font-semibold text-[10px]">ISO 11783-10 Certified</div>
                         </div>
                     </div>
 
-                    <div className="space-y-1.5">
-                        <h4 className="text-[11px] font-bold uppercase tracking-wider text-slate-500 m-0">
+                    <div className="space-y-3">
+                        <h4 className="text-[11px] font-bold uppercase tracking-wider text-slate-500 m-0 pb-1">
                             1. Patient & Subject Identification
                         </h4>
                         <div className="grid grid-cols-4 gap-3 bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs">
@@ -475,8 +473,8 @@ export const VeterinaryReportModal: React.FC<VeterinaryReportModalProps> = ({ an
                         </div>
                     </div>
 
-                    <div className="space-y-1.5">
-                        <h4 className="text-[11px] font-bold uppercase tracking-wider text-slate-500 m-0">
+                    <div className="space-y-3">
+                        <h4 className="text-[11px] font-bold uppercase tracking-wider text-slate-500 m-0 pb-1">
                             2. Physiological Biometric Matrix & Deviations
                         </h4>
                         <div className="border border-slate-200 rounded-lg overflow-hidden">
@@ -529,8 +527,8 @@ export const VeterinaryReportModal: React.FC<VeterinaryReportModalProps> = ({ an
                         </div>
                     </div>
 
-                    <div className="p-3.5 bg-slate-50 rounded-lg border border-slate-200 text-xs space-y-1">
-                        <h4 className="font-bold text-slate-900 m-0 uppercase tracking-wider text-[10px]">
+                    <div className="p-3.5 bg-slate-50 rounded-lg border border-slate-200 text-xs space-y-2.5">
+                        <h4 className="font-bold text-slate-900 m-0 uppercase tracking-wider text-[10px] pb-1">
                             3. Attending Clinical Veterinary Evaluation
                         </h4>
                         <p className="text-slate-800 leading-relaxed m-0">
@@ -561,8 +559,8 @@ export const VeterinaryReportModal: React.FC<VeterinaryReportModalProps> = ({ an
                         <span className="text-[10px] font-mono text-slate-500">{currentDate}</span>
                     </div>
 
-                    <div className="space-y-1.5">
-                        <h4 className="text-[11px] font-bold uppercase tracking-wider text-slate-500 m-0">
+                    <div className="space-y-3">
+                        <h4 className="text-[11px] font-bold uppercase tracking-wider text-slate-500 m-0 pb-1">
                             4. 24-Hour Historical Telemetry Log
                         </h4>
                         <div className="border border-slate-200 rounded-lg overflow-hidden">
@@ -591,8 +589,8 @@ export const VeterinaryReportModal: React.FC<VeterinaryReportModalProps> = ({ an
                         </div>
                     </div>
 
-                    <div className="space-y-1.5">
-                        <h4 className="text-[11px] font-bold uppercase tracking-wider text-slate-500 m-0">
+                    <div className="space-y-3">
+                        <h4 className="text-[11px] font-bold uppercase tracking-wider text-slate-500 m-0 pb-1">
                             5. Prescribed Veterinary Care Directives
                         </h4>
                         <div className="bg-slate-50 p-3.5 rounded-lg border border-slate-200 space-y-1.5 text-xs">
@@ -623,7 +621,7 @@ export const VeterinaryReportModal: React.FC<VeterinaryReportModalProps> = ({ an
                             <div className="flex justify-end">
                                 <div className="h-22 w-22 rounded-full border-2 border-dashed border-teal-800 bg-teal-50 p-2 flex flex-col items-center justify-center text-center text-teal-900">
                                     <span className="text-[8px] font-extrabold uppercase tracking-tight leading-tight">
-                                        MAVIS DIGITAL TWIN<br />OFFICIAL SEAL
+                                        MAVIS CLINICAL RECORD<br />OFFICIAL SEAL
                                     </span>
                                     <span className="text-[7px] font-mono text-teal-800 mt-1">{currentDate}</span>
                                 </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Thermometer, Heart, Wind, Battery, Activity, Clock, Sparkles, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { X, Thermometer, Heart, Wind, Battery, Activity, Clock, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine } from 'recharts';
 import type { Animal, AIInsight } from '../../shared/types';
 import { fetchAIInsight } from '../../shared/services/api';
@@ -382,7 +382,7 @@ export const VitalsModal: React.FC<VitalsModalProps> = ({ animal, onClose }) => 
                     <div className="flex items-center justify-between gap-3 flex-wrap">
                         <div className="flex items-center gap-2.5">
                             <div className="p-2 rounded-xl bg-teal-100/70 text-teal-800 border border-teal-200/80">
-                                <Sparkles className="h-4 w-4" />
+                                <Activity className="h-4 w-4" />
                             </div>
                             <div>
                                 <span className="text-xs font-bold text-slate-900 block">Health &amp; Vitality Assessment</span>

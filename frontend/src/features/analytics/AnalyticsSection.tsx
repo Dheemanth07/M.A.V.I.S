@@ -58,7 +58,7 @@ export const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ animals }) =
     const [healthMap, setHealthMap] = useState<Record<string, HealthStatusResponse>>({});
     const [loading, setLoading] = useState(false);
 
-    const loadAllVitals = () => {
+    const loadAllVitals = React.useCallback(() => {
         if (animals.length === 0) return;
         setLoading(true);
         Promise.allSettled(animals.map(a => fetchHealthStatus(a._id)))
@@ -72,11 +72,11 @@ export const AnalyticsSection: React.FC<AnalyticsSectionProps> = ({ animals }) =
                 setHealthMap(map);
             })
             .finally(() => setLoading(false));
-    };
+    }, [animals]);
 
     useEffect(() => {
         loadAllVitals();
-    }, [animals]);
+    }, [loadAllVitals]);
 
     // Group counts for Pie Chart
     const healthCounts = { healthy: 0, warning: 0, critical: 0 };

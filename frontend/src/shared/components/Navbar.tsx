@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { Activity, ShieldCheck, Cpu, Bell, Layers, LogOut, User as UserIcon, Settings, UserCheck, Shield } from 'lucide-react';
+import { Activity, ShieldCheck, HeartPulse, Bell, Layers, LogOut, User as UserIcon, Settings, UserCheck, Shield } from 'lucide-react';
 import { useAuth } from '../../features/auth/context/AuthContext';
 import { UserSettingsModal } from '../../features/auth/UserSettingsModal';
 import { useToast } from '../context/ToastContext';
@@ -40,11 +40,11 @@ export const Navbar: React.FC<NavbarProps> = ({ activeAlertCount, role, accountR
         { path: '/dashboard', label: role === 'admin' ? 'Overview' : 'Dashboard', icon: Layers },
         { path: '/animals', label: role === 'admin' ? 'Subject Registry' : 'My Animals', icon: ShieldCheck },
         { path: '/analytics', label: 'Analytics', icon: Activity },
-        { path: '/twin', label: role === 'admin' ? 'Digital Twin' : 'Health Profile', icon: Cpu },
+        { path: '/twin', label: role === 'admin' ? 'Biometric Profile' : 'Health Profile', icon: HeartPulse },
         { path: '/alerts', label: 'Alerts', icon: Bell, badge: activeAlertCount },
     ];
 
-    const updatePill = () => {
+    const updatePill = React.useCallback(() => {
         const currentPath = location.pathname;
         const activeEl = itemRefs.current[currentPath] || Object.values(itemRefs.current).find(el => el && el.getAttribute('href') === currentPath);
         if (activeEl) {
@@ -54,13 +54,13 @@ export const Navbar: React.FC<NavbarProps> = ({ activeAlertCount, role, accountR
                 opacity: 1,
             });
         }
-    };
+    }, [location.pathname]);
 
     useEffect(() => {
         updatePill();
         window.addEventListener('resize', updatePill);
         return () => window.removeEventListener('resize', updatePill);
-    }, [location.pathname, role]);
+    }, [updatePill, role]);
 
     return (
         <>

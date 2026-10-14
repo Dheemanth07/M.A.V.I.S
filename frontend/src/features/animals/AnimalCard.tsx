@@ -1,14 +1,15 @@
 import React from 'react';
-import { Thermometer, Heart, Activity, FileText } from 'lucide-react';
+import { Thermometer, Heart, Activity, FileText, Edit3 } from 'lucide-react';
 import type { Animal } from '../../shared/types';
 
 interface AnimalCardProps {
     animal: Animal;
     onViewVitals: (animal: Animal) => void;
     onExportReport?: (animal: Animal) => void;
+    onEditAnimal?: (animal: Animal) => void;
 }
 
-export const AnimalCard: React.FC<AnimalCardProps> = ({ animal, onViewVitals, onExportReport }) => {
+export const AnimalCard: React.FC<AnimalCardProps> = ({ animal, onViewVitals, onExportReport, onEditAnimal }) => {
     const status = animal.healthStatus || 'healthy';
 
     const statusConfig = {
@@ -95,7 +96,7 @@ export const AnimalCard: React.FC<AnimalCardProps> = ({ animal, onViewVitals, on
                 </div>
             </div>
 
-            {/* Bottom Actions: Both Symmetrically Aligned & Clearly Visible */}
+            {/* Bottom Actions */}
             <div className="space-y-2 pt-2 border-t border-slate-100">
                 <button
                     onClick={() => onViewVitals(animal)}
@@ -105,15 +106,27 @@ export const AnimalCard: React.FC<AnimalCardProps> = ({ animal, onViewVitals, on
                     <span>View Detailed Vitals</span>
                 </button>
 
-                {onExportReport && (
-                    <button
-                        onClick={() => onExportReport(animal)}
-                        className="w-full h-10 flex items-center justify-center gap-2 px-4 rounded-full bg-teal-50/90 hover:bg-teal-600 hover:text-white border border-teal-300 text-teal-800 text-xs font-bold transition-all duration-200 hover:scale-[1.01] shadow-2xs cursor-pointer group"
-                    >
-                        <FileText className="h-3.5 w-3.5 text-teal-700 group-hover:text-white transition-colors shrink-0" />
-                        <span>Export Clinical PDF Report</span>
-                    </button>
-                )}
+                <div className="grid grid-cols-2 gap-2">
+                    {onEditAnimal && (
+                        <button
+                            type="button"
+                            onClick={() => onEditAnimal(animal)}
+                            className="h-9 flex items-center justify-center gap-1.5 px-3 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold transition cursor-pointer"
+                        >
+                            <Edit3 className="h-3.5 w-3.5 text-slate-500" />
+                            <span>Edit Profile</span>
+                        </button>
+                    )}
+                    {onExportReport && (
+                        <button
+                            onClick={() => onExportReport(animal)}
+                            className={`h-9 flex items-center justify-center gap-1.5 px-3 rounded-full bg-teal-50/90 hover:bg-teal-600 hover:text-white border border-teal-300 text-teal-800 text-xs font-bold transition group cursor-pointer ${!onEditAnimal ? 'col-span-2' : ''}`}
+                        >
+                            <FileText className="h-3.5 w-3.5 text-teal-700 group-hover:text-white transition-colors shrink-0" />
+                            <span>Report PDF</span>
+                        </button>
+                    )}
+                </div>
             </div>
         </div>
     );

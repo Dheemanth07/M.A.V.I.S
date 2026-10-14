@@ -2,14 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../../../shared/context/ToastContext';
-import { ShieldCheck, UserCheck, Lock, Mail, User as UserIcon, ArrowRight, ArrowLeft } from 'lucide-react';
+import { Lock, Mail, User as UserIcon, ArrowRight, ArrowLeft } from 'lucide-react';
 
 export const AuthPage: React.FC = () => {
     const [isLogin, setIsLogin] = useState(true);
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [role, setRoleState] = useState<'user' | 'admin'>('user');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
@@ -33,7 +32,7 @@ export const AuthPage: React.FC = () => {
                 await login(email, password);
                 showToast('Welcome back! Workspace session authenticated.', 'success');
             } else {
-                await register(name, email, password, role);
+                await register(name, email, password, 'user');
                 showToast('Account created successfully! Welcome to MAVIS.', 'success');
             }
             navigate('/dashboard');
@@ -138,31 +137,7 @@ export const AuthPage: React.FC = () => {
                             </div>
                         </div>
 
-                        {!isLogin && (
-                            <div>
-                                <label className="text-xs font-semibold text-slate-700 mb-1 block">Account Type</label>
-                                <div className="grid grid-cols-2 gap-2">
-                                    <button
-                                        type="button"
-                                        onClick={() => setRoleState('user')}
-                                        className={`flex items-center justify-center gap-1.5 p-2.5 rounded-xl border text-xs font-semibold transition cursor-pointer ${
-                                            role === 'user' ? 'border-emerald-500 bg-emerald-50 text-emerald-800' : 'border-slate-200 bg-slate-50 text-slate-600'
-                                        }`}
-                                    >
-                                        <UserCheck className="h-3.5 w-3.5 text-emerald-600" /> Pet Owner
-                                    </button>
-                                    <button
-                                        type="button"
-                                        onClick={() => setRoleState('admin')}
-                                        className={`flex items-center justify-center gap-1.5 p-2.5 rounded-xl border text-xs font-semibold transition cursor-pointer ${
-                                            role === 'admin' ? 'border-indigo-500 bg-indigo-50 text-indigo-800' : 'border-slate-200 bg-slate-50 text-slate-600'
-                                        }`}
-                                    >
-                                        <ShieldCheck className="h-3.5 w-3.5 text-indigo-600" /> Admin / Vet
-                                    </button>
-                                </div>
-                            </div>
-                        )}
+
 
                         <button
                             type="submit"
