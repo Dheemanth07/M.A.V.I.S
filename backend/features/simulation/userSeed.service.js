@@ -1,6 +1,6 @@
 /**
  * @file Demo Account & Starter Herd Provisioning Service
- * Simulation data is strictly reserved for the demo account (dheemanth1007@gmail.com).
+ * Dedicated demonstration dataset is isolated to the configurable demo account (default: demo@mavis.care).
  * All other newly registered users start with a clean, empty account.
  */
 
@@ -11,35 +11,45 @@ import AlertData from "../alerts/alert.model.js";
 import User from "../auth/user.model.js";
 import logger from "../../utils/logger.js";
 
-const DEMO_EMAIL = "dheemanth1007@gmail.com";
-const DEMO_PASSWORD_RAW = "dheemanth@123";
+export const getDemoEmail = () => (process.env.DEMO_USER_EMAIL || "demo@mavis.care").toLowerCase();
+export const getDemoPassword = () => process.env.DEMO_USER_PASSWORD || "mavis-demo-2026";
+export const isDemoProvisioningEnabled = () => process.env.ENABLE_DEMO_ACCOUNT !== "false";
 
 function hashPassword(password) {
     return crypto.pbkdf2Sync(password, "mavis_salt_2026", 1000, 64, "sha512").toString("hex");
 }
 
 /**
- * Ensures the primary demo account (dheemanth1007@gmail.com / dheemanth@123)
+ * Ensures the dedicated demonstration account (default: demo@mavis.care / mavis-demo-2026)
  * exists with its 8 multi-species demo subjects, historical trends, and active alerts.
+ * Role is restricted to 'viewer' with non-destructive permissions.
  */
 export async function ensureDemoAccountAndHerd() {
+    if (!isDemoProvisioningEnabled()) {
+        logger.info("Demo account provisioning disabled via ENABLE_DEMO_ACCOUNT=false");
+        return;
+    }
+
+    const demoEmail = getDemoEmail();
+    const demoPassword = getDemoPassword();
+
     try {
-        let demoUser = await User.findOne({ email: DEMO_EMAIL });
+        let demoUser = await User.findOne({ email: demoEmail });
         if (!demoUser) {
             demoUser = await User.create({
-                name: "Dheemanth",
-                email: DEMO_EMAIL,
-                password: hashPassword(DEMO_PASSWORD_RAW),
-                role: "admin",
+                name: "Demo Caregiver",
+                email: demoEmail,
+                password: hashPassword(demoPassword),
+                role: "viewer",
                 vetContact: "+1 (555) 019-2834",
                 alertSettings: { soundAlerts: true, tempSensitivity: 1.0, hrThreshold: 100 },
                 collarSettings: { syncInterval: 5, motionSensitivity: "standard" }
             });
-            logger.info(`Initialized primary demo user account: ${DEMO_EMAIL}`);
+            logger.info(`Initialized dedicated public demo account: ${demoEmail} (role: viewer)`);
         }
 
         // Clean up any fake starter animals that were mistakenly created for non-demo users
-        const nonDemoUsers = await User.find({ email: { $ne: DEMO_EMAIL } });
+        const nonDemoUsers = await User.find({ email: { $ne: demoEmail } });
         const nonDemoUserIds = nonDemoUsers.map(u => u._id);
         if (nonDemoUserIds.length > 0) {
             const fakeAnimals = await AnimalData.find({
@@ -65,7 +75,7 @@ export async function ensureDemoAccountAndHerd() {
             }
         }
 
-        // Seed demo herd for dheemanth1007@gmail.com if missing
+        // Seed demo herd for dedicated demo user if missing
         await seedUserHerdIfNeeded(demoUser._id);
     } catch (err) {
         logger.error("Error ensuring demo account and herd:", err);
@@ -73,7 +83,7 @@ export async function ensureDemoAccountAndHerd() {
 }
 
 /**
- * Seeds an isolated dataset ONLY if the user is the primary demo user (dheemanth1007@gmail.com).
+ * Seeds an isolated dataset ONLY if the user is the configured demo user.
  * For all other accounts, this returns empty without seeding anything.
  * 
  * @param {string|import("mongoose").Types.ObjectId} userId - User ObjectId.
@@ -84,7 +94,8 @@ export async function seedUserHerdIfNeeded(userId) {
 
     try {
         const user = await User.findById(userId);
-        if (!user || user.email.toLowerCase() !== DEMO_EMAIL) {
+        const demoEmail = getDemoEmail();
+        if (!user || user.email.toLowerCase() !== demoEmail) {
             // All non-demo users start with an empty account!
             return [];
         }
@@ -94,7 +105,7 @@ export async function seedUserHerdIfNeeded(userId) {
             return await AnimalData.find({ owner: userId }).sort({ createdAt: 1, _id: 1 });
         }
 
-        logger.info(`Provisioning 8-subject simulation herd for demo account (${DEMO_EMAIL})...`);
+        logger.info(`Provisioning 8-subject simulation herd for demo account (${demoEmail})...`);
 
         // If partial demo data existed, clean it up for a pristine 8-subject set
         const existingDemoAnimals = await AnimalData.find({ owner: userId });

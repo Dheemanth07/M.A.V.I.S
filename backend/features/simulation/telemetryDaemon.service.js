@@ -9,6 +9,7 @@ import AnimalData from "../animals/animal.model.js";
 import SensorData from "../sensors/sensor.model.js";
 import AlertData from "../alerts/alert.model.js";
 import logger from "../../utils/logger.js";
+import { getDemoEmail } from "./userSeed.service.js";
 
 class TelemetryDaemon {
     #io;
@@ -45,7 +46,7 @@ class TelemetryDaemon {
             this.#tick++;
             try {
                 const User = (await import("../auth/user.model.js")).default;
-                const demoUser = await User.findOne({ email: "dheemanth1007@gmail.com" });
+                const demoUser = await User.findOne({ email: getDemoEmail() });
                 if (!demoUser) return;
 
                 const animals = await AnimalData.find({ owner: demoUser._id, isActive: true });

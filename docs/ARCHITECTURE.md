@@ -58,7 +58,14 @@ The health evaluation engine combines physiological thresholds with 6-axis behav
 6. **Resting Tachycardia / Acute Pain ($1.25\times$)**:
    When heart rate is significantly elevated during periods of zero motion in the absence of fever, a $1.25\times$ multiplier is applied.
 
-$$\text{Final Risk Score} = \min\left(100, \, \left(\sum \text{Base Risk Contributions}\right) \times \max(\text{Synergies})\right)$$
+### Composite Formulation & Herd Contribution
+The individual vital evaluations are multiplied by the dominant active synergy multiplier, and then augmented by a proportion of the shared pen/enclosure herd contagion risk:
+
+$$\text{Final Risk Score} = \min\left(100, \, \left\lfloor \left(\sum R_{\text{base}}\right) \times \max(1.0, S_{\text{synergy}}) \right\rceil + \left\lfloor 0.20 \times R_{\text{herd}} \right\rceil\right)$$
+
+* $\sum R_{\text{base}}$: Sum of individual biometric penalty scores (temperature, heart rate, respiration, $\text{SpO}_2$, activity).
+* $S_{\text{synergy}}$: The maximum applicable multi-modal synergy multiplier (or $1.0$ if no cross-sensor synergies are triggered).
+* $R_{\text{herd}}$: The co-located herd exposure risk score derived from `herdGraph.service.js`. Adding $20\%$ of this environmental risk accounts for herd contagion pressure on susceptible animals before clamping the final composite score to $[0, 100]$.
 
 ---
 

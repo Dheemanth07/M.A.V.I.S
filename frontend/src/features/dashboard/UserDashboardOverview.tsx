@@ -245,19 +245,25 @@ export const UserDashboardOverview: React.FC<UserDashboardOverviewProps> = ({
                             </h3>
                         </div>
                         <p className="text-xs text-slate-500 m-0 mt-0.5">
-                            Real-time core vitals and learned baseline deviations from physical collar sensors
+                            Real-time core vitals and learned baseline deviations from incoming collar telemetry
                         </p>
                     </div>
 
-                    <button
-                        onClick={loadAllVitals}
-                        disabled={loadingHealth}
-                        className="h-8 px-3.5 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition shadow-2xs"
-                        title="Refresh Live Collar Telemetry"
-                    >
-                        <RefreshCw className={`h-3.5 w-3.5 ${loadingHealth ? 'animate-spin text-teal-600' : ''}`} />
-                        <span>Refresh Vitals</span>
-                    </button>
+                    <div className="flex items-center gap-2.5">
+                        <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+                            <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
+                            <span>Source: <strong>Demonstration Telemetry</strong></span>
+                        </span>
+                        <button
+                            onClick={loadAllVitals}
+                            disabled={loadingHealth}
+                            className="h-8 px-3.5 rounded-full bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition shadow-2xs"
+                            title="Refresh Live Collar Telemetry"
+                        >
+                            <RefreshCw className={`h-3.5 w-3.5 ${loadingHealth ? 'animate-spin text-teal-600' : ''}`} />
+                            <span>Refresh Vitals</span>
+                        </button>
+                    </div>
                 </div>
 
                 {/* Compact Vitals Table */}

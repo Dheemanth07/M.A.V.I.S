@@ -6,12 +6,16 @@ All REST endpoints operate under the `/api` prefix and communicate in JSON forma
 
 ## 1. Authentication (`/api/auth`)
 
-| Method | Endpoint | Description | Auth Required |
+> [!NOTE]
+> **Prototype Authentication Implementation**: The current development prototype hashes passwords using PBKDF2 (`crypto.pbkdf2Sync`) and issues prototype bearer session tokens formatted as `mock_jwt_token_<userId>`. This provides stateful local session identification for multi-user frontend testing. It is not a production-ready cryptographically signed asymmetric JWT (RS256/Ed25519). Production hardening requires swapping the prototype token generator for signed JWT validation with short expirations and refresh rotation.
+
+| Method | Endpoint | Description | Auth / Session |
 |---|---|---|---|
-| `POST` | `/api/auth/register` | Register a new user account | No |
-| `POST` | `/api/auth/login` | Log in and receive JWT bearer token | No |
-| `GET` | `/api/auth/me` | Retrieve authenticated user profile and settings | Yes |
-| `PATCH`| `/api/auth/settings` | Update alert thresholds and collar sync intervals | Yes |
+| `POST` | `/api/auth/register` | Register a new user account | Public |
+| `POST` | `/api/auth/login` | Authenticate and receive prototype session token | Public |
+| `GET` | `/api/auth/profile/:id` | Retrieve user profile by user ID | Prototype Session |
+| `PUT` | `/api/auth/profile/:id` | Update profile information | Prototype Session |
+| `PUT` | `/api/auth/password/:id` | Update password (requires current password) | Prototype Session |
 
 ### Register Payload Example
 ```json
@@ -19,6 +23,22 @@ All REST endpoints operate under the `/api` prefix and communicate in JSON forma
   "name": "Farm Caregiver",
   "email": "caregiver@farm.local",
   "password": "SecurePassword123"
+}
+```
+
+### Login Response Example (Prototype Session)
+```json
+{
+  "status": "success",
+  "data": {
+    "user": {
+      "id": "6a7ad37a373c5495c40c8d5a",
+      "name": "Demo Viewer",
+      "email": "demo@mavis.care",
+      "role": "viewer"
+    },
+    "token": "mock_jwt_token_6a7ad37a373c5495c40c8d5a"
+  }
 }
 ```
 

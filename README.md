@@ -102,7 +102,7 @@ MAVIS/
 ## Getting Started
 
 ### Prerequisites
-* **Node.js**: `v20.19.0` or higher (Node 22 LTS recommended)
+* **Node.js**: `20.19+` (20.x) or `22.12+`; Node.js 22 LTS recommended
 * **npm**: `v9.0.0` or higher
 * **Git**
 * *(Optional)* **Ollama**: For local language model summaries (`ollama run llama3.2`)
@@ -121,7 +121,7 @@ Copy the example environment file:
 ```bash
 cp backend/.env.example backend/.env
 ```
-Review `backend/.env` to configure port, database URI, or secrets if desired.
+Review `backend/.env` to configure port, database URI, demo account settings, or secrets if desired.
 
 > **Database Fallback**: If a local MongoDB instance is not detected on `MONGO_URI`, the backend automatically starts an **in-memory MongoDB database**. No manual database installation is required for development or demonstration.
 
@@ -143,11 +143,12 @@ npm run dev
 Open the local URL printed by Vite (typically `http://localhost:5173`).
 
 ### 5. Sign In to the Demonstration Herd
-To explore the complete 8-animal multi-species herd, active anomaly alerts, and calibrated baseline profiles shown in the screenshots, sign in with the pre-provisioned demonstration credentials:
-* **Email**: `dheemanth1007@gmail.com`
-* **Password**: `dheemanth@123`
+To explore the complete 8-animal multi-species herd, active anomaly alerts, and calibrated baseline profiles shown in the screenshots, sign in with the pre-provisioned public demonstration account:
+* **Email**: `demo@mavis.care`
+* **Password**: `mavis-demo-2026`
+* **Role**: `viewer` (restricted demonstration access)
 
-*(Note: Newly registered custom accounts start with an empty dashboard to allow onboarding fresh subjects from scratch.)*
+*(Demo account provisioning is explicitly configurable via `ENABLE_DEMO_ACCOUNT=true`, `DEMO_USER_EMAIL`, and `DEMO_USER_PASSWORD` in `backend/.env`. Newly registered custom accounts start with an empty dashboard to allow onboarding fresh subjects from scratch.)*
 
 ---
 

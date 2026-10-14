@@ -205,23 +205,27 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
                                 <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
                                     <div>
                                         <h3 className="text-lg font-bold tracking-tight text-slate-900 m-0 font-display">
-                                            Live Collar Vitals & Differences
+                                            Live Collar Telemetry &amp; Differences
                                         </h3>
                                         <p className="text-xs text-slate-500 font-normal m-0 mt-0.5">
-                                            Comparing live collar readings against learned normal vitals
+                                            Comparing incoming telemetry readings against learned normal vitals
                                         </p>
                                     </div>
                                     <div className="flex items-center gap-2">
+                                        <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+                                            <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
+                                            <span>Stream: <strong>Demonstration Mode</strong></span>
+                                        </div>
                                         <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-50 text-slate-700 border border-slate-200">
                                             <Radio className="h-3.5 w-3.5 text-teal-600 animate-pulse" />
-                                            <span>Telemetry Cycle: <strong className="text-slate-900">3s Interval</strong></span>
+                                            <span>Cycle: <strong className="text-slate-900">3s Interval</strong></span>
                                         </div>
                                         <span className={`text-[11px] px-3 py-1 rounded-full font-bold tracking-wider uppercase border ${
                                             hasLiveSignal 
                                                 ? 'bg-emerald-50 text-emerald-700 border-emerald-200/80' 
                                                 : 'bg-amber-50 text-amber-700 border-amber-200/80'
                                         }`}>
-                                            {hasLiveSignal ? 'Live Telemetry Active' : 'Waiting for Collar Signal'}
+                                            {hasLiveSignal ? 'Live Stream Active' : 'Waiting for Signal'}
                                         </span>
                                     </div>
                                 </div>
@@ -247,7 +251,7 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
                                                 <span className="text-slate-400 font-normal text-xl">-- °C</span>
                                             )}
                                         </div>
-                                        <p className="text-[10px] text-slate-500 font-normal m-0">Live Collar Temperature Sensor</p>
+                                        <p className="text-[10px] text-slate-500 font-normal m-0">Collar Temperature Probe (DS18B20)</p>
                                     </div>
 
                                     {/* Heart Rate */}
@@ -269,7 +273,7 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
                                                 <span className="text-slate-400 font-normal text-xl">-- BPM</span>
                                             )}
                                         </div>
-                                        <p className="text-[10px] text-slate-500 font-normal m-0">Live Collar Pulse Sensor</p>
+                                        <p className="text-[10px] text-slate-500 font-normal m-0">Collar Pulse Oximeter (MAX30102)</p>
                                     </div>
 
                                     {/* Respiratory Rate */}
