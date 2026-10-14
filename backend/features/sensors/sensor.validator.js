@@ -107,16 +107,10 @@ class SensorValidator {
     validateHistoryQuery = (req, res, next) => {
         const { from, to } = req.query;
 
-        if (!from || !to) {
-            return next(
-                new AppError("Missing required query parameters: 'from' and 'to'", 400),
-            );
-        }
+        const toDate = to ? new Date(to) : new Date();
+        const fromDate = from ? new Date(from) : new Date(toDate.getTime() - 24 * 60 * 60 * 1000);
 
-        const fromDate = new Date(from);
-        const toDate = new Date(to);
-
-        if (Number.isNaN(fromDate.getTime())) {
+        if (from && Number.isNaN(fromDate.getTime())) {
             return next(
                 new AppError(
                     `Invalid 'from' date format: ${from}. Use ISO format (e.g., 2026-04-17T10:00:00Z)`,
@@ -125,7 +119,7 @@ class SensorValidator {
             );
         }
 
-        if (Number.isNaN(toDate.getTime())) {
+        if (to && Number.isNaN(toDate.getTime())) {
             return next(
                 new AppError(
                     `Invalid 'to' date format: ${to}. Use ISO format (e.g., 2026-04-17T10:00:00Z)`,

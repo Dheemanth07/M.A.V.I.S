@@ -1,132 +1,60 @@
 /**
- * @file Application entry point.
- * Connects dependencies and starts the HTTP listener.
+ * @file Application entry point (Object-Oriented Bootstrap).
+ * Connects database, starts background services, and begins HTTP listening.
  */
-import express from "express";
-import cors from "cors";
-import { createServer } from "http";
-import { Server } from "socket.io";
-import mongoose from "mongoose";
-
 import "./config/env.js";
-import corsOptions from "./middlewares/cors.js";
-import { extractUser } from "./middlewares/auth.middleware.js";
 import connectDB from "./config/db.js";
-import globalErrorHandler from "./middlewares/error.middleware.js";
 import logger from "./utils/logger.js";
-
-// --- Feature Imports ---
-import AnimalData from "./features/animals/animal.model.js";
-import AnimalRepository from "./features/animals/animal.repository.js";
-import AnimalService from "./features/animals/animal.service.js";
-import AnimalController from "./features/animals/animal.controller.js";
-import AnimalValidator from "./features/animals/animal.validator.js";
-import AnimalRoutes from "./features/animals/animal.routes.js";
-
-import SensorRepository from "./features/sensors/sensor.repository.js";
-import SensorService from "./features/sensors/sensor.service.js";
-import SensorController from "./features/sensors/sensor.controller.js";
-import SensorData from "./features/sensors/sensor.model.js";
-import SensorValidator from "./features/sensors/sensor.validator.js";
-import SensorRoutes from "./features/sensors/sensor.routes.js";
-
-import AlertData from "./features/alerts/alert.model.js";
-import AlertRepository from "./features/alerts/alert.repository.js";
-import AlertService from "./features/alerts/alert.service.js";
-import AlertController from "./features/alerts/alert.controller.js";
-import AlertValidator from "./features/alerts/alert.validator.js";
-import AlertRoutes from "./features/alerts/alert.routes.js";
-
-import authRoutes from "./features/auth/auth.routes.js";
-import aiRoutes from "./features/ai-insights/ai.routes.js";
-
-const PORT = process.env.PORT || 5000;
-const app = express();
-
-app.use(cors(corsOptions));
-app.use(express.json());
-app.use(extractUser);
-
-const httpServer = createServer(app);
-const io = new Server(httpServer, { cors: corsOptions });
-
-// Controllers pull this from req.app when they need to emit realtime events.
-app.set("io", io);
-
-io.on("connection", (socket) => {
-    logger.info("Socket connected", { socketId: socket.id });
-
-    socket.on("disconnect", (reason) => {
-        logger.info("Socket disconnected", { socketId: socket.id, reason });
-    });
-});
-
-const animalRepository = new AnimalRepository(AnimalData);
-const sensorRepository = new SensorRepository(SensorData);
-const alertRepository = new AlertRepository(AlertData);
-
-const animalService = new AnimalService(animalRepository, sensorRepository);
-const animalController = new AnimalController(animalService);
-const animalValidator = new AnimalValidator();
-const animalRoutes = new AnimalRoutes(animalController, animalValidator);
-
-const sensorService = new SensorService(sensorRepository, animalRepository, alertRepository);
-const sensorController = new SensorController(sensorService);
-const sensorValidator = new SensorValidator();
-const sensorRoutes = new SensorRoutes(sensorController, sensorValidator);
-
-const alertService = new AlertService(alertRepository);
-const alertController = new AlertController(alertService);
-const alertValidator = new AlertValidator();
-const alertRoutes = new AlertRoutes(alertController, alertValidator);
-
-/**
- * Basic liveness endpoint with database connection state.
- */
-app.get("/", (req, res) => {
-    res.json({
-        status: "success",
-        message: "MAVIS backend running",
-        data: {
-            service: "MAVIS backend",
-            database: mongoose.connection.readyState === 1 ? "connected" : "disconnected",
-            connectedDatabase: mongoose.connection.name,
-        },
-    });
-});
-
-app.use("/api/animals", animalRoutes.getRouter());
-app.use("/api/sensor", sensorRoutes.getRouter());
-app.use("/api/sensors", sensorRoutes.getRouter());
-app.use("/api/alerts", alertRoutes.getRouter());
-app.use("/api/auth", authRoutes);
-app.use("/api/ai", aiRoutes);
-
-app.use(globalErrorHandler);
-
+import { Application } from "./app.js";
 import TelemetryDaemon from "./features/simulation/telemetryDaemon.service.js";
 
-/**
- * Connects to MongoDB before accepting HTTP requests.
- *
- * @returns {Promise<void>}
- */
-const startServer = async () => {
-    try {
-        await connectDB();
+export class ServerBootstrap {
+    #application;
+    #port;
 
-        // Start continuous background telemetry daemon for all animals & scenarios
-        const daemon = new TelemetryDaemon(io);
-        await daemon.start();
-
-        httpServer.listen(PORT, () => {
-            logger.info(`Server running on port ${PORT}`);
-        });
-
-    } catch (err) {
-        logger.error("Failed to start server", err);
-        process.exit(1);
+    constructor(port = process.env.PORT || 5000) {
+        this.#port = port;
+        this.#application = new Application();
     }
-};
 
-startServer();
+    get application() {
+        return this.#application;
+    }
+
+    get app() {
+        return this.#application.app;
+    }
+
+    get httpServer() {
+        return this.#application.httpServer;
+    }
+
+    get io() {
+        return this.#application.io;
+    }
+
+    /**
+     * Connects to database and starts services.
+     */
+    async start() {
+        try {
+            await connectDB();
+
+            const daemon = new TelemetryDaemon(this.#application.io);
+            await daemon.start();
+
+            this.#application.httpServer.listen(this.#port, () => {
+                logger.info(`Server running on port ${this.#port}`);
+            });
+        } catch (err) {
+            logger.error("Failed to start server", err);
+            process.exit(1);
+        }
+    }
+}
+
+const bootstrap = new ServerBootstrap();
+bootstrap.start();
+
+export const { app, httpServer, io } = bootstrap;
+export default bootstrap;

@@ -22,45 +22,54 @@ export const SPECIES_CHRONO_PROFILES = {
     default: { peakHour: 16.0, amplitude: 0.35, chronotype: 'Diurnal' }
 };
 
-/**
- * Calculates the expected species-specific diurnal baseline temperature for the current hour of the day.
- * 
- * @param {string} species - Animal species (e.g. 'cattle', 'canine', 'feline').
- * @param {number} baseLearnedTemp - The 24-hour mean temperature learned by the Digital Twin (e.g. 38.5).
- * @param {Date|number} [timeOrHour=new Date().getHours()] - Current time or hour of day (0-23).
- * @param {Object} [context={}] - Optional environmental context (e.g., thi, motion).
- * @returns {{ expectedBaseline: number, diurnalOffset: number, chronotype: string }}
- */
-export function getSpeciesCircadianBaseline(species = 'cattle', baseLearnedTemp = 38.5, timeOrHour = new Date().getHours(), context = {}) {
-    const key = (species || 'default').toLowerCase().trim();
-    const profile = SPECIES_CHRONO_PROFILES[key] || SPECIES_CHRONO_PROFILES.default;
+const PI_OVER_12 = Math.PI / 12;
 
-    let hour = typeof timeOrHour === 'number' ? timeOrHour : (timeOrHour.getHours() + timeOrHour.getMinutes() / 60);
+export class CircadianService {
+    #profiles;
 
-    // Harmonic Cosine Diurnal Wave:
-    // When hour == peakHour -> cos(0) = +1 (+amplitude)
-    // When hour == troughHour (12 hrs later) -> cos(PI) = -1 (-amplitude)
-    const harmonicAngle = ((hour - profile.peakHour) * (Math.PI / 12));
-    let diurnalOffset = Math.cos(harmonicAngle) * profile.amplitude;
-
-    // Environmental Heat Load Buffer (THI >= 79 adds nominal physiological thermal retention)
-    let envBuffer = 0;
-    if (context.thi && context.thi >= 79) {
-        envBuffer = 0.20;
+    constructor(profiles = SPECIES_CHRONO_PROFILES) {
+        this.#profiles = profiles;
     }
 
-    // Physical Activity Exertion Buffer (Motion adds transient metabolic heat)
-    let motionBuffer = 0;
-    if (context.motion) {
-        motionBuffer = 0.25;
+    /**
+     * Calculates the expected species-specific diurnal baseline temperature.
+     * 
+     * @param {string} [species='cattle'] - Animal species
+     * @param {number} [baseLearnedTemp=38.5] - 24-hour mean temperature
+     * @param {Date|number} [timeOrHour=new Date().getHours()] - Hour or Date object
+     * @param {Object} [context={}] - Environmental context (thi, motion)
+     * @returns {{ expectedBaseline: number, diurnalOffset: number, chronotype: string }}
+     */
+    getSpeciesBaseline(species = 'cattle', baseLearnedTemp = 38.5, timeOrHour = new Date().getHours(), context = {}) {
+        const key = (species || 'default').toLowerCase().trim();
+        const profile = this.#profiles[key] || this.#profiles.default;
+
+        const hour = typeof timeOrHour === 'number'
+            ? timeOrHour
+            : (timeOrHour.getHours() + timeOrHour.getMinutes() / 60);
+
+        // Harmonic Cosine Diurnal Wave
+        const harmonicAngle = (hour - profile.peakHour) * PI_OVER_12;
+        const diurnalOffset = Math.cos(harmonicAngle) * profile.amplitude;
+
+        // Environmental Heat Load Buffer (THI >= 79)
+        const envBuffer = (context.thi && context.thi >= 79) ? 0.20 : 0;
+
+        // Physical Activity Exertion Buffer
+        const motionBuffer = context.motion ? 0.25 : 0;
+
+        const totalOffset = diurnalOffset + envBuffer + motionBuffer;
+        const expectedBaseline = Math.round((baseLearnedTemp + totalOffset) * 100) / 100;
+
+        return {
+            expectedBaseline,
+            diurnalOffset: Math.round(diurnalOffset * 100) / 100,
+            chronotype: profile.chronotype
+        };
     }
-
-    const totalOffset = diurnalOffset + envBuffer + motionBuffer;
-    const expectedBaseline = Math.round((baseLearnedTemp + totalOffset) * 100) / 100;
-
-    return {
-        expectedBaseline,
-        diurnalOffset: Math.round(diurnalOffset * 100) / 100,
-        chronotype: profile.chronotype
-    };
 }
+
+export const circadianService = new CircadianService();
+export const getSpeciesCircadianBaseline = (species, baseLearnedTemp, timeOrHour, context) =>
+    circadianService.getSpeciesBaseline(species, baseLearnedTemp, timeOrHour, context);
+export default CircadianService;

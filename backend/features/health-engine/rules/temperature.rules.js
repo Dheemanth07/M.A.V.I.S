@@ -10,7 +10,7 @@ export const temperatureMatrix = [
     {
         state: "Low Temperature",
         range: [37.0, 37.8],
-        severity: "Warning",
+        severity: "warning",
         riskContribution: 15,
         alertType: "lowTemperature",
         recommendation: "Monitor temperature closely."
@@ -26,7 +26,7 @@ export const temperatureMatrix = [
     {
         state: "Elevated Temperature",
         range: [39.3, 40.0],
-        severity: "Warning",
+        severity: "warning",
         riskContribution: 15,
         alertType: "elevatedTemperature",
         recommendation: "Monitor for potential fever."
@@ -34,9 +34,9 @@ export const temperatureMatrix = [
     {
         state: "Fever",
         range: [40.1, Infinity],
-        severity: "Critical",
+        severity: "critical",
         riskContribution: 35,
         alertType: "fever",
         recommendation: "Seek veterinary care immediately."
     }
-]
+];

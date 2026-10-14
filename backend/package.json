@@ -6,8 +6,11 @@
     "scripts": {
         "test": "node tests/run-tests.js",
         "benchmark:slm": "node scripts/benchmark_all_slms.js",
+        "verify:routes": "node scripts/verify_all_routes.js",
+        "verify:twin": "node scripts/verify_twin_pipeline.js",
+        "simulate:scenarios": "node scripts/simulate_all_scenarios.js",
         "start": "node server.js",
-        "dev": "nodemon -L --ext js,mjs,cjs --ignore data/sensor_data.json --ignore data/animal_ids.json --ignore data/animal_mapping.json server.js"
+        "dev": "nodemon -L --ext js,mjs,cjs server.js"
     },
     "keywords": [],
     "author": "",

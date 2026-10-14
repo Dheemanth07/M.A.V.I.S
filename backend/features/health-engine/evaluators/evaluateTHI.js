@@ -1,5 +1,12 @@
 import { thiMatrix } from "../rules/thi.rules.js";
-import { createEvaluator } from "./createEvaluator.js";
+import { MetricEvaluator } from "./createEvaluator.js";
 
-export const evaluateTHI = createEvaluator("thi", thiMatrix);
+export class THIEvaluator extends MetricEvaluator {
+    constructor() {
+        super("thi", thiMatrix);
+    }
+}
 
+export const thiEvaluatorInstance = new THIEvaluator();
+export const evaluateTHI = (val) => thiEvaluatorInstance.evaluate(val);
+export default THIEvaluator;

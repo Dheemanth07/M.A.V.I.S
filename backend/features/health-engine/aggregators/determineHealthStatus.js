@@ -1,26 +1,37 @@
 import { RISK_THRESHOLDS } from '../constants/riskLevels.js';
 import { HEALTH_STATUS } from '../constants/healthStatuses.js';
 
+/**
+ * Encapsulates global health status determination.
+ */
+export class HealthStatusDeterminer {
+    #warningThreshold;
+    #criticalThreshold;
 
-// Determine a global health status based on overall risk score.
+    constructor(warning = RISK_THRESHOLDS.WARNING, critical = RISK_THRESHOLDS.CRITICAL) {
+        this.#warningThreshold = warning;
+        this.#criticalThreshold = critical;
+    }
 
-export function determineHealthStatus(overallRiskScore = 0) {
-  const score = Number(overallRiskScore);
-  if (!Number.isFinite(score)) return HEALTH_STATUS.healthy;
+    /**
+     * Determines health status from numeric score [0, 100].
+     * @param {number} overallRiskScore
+     * @returns {'healthy' | 'warning' | 'critical'}
+     */
+    determine(overallRiskScore = 0) {
+        const score = Number(overallRiskScore);
+        if (!Number.isFinite(score) || score < this.#warningThreshold) {
+            return HEALTH_STATUS.HEALTHY;
+        }
 
-  const statusByThreshold = [
-    { min: RISK_THRESHOLDS.CRITICAL, status: HEALTH_STATUS.CRITICAL },
-    { min: RISK_THRESHOLDS.WARNING, status: HEALTH_STATUS.WARNING },
-  ];
+        if (score >= this.#criticalThreshold) {
+            return HEALTH_STATUS.CRITICAL;
+        }
 
-  const match = statusByThreshold.find(({ min }) => score >= min);
-  return match ? match.status : HEALTH_STATUS.NORMAL;
+        return HEALTH_STATUS.WARNING;
+    }
 }
 
-
-
-
-
-
-
-
+export const healthStatusDeterminer = new HealthStatusDeterminer();
+export const determineHealthStatus = (score) => healthStatusDeterminer.determine(score);
+export default HealthStatusDeterminer;

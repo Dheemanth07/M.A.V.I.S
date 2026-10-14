@@ -1,5 +1,8 @@
 import assert from "node:assert/strict";
+import { createApp } from "../app.js";
 import { analyzeSensorReading } from "../utils/riskEngine.js";
+import { evaluateHealth } from "../features/health-engine/healthEngine.service.js";
+import { getSpeciesCircadianBaseline } from "../features/health-engine/circadian.service.js";
 import { 
     calculateHerdGraphRisk, 
     calculateZoneWeight, 
@@ -264,6 +267,85 @@ const tests = [
             const resultImplicit = calculateHerdGraphRisk(implicitA, [implicitA, implicitB]);
             assert.equal(resultImplicit.herdRiskScore, 72);
             assert.ok(resultImplicit.warnings.length > 0);
+        },
+    },
+    // Health Engine Multi-Modal Evaluation Tests
+    {
+        name: "evaluateHealth returns normal healthy status for baseline vitals",
+        run: () => {
+            const report = evaluateHealth({
+                temperature: 38.5,
+                heartRate: 72,
+                oxygen: 98,
+                humidity: 50,
+                battery: 95
+            });
+            assert.equal(report.overallHealthStatus, "healthy");
+            assert.equal(report.overallRiskScore, 0);
+            assert.equal(report.mergedAlerts.length, 0);
+        },
+    },
+    {
+        name: "evaluateHealth triggers warning and critical states correctly with alerts",
+        run: () => {
+            const report = evaluateHealth({
+                temperature: 40.5, // fever -> critical
+                heartRate: 110,    // tachycardia -> critical
+                oxygen: 82,        // severe hypoxia -> critical
+                battery: 80
+            });
+            assert.equal(report.overallHealthStatus, "critical");
+            assert.ok(report.overallRiskScore >= 50);
+            assert.ok(report.mergedAlerts.length >= 3);
+            assert.ok(report.mergedAlerts.some(a => a.severity === "critical"));
+        },
+    },
+    {
+        name: "evaluateHealth calculates synergy multiplier for febrile ruminal cessation",
+        run: () => {
+            const baseReport = evaluateHealth({
+                temperature: 40.5,
+                heartRate: 75,
+                oxygen: 98,
+                motion: false,
+                rumination: true
+            });
+            const febrileCessationReport = evaluateHealth({
+                temperature: 40.5,
+                heartRate: 75,
+                oxygen: 98,
+                motion: false,
+                rumination: false // Triggers synergy: febrile ruminal cessation (1.45x)
+            });
+            assert.ok(febrileCessationReport.overallRiskScore > baseReport.overallRiskScore);
+        },
+    },
+    {
+        name: "getSpeciesCircadianBaseline calculates diurnal curve with environmental offsets",
+        run: () => {
+            // Cattle peak hour is 16:00
+            const peak = getSpeciesCircadianBaseline("cattle", 38.5, 16.0);
+            assert.equal(peak.expectedBaseline, 38.9); // 38.5 + 0.40
+            assert.equal(peak.diurnalOffset, 0.40);
+
+            // Cattle trough hour is 04:00 (12 hrs from peak)
+            const trough = getSpeciesCircadianBaseline("cattle", 38.5, 4.0);
+            assert.equal(trough.expectedBaseline, 38.1); // 38.5 - 0.40
+            assert.equal(trough.diurnalOffset, -0.40);
+
+            // Heat stress THI >= 79 adds 0.20°C retention buffer
+            const heatStressed = getSpeciesCircadianBaseline("cattle", 38.5, 16.0, { thi: 82 });
+            assert.equal(heatStressed.expectedBaseline, 39.1); // 38.5 + 0.40 + 0.20
+        },
+    },
+    {
+        name: "createApp initializes Express, mounts all routes and Socket.IO cleanly",
+        run: () => {
+            const { app, httpServer, io } = createApp();
+            assert.ok(app, "Express app instance exists");
+            assert.ok(httpServer, "HTTP server instance exists");
+            assert.ok(io, "Socket.IO server instance exists");
+            assert.equal(typeof app.listen, "function");
         },
     },
 ];

@@ -1,5 +1,12 @@
 import { humidityMatrix } from "../rules/humidity.rules.js";
-import { createEvaluator } from "./createEvaluator.js";
+import { MetricEvaluator } from "./createEvaluator.js";
 
-export const evaluateHumidity = createEvaluator("humidity", humidityMatrix);
+export class HumidityEvaluator extends MetricEvaluator {
+    constructor() {
+        super("humidity", humidityMatrix);
+    }
+}
 
+export const humidityEvaluatorInstance = new HumidityEvaluator();
+export const evaluateHumidity = (val) => humidityEvaluatorInstance.evaluate(val);
+export default HumidityEvaluator;

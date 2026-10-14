@@ -1,55 +1,90 @@
-import { evaluateTemperature } from "./evaluators/evaluateTemperature.js";
-import { evaluateHeartRate } from "./evaluators/evaluateHeartRate.js";
-import { evaluateBloodOxygen } from "./evaluators/evaluateBloodOxygen.js";
-import { evaluateHumidity } from "./evaluators/evaluateHumidity.js";
-import { evaluateBattery } from "./evaluators/evaluateBattery.js";
-import { evaluateTHI } from "./evaluators/evaluateTHI.js";
+import { temperatureEvaluatorInstance } from "./evaluators/evaluateTemperature.js";
+import { heartRateEvaluatorInstance } from "./evaluators/evaluateHeartRate.js";
+import { bloodOxygenEvaluatorInstance } from "./evaluators/evaluateBloodOxygen.js";
+import { humidityEvaluatorInstance } from "./evaluators/evaluateHumidity.js";
+import { batteryEvaluatorInstance } from "./evaluators/evaluateBattery.js";
+import { thiEvaluatorInstance } from "./evaluators/evaluateTHI.js";
 
-import { calculateRiskScore } from "./aggregators/calculateRiskScore.js";
-import { determineHealthStatus } from "./aggregators/determineHealthStatus.js";
-import { mergeAlerts } from "./aggregators/mergeAlerts.js";
+import { riskScoreCalculator } from "./aggregators/calculateRiskScore.js";
+import { healthStatusDeterminer } from "./aggregators/determineHealthStatus.js";
+import { alertMerger } from "./aggregators/mergeAlerts.js";
 
 import { normalizeMetric } from "./utils/normalizeMetric.js";
 
-export function evaluateHealth(payload = {}) {
+/**
+ * Orchestrating Service for Multi-Modal Animal Vitality Intelligence.
+ * Encapsulated as an Object-Oriented Service with Dependency Injection.
+ */
+export class HealthEngineService {
+    #tempEval;
+    #hrEval;
+    #o2Eval;
+    #humEval;
+    #battEval;
+    #thiEval;
+    #riskCalc;
+    #statusDeterminer;
+    #alertMerger;
 
-  // Normalize all incoming metrics to ensure consistent evaluation
-  const temp = normalizeMetric(payload.temperature);
-  const hr = normalizeMetric(payload.heartRate);
-  const spo2 = normalizeMetric(payload.oxygen);
-  const hum = normalizeMetric(payload.humidity);
-  const batt = normalizeMetric(payload.battery);
-  const thiValue = normalizeMetric(payload.thi);
+    constructor(dependencies = {}) {
+        this.#tempEval = dependencies.temperatureEvaluator || temperatureEvaluatorInstance;
+        this.#hrEval = dependencies.heartRateEvaluator || heartRateEvaluatorInstance;
+        this.#o2Eval = dependencies.oxygenEvaluator || bloodOxygenEvaluatorInstance;
+        this.#humEval = dependencies.humidityEvaluator || humidityEvaluatorInstance;
+        this.#battEval = dependencies.batteryEvaluator || batteryEvaluatorInstance;
+        this.#thiEval = dependencies.thiEvaluator || thiEvaluatorInstance;
+        this.#riskCalc = dependencies.riskScoreCalculator || riskScoreCalculator;
+        this.#statusDeterminer = dependencies.healthStatusDeterminer || healthStatusDeterminer;
+        this.#alertMerger = dependencies.alertMerger || alertMerger;
+    }
 
-  // 1. Evaluate all individual metrics and store them in an object
-  const evaluations = {
-    temperature: temp === undefined ? null : evaluateTemperature(Number(temp)),
-    heartRate: hr === undefined ? null : evaluateHeartRate(Number(hr)),
-    oxygen: spo2 === undefined ? null : evaluateBloodOxygen(Number(spo2)),
-    humidity: hum === undefined ? null : evaluateHumidity(Number(hum)),
-    battery: batt === undefined ? null : evaluateBattery(Number(batt)),
-    thi: thiValue === undefined ? null : evaluateTHI(Number(thiValue)),
-  };
+    /**
+     * Executes comprehensive vital and multi-modal evaluation on an incoming sensor payload.
+     * @param {Object} payload - Raw or mapped sensor telemetry payload
+     * @returns {Object} Comprehensive clinical health report
+     */
+    evaluateHealth(payload = {}) {
+        const temp = normalizeMetric(payload.temperature);
+        const hr = normalizeMetric(payload.heartRate);
+        const spo2 = normalizeMetric(payload.oxygen);
+        const hum = normalizeMetric(payload.humidity);
+        const batt = normalizeMetric(payload.battery);
+        const thiValue = normalizeMetric(payload.thi);
 
-  const context = {
-    motion: payload.motion ?? payload.behavior?.motion,
-    lyingDown: payload.lyingDown ?? payload.behavior?.lyingDown,
-    rumination: payload.rumination ?? payload.behavior?.rumination,
-    headShaking: payload.headShaking ?? payload.behavior?.headShaking,
-    sensorStatus: payload.sensorStatus ?? payload.device?.sensorStatus,
-    thi: thiValue,
-    herdRiskScore: payload.herdRiskScore
-  };
+        // 1. Evaluate individual physiological and environmental metrics
+        const evaluations = {
+            temperature: temp === undefined ? null : this.#tempEval.evaluate(Number(temp)),
+            heartRate: hr === undefined ? null : this.#hrEval.evaluate(Number(hr)),
+            oxygen: spo2 === undefined ? null : this.#o2Eval.evaluate(Number(spo2)),
+            humidity: hum === undefined ? null : this.#humEval.evaluate(Number(hum)),
+            battery: batt === undefined ? null : this.#battEval.evaluate(Number(batt)),
+            thi: thiValue === undefined ? null : this.#thiEval.evaluate(Number(thiValue)),
+        };
 
-  const overallRiskScore = calculateRiskScore(evaluations, context);
-  const overallHealthStatus = determineHealthStatus(overallRiskScore);
-  const mergedAlerts = mergeAlerts(evaluations);
+        const context = {
+            motion: payload.motion ?? payload.behavior?.motion,
+            lyingDown: payload.lyingDown ?? payload.behavior?.lyingDown,
+            rumination: payload.rumination ?? payload.behavior?.rumination,
+            headShaking: payload.headShaking ?? payload.behavior?.headShaking,
+            sensorStatus: payload.sensorStatus ?? payload.device?.sensorStatus,
+            thi: thiValue,
+            herdRiskScore: payload.herdRiskScore
+        };
 
-  // 3. Return the final comprehensive health report
-  return {
-    ...evaluations,
-    overallRiskScore,
-    overallHealthStatus,
-    mergedAlerts,
-  };
+        // 2. Aggregate composite risk score, health tier, and deduplicated alerts
+        const overallRiskScore = this.#riskCalc.calculate(evaluations, context);
+        const overallHealthStatus = this.#statusDeterminer.determine(overallRiskScore);
+        const mergedAlerts = this.#alertMerger.merge(evaluations);
+
+        return {
+            ...evaluations,
+            overallRiskScore,
+            overallHealthStatus,
+            mergedAlerts,
+        };
+    }
 }
+
+export const healthEngineService = new HealthEngineService();
+export const evaluateHealth = (payload) => healthEngineService.evaluateHealth(payload);
+export default HealthEngineService;

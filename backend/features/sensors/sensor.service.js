@@ -79,6 +79,9 @@ class SensorService {
             throw new AppError(`Animal with ID ${animalId} not found`, 404);
         }
 
+        if (this.#animalCache.size >= 200) {
+            this.#animalCache.clear();
+        }
         this.#animalCache.set(String(animalId), { animal, cachedAt: Date.now() });
         return animal;
     }
@@ -98,6 +101,11 @@ class SensorService {
         if (!sensorData) {
             throw new AppError("Failed to save sensor data", 500);
         }
+
+        mavisEvents.emit(EVENTS.SENSOR_DATA_RECEIVED, {
+            animalId: sensorData.animalId,
+            payload: sensorData
+        });
 
         const { temperature, heartRate, respiratoryRate, bloodOxygen } = sensorData.physiology;
         const animalKey = String(animal._id);
@@ -319,26 +327,7 @@ class SensorService {
 
         const data = await this.#sensorRepository.findByRange(animalId, from, to);
 
-        if (!data || data.length === 0) {
-            throw new AppError(
-                "No data found for the specified date range",
-                404,
-            );
-        }
-
-        return data;
-    }
-
-    async ingestData(animalId, payload) {
-        await this.#ensureAnimalExists(animalId);
-        const savedData = await this.#sensorRepository.create({ animalId, ...payload });
-
-        mavisEvents.emit(EVENTS.SENSOR_DATA_RECEIVED, {
-            animalId,
-            payload: savedData
-        });
-
-        return savedData;
+        return data || [];
     }
 }
 

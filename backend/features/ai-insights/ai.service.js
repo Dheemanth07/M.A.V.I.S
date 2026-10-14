@@ -10,19 +10,21 @@
  */
 
 const OLLAMA_HOST = process.env.OLLAMA_HOST || "http://127.0.0.1:11434";
-const REQUEST_TIMEOUT_MS = 30000; // 30s max for local model inference
+const DEFAULT_TIMEOUT_MS = Number(process.env.OLLAMA_TIMEOUT_MS) || 90000; // 90s adaptive default for local CPU inference
 
-// Prioritized list of supported local models
+// Prioritized list of supported local models (arranged by clinical speed, memory efficiency, and accuracy)
 const MODEL_PRIORITY = [
     "llama3.2:3b",
+    "llama3.2:latest",
     "llama3.2",
     "llama3.2:1b",
-    "phi3:mini",
-    "phi3",
     "gemma2:2b",
     "gemma:2b",
     "qwen2.5:3b",
-    "qwen2.5:1.5b",
+    "qwen2.5-coder:3b",
+    "phi3:mini",
+    "phi3",
+    "qwen2.5-coder:7b",
     "mistral",
 ];
 
@@ -36,7 +38,7 @@ export class AIService {
     async getAvailableLocalModels() {
         try {
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 3000);
+            const timeoutId = setTimeout(() => controller.abort(), 4000);
 
             const res = await fetch(`${OLLAMA_HOST}/api/tags`, {
                 signal: controller.signal,
@@ -77,11 +79,16 @@ export class AIService {
      * @param {string} modelName - Name of the Ollama model.
      * @param {string} systemPrompt - Grounded veterinary role and constraint instructions.
      * @param {string} userPrompt - Structured sensor telemetry packet.
-     * @returns {Promise<Object|null>} Parsed JSON response or null on error.
+     * @param {number|null} customTimeoutMs - Optional timeout in milliseconds.
+     * @returns {Promise<Object>} Parsed and normalized JSON response.
      */
-    async queryOllamaModel(modelName, systemPrompt, userPrompt) {
+    async queryOllamaModel(modelName, systemPrompt, userPrompt, customTimeoutMs = null) {
+        // Heavyweight models (7B+) require up to 120s on CPU
+        const isLargeModel = /7b|8b|13b|14b/i.test(modelName);
+        const timeoutMs = customTimeoutMs || (isLargeModel ? 120000 : DEFAULT_TIMEOUT_MS);
+
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+        const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
         try {
             const res = await fetch(`${OLLAMA_HOST}/api/generate`, {
@@ -96,24 +103,68 @@ export class AIService {
                     format: "json",
                     options: {
                         temperature: 0.2, // Low temperature for clinical determinism
-                        num_predict: 200
+                        num_predict: 350  // Allow sufficient tokens for full JSON structure without cutoff
                     }
                 })
             });
             clearTimeout(timeoutId);
 
-            if (!res.ok) return null;
+            if (!res.ok) {
+                throw new Error(`Ollama HTTP ${res.status}: ${res.statusText}`);
+            }
 
             const json = await res.json();
-            if (!json.response) return null;
+            if (!json.response) {
+                throw new Error("Empty response received from Ollama model");
+            }
 
-            const parsed = JSON.parse(json.response);
-            if (!parsed.summary || !parsed.riskLevel) return null;
+            let text = json.response.trim();
+            // Remove markdown code fences if outputted by model
+            text = text.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
 
-            return parsed;
-        } catch {
+            const jsonMatch = text.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+                text = jsonMatch[0];
+            }
+
+            let parsed;
+            try {
+                parsed = JSON.parse(text);
+            } catch {
+                // Attempt to clean trailing commas before closing braces/brackets
+                const cleaned = text.replace(/,\s*([\]}])/g, "$1");
+                parsed = JSON.parse(cleaned);
+            }
+
+            // Normalization: accommodate variations in naming across SLM models
+            const summary = parsed.summary || parsed.clinicalSummary || parsed.clinical_summary || parsed.description || parsed.overview;
+            if (!summary) {
+                throw new Error("Model response is missing summary field");
+            }
+
+            const rawRisk = parsed.riskLevel || parsed.risk_level || parsed.risk || "Moderate";
+            const riskLevel = String(rawRisk).charAt(0).toUpperCase() + String(rawRisk).slice(1);
+
+            const differentialDiagnosis = Array.isArray(parsed.differentialDiagnosis)
+                ? parsed.differentialDiagnosis
+                : (Array.isArray(parsed.differential_diagnosis) ? parsed.differential_diagnosis : (parsed.causes || []));
+
+            const recommendations = Array.isArray(parsed.recommendations)
+                ? parsed.recommendations
+                : (Array.isArray(parsed.recommendation) ? parsed.recommendation : (parsed.actions || []));
+
+            return {
+                riskLevel,
+                summary: String(summary),
+                differentialDiagnosis: Array.isArray(differentialDiagnosis) ? differentialDiagnosis : [String(differentialDiagnosis)],
+                recommendations: Array.isArray(recommendations) ? recommendations : [String(recommendations)]
+            };
+        } catch (err) {
             clearTimeout(timeoutId);
-            return null;
+            if (err.name === "AbortError") {
+                throw new Error(`Inference timed out after ${(timeoutMs / 1000).toFixed(0)}s (cold-start / CPU latency)`);
+            }
+            throw err;
         }
     }
 
@@ -361,8 +412,9 @@ Generate the simple, clear health assessment JSON now.`;
                         this.#insightCache.set(cacheKey, { vitals: { ...latestVitals }, insight: slmInsight, cachedAt: Date.now() });
                         return slmInsight;
                     }
-                } catch {
-                    // Try next model in cascade
+                } catch (err) {
+                    // Automatically cascade to next available model in priority list
+                    console.warn(`[AIService] Model [${model}] failed (${err.message}). Cascading to next model in priority order...`);
                     continue;
                 }
             }

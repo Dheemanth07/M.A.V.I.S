@@ -1,7 +1,12 @@
 import { temperatureMatrix } from "../rules/temperature.rules.js";
-import { createEvaluator } from "./createEvaluator.js";
+import { MetricEvaluator } from "./createEvaluator.js";
 
-// evaluator instance (factory -> function)
-export const evaluateTemperature = createEvaluator("temperature", temperatureMatrix);
+export class TemperatureEvaluator extends MetricEvaluator {
+    constructor() {
+        super("temperature", temperatureMatrix);
+    }
+}
 
-
+export const temperatureEvaluatorInstance = new TemperatureEvaluator();
+export const evaluateTemperature = (val) => temperatureEvaluatorInstance.evaluate(val);
+export default TemperatureEvaluator;
