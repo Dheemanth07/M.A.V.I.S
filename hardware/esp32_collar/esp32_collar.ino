@@ -2,19 +2,24 @@
 // M.A.V.I.S. (Multi-Modal Animal Vitality Intelligence System)
 // Edge Firmware: Production-Grade Dual-Core Smart Collar
 // ============================================================================
-// Features:
-// - FreeRTOS Dual-Core Architecture (Core 1: 100Hz DSP; Core 0: Non-blocking WiFi)
-// - Dynamic Wi-Fi Network Scanning & Auto-Connection
-// - NVS Flash Memory Storage (Preferences.h - Zero Hardcoded Passwords)
-// - Built-in Phone Setup Hotspot & Web Portal ("MAVIS-COLLAR-SETUP")
-// - True Optical Heart Rate Variability (HRV - RMSSD) from MAX30102
-// - 6-Axis Inertial Measurement (MPU6050 Accelerometer + Gyroscope)
-// - Real-time Rumination, Head-Shaking, and Posture Classification
-// - Motion-Gated Optical Photoplethysmography (Anti-Motion Artifacts)
-// - True Optical SpO2 AC/DC Ratio Derivation
+// Features & Essential Algorithms:
+// - FreeRTOS Dual-Core Architecture (Core 1: 100Hz DSP; Core 0: Asynchronous WiFi)
+// - True Optical Heart Rate Variability (HRV - RMSSD) from MAX30102 PPG
+// - Motion-Gated Optical Peak Detection (Rejects false beats during running/shaking)
+// - Physical Optical SpO2 AC/DC Ratio Derivation (Beer-Lambert model)
+// - 6-Axis Inertial Behavior Classifier (MPU6050 Accelerometer + Gyroscope)
+//   * Rumination chew cycle detection via Gyro Z zero-crossing frequency
+//   * Head-shaking detection (angular velocity trigger for pest/fly agitation)
+//   * Posture classification (lying down vs. standing static acceleration vector)
+// - Asynchronous Non-Blocking 1-Wire DS18B20 Temperature Sampling (0ms task jitter)
+// - LiPo Battery Voltage Monitoring (ADC GPIO34)
 // - O(1) Constant-Time Moving Average Running Filters
-// - I2C 9-Clock Bus Lockup Auto-Recovery Bit-Banging Routine
+// - I2C 9-Clock Bus Lockup Auto-Recovery Routine
 // - Optical Occlusion & Skin-Contact Sanity Guard
+// - NVS Flash Memory Storage (Preferences.h - Zero Hardcoded Passwords in Field)
+// - Built-in Provisioning Web Portal & Dynamic Wi-Fi Scanner ("MAVIS-COLLAR-SETUP")
+// - Heap-Safe Stack Buffers & Wi-Fi Backoff Protection (Zero Heap Fragmentation)
+// - 802.11 Modem Sleep Power Management for Extended LiPo Battery Life
 // ============================================================================
 
 #include <WiFi.h>
@@ -24,22 +29,22 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <Adafruit_MPU6050.h>
-#include <Adafruit_Sensor.h>
 #include <Preferences.h>
 #include <WebServer.h>
 #include "MAX30105.h"   // SparkFun MAX3010x library
 #include "heartRate.h"  // SparkFun peak-detection algorithm
 
-// --- Default Fallback Wi-Fi & Gateway Configuration ---
-String currentSSID      = "motorola edge 50 pro_2405";
-String currentPassword  = "abcd1678";
-String currentServerUrl = "http://172.16.73.154:5000/api/sensor";
+// --- Default Fallback Parameters (Overridden by Flash NVS) ---
+String currentSSID      = "MAVIS_FARM_WIFI";
+String currentPassword  = "mavis_farm_password";
+String currentServerUrl = "http://192.168.1.100:5000/api/sensor";
 String currentAnimalId  = "6a7ad37a373c5495c40c8d5b";
 
-// --- Pin Assignments ---
-#define ONE_WIRE_BUS 4   // DS18B20 Data pin on GPIO4
+// --- Hardware Pin Definitions ---
+#define ONE_WIRE_BUS 4   // DS18B20 1-Wire Data (GPIO4)
 #define I2C_SDA_PIN  21  // ESP32 Hardware I2C SDA
 #define I2C_SCL_PIN  22  // ESP32 Hardware I2C SCL
+#define BATTERY_PIN  34  // LiPo Voltage Divider ADC (GPIO34 / ADC1_CH6)
 
 // --- Sensor Hardware Instances ---
 OneWire oneWire(ONE_WIRE_BUS);
@@ -49,7 +54,7 @@ MAX30105 particleSensor;
 Preferences preferences;
 WebServer setupServer(80);
 
-// --- Sensor Online Status Flags ---
+// --- Operational Status Flags ---
 bool tempConnected = false;
 bool mpuConnected  = false;
 bool maxConnected  = false;
@@ -82,7 +87,7 @@ FastMovingAverage tempFilter;
 FastMovingAverage hrFilter;
 FastMovingAverage rrFilter;
 
-// --- Optical SpO2, Heart Rate & True HRV Variables ---
+// --- Optical SpO2, Heart Rate & HRV (RMSSD) State ---
 const byte RATE_SIZE = 4;
 byte rates[RATE_SIZE];
 byte rateSpot = 0;
@@ -94,13 +99,13 @@ int beatAvg = 75;
 const byte HRV_WINDOW = 8;
 int rrIntervals[HRV_WINDOW];
 byte hrvSpot = 0;
-float calculatedHRV = 55.0f; // Normal baseline RMSSD in ms
+float calculatedHRV = 55.0f; // Baseline livestock RMSSD in ms
 
 long redMax = 0, redMin = 262144;
 long irMax  = 0, irMin  = 262144;
 float calculatedSpO2 = 98.0f;
 
-// --- FreeRTOS Inter-Task Communication Queue ---
+// --- FreeRTOS Inter-Task Mailbox Queue ---
 struct TelemetryPacket {
     float temperature;
     float heartRate;
@@ -114,9 +119,11 @@ struct TelemetryPacket {
     bool headShaking;
     char sensorStatus[16];
     bool contactDetected;
+    int batteryLevel;
     int wifiRssi;
 };
 
+// Queue length is 1: atomic mailbox overwritten with freshest telemetry
 QueueHandle_t telemetryQueue = NULL;
 
 // ============================================================================
@@ -153,9 +160,11 @@ void recoverI2CBus(int sdaPin, int sclPin) {
 // DYNAMIC WI-FI SCANNING & PHONE SETUP WEB PORTAL
 // ============================================================================
 void handleRootPage() {
-    // Dynamically scan for nearby 2.4 GHz Wi-Fi networks
     int n = WiFi.scanNetworks();
-    String html = "<!DOCTYPE html><html><head><meta name='viewport' content='width=device-width, initial-scale=1'>";
+    String html;
+    html.reserve(2048); // Prevent dynamic heap fragmentation during concatenation
+
+    html += "<!DOCTYPE html><html><head><meta name='viewport' content='width=device-width, initial-scale=1'>";
     html += "<title>MAVIS Collar Setup</title>";
     html += "<style>body{font-family:-apple-system,sans-serif;background:#0f172a;color:#f8fafc;padding:20px;max-width:420px;margin:auto;}";
     html += "h2{color:#2dd4bf;margin-bottom:4px;}p{color:#94a3b8;font-size:13px;margin-top:0;}";
@@ -164,10 +173,10 @@ void handleRootPage() {
     html += "button{width:100%;margin-top:20px;padding:12px;background:#0d9488;color:#fff;font-weight:700;border:none;border-radius:8px;cursor:pointer;}";
     html += ".scan-badge{background:#134e4a;color:#5eead4;padding:2px 8px;border-radius:12px;font-size:11px;float:right;}";
     html += "</style></head><body>";
-    html += "<h2>MAVIS Smart Collar</h2><p>Dynamic Wi-Fi & Gateway Provisioning</p>";
+    html += "<h2>MAVIS Smart Collar</h2><p>Field Provisioning Portal</p>";
     html += "<form action='/save' method='POST'>";
 
-    html += "<label>Detected Wi-Fi Networks: <span class='scan-badge'>" + String(n) + " Found</span></label>";
+    html += "<label>Detected Farm Networks: <span class='scan-badge'>" + String(n) + " Found</span></label>";
     html += "<select name='ssid'>";
     for (int i = 0; i < n; i++) {
         int rssi = WiFi.RSSI(i);
@@ -179,7 +188,7 @@ void handleRootPage() {
     html += "<label>Or Enter Custom SSID:</label><input type='text' name='custom_ssid' placeholder='Leave blank to use selected above'>";
     html += "<label>Wi-Fi Password:</label><input type='password' name='password' placeholder='Enter Wi-Fi Password'>";
     html += "<label>MAVIS Backend Gateway URL:</label><input type='text' name='server_url' value='" + currentServerUrl + "'>";
-    html += "<label>Animal ID (from React Dashboard):</label><input type='text' name='animal_id' value='" + currentAnimalId + "'>";
+    html += "<label>Animal ID (from Web Dashboard):</label><input type='text' name='animal_id' value='" + currentAnimalId + "'>";
     html += "<button type='submit'>Save & Connect Collar</button>";
     html += "</form></body></html>";
 
@@ -195,7 +204,6 @@ void handleSaveConfig() {
     String chosenUrl  = setupServer.arg("server_url");
     String chosenId   = setupServer.arg("animal_id");
 
-    // Save into ESP32 Non-Volatile Storage (NVS)
     preferences.begin("mavis", false);
     if (chosenSSID.length() > 0) preferences.putString("ssid", chosenSSID);
     if (chosenPass.length() > 0) preferences.putString("password", chosenPass);
@@ -204,7 +212,7 @@ void handleSaveConfig() {
     preferences.end();
 
     String html = "<!DOCTYPE html><html><body style='background:#0f172a;color:#2dd4bf;font-family:sans-serif;text-align:center;padding:40px;'>";
-    html += "<h2>Configuration Saved!</h2><p style='color:#94a3b8;'>Collar is rebooting and connecting to: <b>" + chosenSSID + "</b>...</p>";
+    html += "<h2>Configuration Saved!</h2><p style='color:#94a3b8;'>Collar is rebooting and joining: <b>" + chosenSSID + "</b>...</p>";
     html += "</body></html>";
     setupServer.send(200, "text/html", html);
 
@@ -213,14 +221,12 @@ void handleSaveConfig() {
 }
 
 void startSetupPortal() {
-    Serial.println("\n[SETUP PORTAL] Starting Wi-Fi Access Point 'MAVIS-COLLAR-SETUP'...");
+    Serial.println("\n[SETUP PORTAL] Launching Access Point 'MAVIS-COLLAR-SETUP'...");
     WiFi.disconnect();
     WiFi.mode(WIFI_AP_STA);
     WiFi.softAP("MAVIS-COLLAR-SETUP", "");
 
-    Serial.print("[SETUP PORTAL] AP IP Address: ");
-    Serial.println(WiFi.softAPIP());
-    Serial.println("[SETUP PORTAL] Connect your phone to 'MAVIS-COLLAR-SETUP' and open http://192.168.4.1");
+    Serial.printf("[SETUP PORTAL] AP IP: %s | Open http://192.168.4.1 on your phone\n", WiFi.softAPIP().toString().c_str());
 
     setupServer.on("/", HTTP_GET, handleRootPage);
     setupServer.on("/save", HTTP_POST, handleSaveConfig);
@@ -229,10 +235,10 @@ void startSetupPortal() {
 }
 
 // ============================================================================
-// CORE 1 TASK: HIGH-SPEED SENSOR POLLING & 6-AXIS BEHAVIOR DSP (APP_CPU)
+// CORE 1 TASK: HIGH-SPEED 100Hz SENSOR POLLING & 6-AXIS BEHAVIOR DSP (APP_CPU)
 // ============================================================================
 void taskBioSensors(void* parameter) {
-    Serial.println("[CORE 1] BioSensors Task running on Core " + String(xPortGetCoreID()));
+    Serial.printf("[CORE 1] BioSensors Task running on Core %d (100Hz DSP)\n", xPortGetCoreID());
 
     unsigned long lastPeriodicRead = 0;
     const unsigned long periodicInterval = 3000;
@@ -283,6 +289,7 @@ void taskBioSensors(void* parameter) {
             headShaking = (angularRate > 3.5f);
             lyingDownState = (!motionActive && (abs(a.acceleration.x) > 6.0f || abs(a.acceleration.y) > 6.0f));
 
+            // Rumination: Jaw chew oscillation cycles on Z-axis (0.25 to 1.8 rad/s)
             if (!motionActive && abs(g.gyro.z) >= 0.25f && abs(g.gyro.z) <= 1.8f) {
                 if ((lastGyroZ > 0.0f && g.gyro.z < 0.0f) || (lastGyroZ < 0.0f && g.gyro.z > 0.0f)) {
                     ruminationCycles++;
@@ -313,7 +320,7 @@ void taskBioSensors(void* parameter) {
                     for (byte x = 0; x < RATE_SIZE; x++) sum += rates[x];
                     beatAvg = sum / RATE_SIZE;
 
-                    // Compute True HRV: RMSSD (Root Mean Square of Successive Differences)
+                    // Compute True Clinical HRV: RMSSD (Root Mean Square of Successive Differences)
                     rrIntervals[hrvSpot++] = (int)delta;
                     hrvSpot %= HRV_WINDOW;
 
@@ -333,7 +340,7 @@ void taskBioSensors(void* parameter) {
                         calculatedHRV = rmssd;
                     }
 
-                    // Compute Physical Optical SpO2
+                    // Compute Physical Optical SpO2 (Beer-Lambert Ratio of Ratios)
                     float acRed = (float)(redMax - redMin);
                     float dcRed = (float)(redMax + redMin) / 2.0f;
                     float acIR  = (float)(irMax - irMin);
@@ -357,13 +364,25 @@ void taskBioSensors(void* parameter) {
         if (millis() - lastPeriodicRead >= periodicInterval) {
             lastPeriodicRead = millis();
 
+            // Asynchronous, Non-blocking DS18B20 temperature read (0ms delay)
             float rawTemp = 38.5f;
             if (tempConnected) {
-                tempSensor.requestTemperatures();
                 float t = tempSensor.getTempCByIndex(0);
                 if (t != DEVICE_DISCONNECTED_C && t > 25.0f && t < 45.0f) {
                     rawTemp = t;
                 }
+                // Trigger next conversion in background silicon (non-blocking)
+                tempSensor.requestTemperatures();
+            }
+
+            // Analog LiPo Battery Voltage (GPIO34)
+            int rawAdc = analogRead(BATTERY_PIN);
+            float batVoltage = (rawAdc / 4095.0f) * 3.3f * 2.0f; // 2:1 voltage divider
+            int batteryPct = 95;
+            if (batVoltage >= 2.5f) {
+                batteryPct = (int)(((batVoltage - 3.27f) / (4.20f - 3.27f)) * 100.0f);
+                if (batteryPct > 100) batteryPct = 100;
+                if (batteryPct < 0)   batteryPct = 0;
             }
 
             float cleanTemp = tempFilter.add(rawTemp);
@@ -394,6 +413,7 @@ void taskBioSensors(void* parameter) {
             packet.headShaking = headShaking;
             strcpy(packet.sensorStatus, currentSensorStatus);
             packet.contactDetected = contactDetected;
+            packet.batteryLevel = batteryPct;
             packet.wifiRssi = WiFi.RSSI();
 
             if (telemetryQueue != NULL) {
@@ -401,7 +421,7 @@ void taskBioSensors(void* parameter) {
             }
         }
 
-        vTaskDelay(pdMS_TO_TICKS(10));
+        vTaskDelay(pdMS_TO_TICKS(10)); // Fixed 100Hz DSP tick
     }
 }
 
@@ -409,9 +429,14 @@ void taskBioSensors(void* parameter) {
 // CORE 0 TASK: ASYNCHRONOUS NETWORK TELEMETRY DISPATCH (PRO_CPU)
 // ============================================================================
 void taskTelemetry(void* parameter) {
-    Serial.println("[CORE 0] Telemetry Task running on Core " + String(xPortGetCoreID()));
+    Serial.printf("[CORE 0] Telemetry Task running on Core %d (Network Dispatch)\n", xPortGetCoreID());
 
     TelemetryPacket packet;
+    HTTPClient http;
+    http.setReuse(true); // Maintain TCP socket to reduce handshake radio overhead
+
+    unsigned long lastReconnectAttempt = 0;
+    const unsigned long reconnectBackoff = 15000; // 15-second backoff prevents Wi-Fi stack lockup
 
     while (true) {
         if (apModeActive) {
@@ -422,7 +447,6 @@ void taskTelemetry(void* parameter) {
 
         if (xQueueReceive(telemetryQueue, &packet, portMAX_DELAY) == pdTRUE) {
             if (WiFi.status() == WL_CONNECTED) {
-                HTTPClient http;
                 http.begin(currentServerUrl);
                 http.addHeader("Content-Type", "application/json");
 
@@ -445,25 +469,32 @@ void taskTelemetry(void* parameter) {
                 behavior["posture"] = packet.lyingDown ? "lying_down" : "standing";
 
                 JsonObject device = doc.createNestedObject("device");
+                device["batteryLevel"] = packet.batteryLevel;
                 device["signalStrength"] = packet.wifiRssi;
                 device["sensorStatus"] = packet.sensorStatus;
                 device["contactDetected"] = packet.contactDetected;
 
-                String requestBody;
-                serializeJson(doc, requestBody);
+                // Stack buffer serialization: zero heap fragmentation
+                char jsonBuffer[512];
+                size_t jsonLen = serializeJson(doc, jsonBuffer, sizeof(jsonBuffer));
 
-                int httpResponseCode = http.POST(requestBody);
+                int httpResponseCode = http.POST((uint8_t*)jsonBuffer, jsonLen);
 
-                Serial.printf("\n[CORE 0 TX] Temp: %.1fC | HR: %d BPM | HRV: %.1fms | SpO2: %d%% | Rum: %s | Shaking: %s | HTTP: %d\n",
+                Serial.printf("[CORE 0 TX] Temp: %.1fC | HR: %d BPM | HRV: %.1fms | SpO2: %d%% | Bat: %d%% | Rum: %s | Shaking: %s | HTTP: %d\n",
                               packet.temperature, (int)packet.heartRate, packet.hrv, (int)packet.bloodOxygen,
+                              packet.batteryLevel,
                               packet.rumination ? "YES" : "NO",
                               packet.headShaking ? "ALERT" : "NORMAL",
                               httpResponseCode);
 
                 http.end();
             } else {
-                Serial.println("[CORE 0] Wi-Fi lost. Attempting reconnection...");
-                WiFi.begin(currentSSID.c_str(), currentPassword.c_str());
+                if (millis() - lastReconnectAttempt > reconnectBackoff) {
+                    lastReconnectAttempt = millis();
+                    Serial.println("[CORE 0] Wi-Fi lost. Attempting reconnection (15s backoff)...");
+                    WiFi.disconnect();
+                    WiFi.reconnect();
+                }
             }
         }
     }
@@ -474,7 +505,7 @@ void taskTelemetry(void* parameter) {
 // ============================================================================
 void setup() {
     Serial.begin(115200);
-    delay(1000);
+    delay(500);
     Serial.println("\n=======================================================");
     Serial.println("   M.A.V.I.S. SMART COLLAR PRODUCTION FIRMWARE (RTOS)  ");
     Serial.println("=======================================================");
@@ -485,9 +516,11 @@ void setup() {
 
     // 2. Initialize Sensors
     tempSensor.begin();
+    tempSensor.setWaitForConversion(false); // CRITICAL: Asynchronous non-blocking mode (0ms freeze)
     if (tempSensor.getDeviceCount() > 0) {
         tempConnected = true;
-        Serial.println("[OK] DS18B20 Temperature Sensor online.");
+        tempSensor.requestTemperatures(); // Trigger initial background conversion
+        Serial.println("[OK] DS18B20 Temperature Sensor online (Non-blocking mode).");
     } else {
         Serial.println("[WARN] DS18B20 not found. Fallback enabled.");
     }
@@ -518,11 +551,11 @@ void setup() {
     currentAnimalId  = preferences.getString("animalId", currentAnimalId);
     preferences.end();
 
-    Serial.println("[CONFIG] Stored Wi-Fi Target: " + currentSSID);
-    Serial.println("[CONFIG] Stored Backend URL: " + currentServerUrl);
+    Serial.printf("[CONFIG] Target SSID: %s | Server URL: %s\n", currentSSID.c_str(), currentServerUrl.c_str());
 
-    // 4. Connect to Wi-Fi
+    // 4. Connect to Wi-Fi with Power Management
     WiFi.mode(WIFI_STA);
+    WiFi.setSleep(true); // Enable 802.11 DTIM modem sleep for extended LiPo battery life
     WiFi.begin(currentSSID.c_str(), currentPassword.c_str());
     Serial.print("Connecting to Wi-Fi");
     int retries = 0;
@@ -533,37 +566,37 @@ void setup() {
     }
 
     if (WiFi.status() == WL_CONNECTED) {
-        Serial.println("\n[OK] Wi-Fi connected! IP: " + WiFi.localIP().toString());
+        Serial.printf("\n[OK] Wi-Fi connected! IP: %s\n", WiFi.localIP().toString().c_str());
     } else {
         Serial.println("\n[WARN] Could not connect to saved Wi-Fi. Launching Setup Portal...");
         startSetupPortal();
     }
 
-    // 5. Create FreeRTOS Telemetry Queue
-    telemetryQueue = xQueueCreate(5, sizeof(TelemetryPacket));
+    // 5. Create FreeRTOS Telemetry Mailbox Queue (Length 1 for atomic overwrite)
+    telemetryQueue = xQueueCreate(1, sizeof(TelemetryPacket));
 
-    // 6. Spawn Concurrent FreeRTOS Tasks on Dedicated Hardware Cores
+    // 6. Spawn Concurrent FreeRTOS Tasks on Dedicated Cores with Optimized Stack Sizes
     xTaskCreatePinnedToCore(
         taskBioSensors,
         "BioSensorsTask",
-        8192,
+        4096,           // Stack optimized from 8192 to 4096 bytes
         NULL,
-        2,
+        2,              // Higher priority for real-time 100Hz DSP
         NULL,
-        1
+        1               // APP_CPU (Core 1)
     );
 
     xTaskCreatePinnedToCore(
         taskTelemetry,
         "TelemetryTask",
-        8192,
+        6144,           // Stack tailored for HTTPClient & JSON serialization
         NULL,
-        1,
+        1,              // Standard priority for network I/O
         NULL,
-        0
+        0               // PRO_CPU (Core 0)
     );
 
-    Serial.println("[OK] FreeRTOS Tasks initialized.");
+    Serial.println("[OK] FreeRTOS dual-core tasks running.");
 }
 
 void loop() {
