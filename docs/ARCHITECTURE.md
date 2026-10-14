@@ -4,14 +4,30 @@ This document provides a comprehensive technical breakdown of the architecture, 
 
 ---
 
-## 1. High-Level Data Flow
+## 1. High-Level System Architecture
 
-![M.A.V.I.S. Architecture](images/architecture.png)
+The architecture decouples representation acquisition, statistical baseline learning, and clinical evaluation into three specialized, synchronized stages:
 
-The system is decoupled into three primary execution tiers:
-1. **Edge Hardware Layer**: Embedded ESP32 firmware running a dual-core FreeRTOS architecture. Core 1 samples the MAX30102 pulse oximeter, MPU6050 6-axis IMU, and DS18B20 1-Wire temperature probe at 100 Hz. Core 0 handles network dispatch, pushing structured JSON telemetry packets over Wi-Fi/HTTP every 3 seconds.
-2. **Backend Gateway & Ingestion**: Node.js/Express server providing input schema validation (Joi), persistent time-series ingestion (MongoDB), adaptive baseline computation, multi-modal risk scoring, and spatial herd contagion tracking.
-3. **Frontend Digital Twin & Presentation**: React 18 + TypeScript single-page application receiving real-time WebSocket events (`sensorUpdate`, `alert`) via Socket.IO, rendering 24-hour/7-day historical trends, and providing clinical audit logging.
+![M.A.V.I.S. End-to-End Architecture](images/architecture.png)
+
+### Subsystem & Processing Budget Audit
+
+Modeled after standard technical engineering reports, the table below audits the layer descriptions, execution frequencies, and computational budgets across all three tiers:
+
+| Subsystem / Layer Module | Layer Description & Tensor/Payload Contract | Processing Frequency | Algorithmic Complexity | Execution Budget |
+|---|---|---|---|---|
+| **Optical PPG Acquisition** | MAX30102 Red & IR photodiode registers `[32-sample FIFO]` | 100 Hz (10 ms ticks) | $O(1)$ Peak Detect | Core 1 (APP_CPU) |
+| **Motion Gating & True HRV** | Accelerometer gating $\sqrt{\sum a_i^2} > 15 \text{m/s}^2$ + RMSSD 8-beat RR window | 100 Hz (Event-triggered) | $O(N)$ where $N=8$ | Core 1 (APP_CPU) |
+| **Inertial Rumination DSP** | MPU6050 Gyro Z zero-crossings ($0.25 \le \|\omega_z\| \le 1.8 \text{rad/s}$) | 100 Hz (Running integral) | $O(1)$ Zero-Crossing | Core 1 (APP_CPU) |
+| **Subcutaneous Temp** | DS18B20 1-Wire non-blocking scratchpad read (`setWaitForConversion(false)`) | 0.33 Hz (Every 3 sec) | $O(1)$ Silicon Read | Core 1 (APP_CPU) |
+| **Inter-Core Mailbox** | FreeRTOS Queue `[Length = 1, sizeof(TelemetryPacket)]` | Atomic overwrite | $O(1)$ Mailbox | FreeRTOS Kernel |
+| **Edge Network Dispatch** | HTTPClient POST payload to `/api/sensor` | 0.33 Hz (Every 3 sec) | Non-blocking lwIP | Core 0 (PRO_CPU) |
+| **Schema Ingestion & Joi** | Express Gateway input sanitization against strict Joi schema | Per request (<5 ms) | $O(K)$ field validation | Gateway Node.js |
+| **Welford Baseline Engine** | Streaming continuous mean & variance ($\bar{x}_k, M_{2,k}, \sigma_k$) | Ingestion tick | $O(1)$ Constant RAM | Gateway Memory |
+| **Spatial Herd Contagion** | Graph edge evaluation across shared pen co-presence matrix | Ingestion tick | $O(E)$ connected herd | Gateway Node.js |
+| **Non-Linear Risk Scoring** | Multi-modal synergy engine ($1.35\times$ Febrile Ruminal Cessation) | Ingestion tick | $O(R)$ rules | Gateway Node.js |
+| **Local SLM Cascade** | Ollama edge inference (`llama3.2:3b` / `phi3:mini`) + Deterministic Fallback | On-Demand (<3s) | 3B/4B quantized | Localhost GPU/CPU |
+| **Client Digital Twin UI** | React 18 + TS Socket.IO consumer (`sensorUpdate`, `alert`) | Real-time push | 60 FPS re-render | Client Browser |
 
 ---
 
@@ -39,8 +55,6 @@ $$Z = \frac{|x_{current} - \bar{x}_{baseline}|}{\max(\sigma_k, \sigma_{min})}$$
 
 ## 3. Multi-Modal Risk Scoring Engine
 
-![Risk Engine Pipeline](images/risk-engine-diagram.jpg)
-
 The clinical evaluation engine combines physiological thresholds with 6-axis behavioral state and environmental context. Rather than simple additive scoring, it models **pathophysiological synergies**:
 
 ### Non-Linear Synergy Multipliers
@@ -65,7 +79,7 @@ The transmission probability between index subject $i$ and neighboring subject $
 $$P_{\text{contagion}}(i, j) = 1 - \exp\left(-\beta \cdot w_{\text{species}} \cdot \Delta t_{\text{shared}}\right)$$
 
 * $\beta$: Transmission coefficient calibrated by ventilation and contact density ($0.85$ for enclosed barn, $0.35$ for open pasture).
-* $w_{\text{species}}$: Species susceptibility weight (e.g., $1.0$ for cross-cattle transmission, $0.6$ for inter-species contact).
+* $w_{\text{species}}$: Species susceptibility weight ($1.0$ for cross-cattle transmission, $0.6$ for inter-species contact).
 
 ---
 

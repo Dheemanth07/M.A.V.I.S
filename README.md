@@ -16,24 +16,29 @@ Continuous health monitoring in livestock and domestic animals is critical for d
 **M.A.V.I.S.** addresses this challenge by integrating:
 - **Wearable Sensing**: An ESP32-based multi-sensor collar capturing optical photoplethysmography (PPG), core body temperature, 6-axis kinematics, and battery voltage.
 - **Real-Time Gateway**: A local Node.js gateway that ingests telemetry, maintains personalized circadian baselines via Welford's algorithm, and computes multi-modal risk scores.
-- **Interactive Dashboard**: A React single-page application providing biological digital twin monitoring, 24-hour and 7-day historical trend timelines, alert feeds, and clinical action logs.
+- **Interactive Dashboard**: A React single-page application providing biological digital twin monitoring, live herd matrix tracking, alert triage, and clinical action logs.
 - **Simulation Workflow**: Built-in telemetry simulation daemon enabling complete evaluation and demonstration without requiring physical collar hardware.
 
 > **Clinical Disclaimer**: M.A.V.I.S. is a project prototype designed for animal vitality monitoring and risk screening. Its risk scores and alerts are algorithmic indicators and do not constitute certified veterinary diagnoses.
 
 ---
 
-## 2. Product Demonstration & Screenshots
+## 2. Product Demonstration & Live Screenshots
 
-### Live Telemetry & Biological Digital Twin
-Real-time physiological metrics compared against individual learned circadian baselines, featuring 6-axis posture and optical skin contact status:
+### Live Animal Digital Twin & Collar Vitals
+Real-time physiological telemetry (LoRa Link: 98%, 3s Interval) compared against individual learned circadian baselines, featuring 6-axis posture, optical skin contact, and cumulative alert breakdowns:
 
-![Live Telemetry Dashboard](docs/images/dashboard-live.png)
+![Live Animal Digital Twin](docs/images/digital-twin-monitor.png)
 
-### Active Telemetry & Herd Contagion Exposure Center
-Automated alert generation flagging vital sign deviations and spatial cross-infection risks across shared herd enclosures:
+### Live Herd Telemetry Matrix & Priority Clinical Queue
+Real-time status tracking across the entire herd with automated priority clinical queueing for immediate caregiver observation:
 
-![Active Telemetry & Contagion Alerts](docs/images/alerts-contagion.png)
+![Live Herd Telemetry Matrix](docs/images/live-herd-matrix.png)
+
+### Herd Health Summary & Risk Level Analytics
+Group-wide risk scoring with a 50% clinical action line, herd health breakdown donut chart, and vital benchmarks:
+
+![Herd Health Summary & Risk Analytics](docs/images/herd-analytics-summary.png)
 
 ---
 
@@ -54,7 +59,24 @@ Automated alert generation flagging vital sign deviations and spatial cross-infe
 
 The end-to-end data pipeline decouples sensor acquisition, validation, baseline computation, storage, and presentation:
 
-![M.A.V.I.S. Architecture Infographic](docs/images/architecture.png)
+![M.A.V.I.S. Architecture Diagram](docs/images/architecture.png)
+
+### Subsystem & Processing Budget Audit
+
+| Subsystem / Layer Module | Layer Description & Tensor/Payload Contract | Processing Frequency | Algorithmic Complexity | Execution Budget |
+|---|---|---|---|---|
+| **Optical PPG Acquisition** | MAX30102 Red & IR photodiode registers `[32-sample FIFO]` | 100 Hz (10 ms ticks) | $O(1)$ Peak Detect | Core 1 (APP_CPU) |
+| **Motion Gating & True HRV** | Accelerometer gating $\sqrt{\sum a_i^2} > 15 \text{m/s}^2$ + RMSSD 8-beat RR window | 100 Hz (Event-triggered) | $O(N)$ where $N=8$ | Core 1 (APP_CPU) |
+| **Inertial Rumination DSP** | MPU6050 Gyro Z zero-crossings ($0.25 \le \|\omega_z\| \le 1.8 \text{rad/s}$) | 100 Hz (Running integral) | $O(1)$ Zero-Crossing | Core 1 (APP_CPU) |
+| **Subcutaneous Temp** | DS18B20 1-Wire non-blocking scratchpad read (`setWaitForConversion(false)`) | 0.33 Hz (Every 3 sec) | $O(1)$ Silicon Read | Core 1 (APP_CPU) |
+| **Inter-Core Mailbox** | FreeRTOS Queue `[Length = 1, sizeof(TelemetryPacket)]` | Atomic overwrite | $O(1)$ Mailbox | FreeRTOS Kernel |
+| **Edge Network Dispatch** | HTTPClient POST payload to `/api/sensor` | 0.33 Hz (Every 3 sec) | Non-blocking lwIP | Core 0 (PRO_CPU) |
+| **Schema Ingestion & Joi** | Express Gateway input sanitization against strict Joi schema | Per request (<5 ms) | $O(K)$ field validation | Gateway Node.js |
+| **Welford Baseline Engine** | Streaming continuous mean & variance ($\bar{x}_k, M_{2,k}, \sigma_k$) | Ingestion tick | $O(1)$ Constant RAM | Gateway Memory |
+| **Spatial Herd Contagion** | Graph edge evaluation across shared pen co-presence matrix | Ingestion tick | $O(E)$ connected herd | Gateway Node.js |
+| **Non-Linear Risk Scoring** | Multi-modal synergy engine ($1.35\times$ Febrile Ruminal Cessation) | Ingestion tick | $O(R)$ rules | Gateway Node.js |
+| **Local SLM Cascade** | Ollama edge inference (`llama3.2:3b` / `phi3:mini`) + Deterministic Fallback | On-Demand (<3s) | 3B/4B quantized | Localhost GPU/CPU |
+| **Client Digital Twin UI** | React 18 + TS Socket.IO consumer (`sensorUpdate`, `alert`) | Real-time push | 60 FPS re-render | Client Browser |
 
 *For detailed algorithmic formulations, synergy equations, and graph math, see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).*
 
@@ -124,7 +146,6 @@ Copy the example environment configuration:
 ```bash
 cp backend/.env.example backend/.env
 ```
-*Review `backend/.env` to customize the port, database URI, or secrets if desired.*
 
 > **Zero-Config Database Fallback**: If you do not have a local MongoDB instance running, the backend automatically boots an **in-memory MongoDB database**. No manual database installation is required for development or testing.
 
@@ -184,7 +205,7 @@ npm run build
 ```
 **Verified Result**:
 - `oxlint`: 0 warnings, 0 errors across 32 files.
-- `vite build`: Production bundle transformed and minified cleanly in 1.01 seconds.
+- `vite build`: Production bundle transformed and minified cleanly in 959 ms.
 
 ---
 
