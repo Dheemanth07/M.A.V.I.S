@@ -1,42 +1,29 @@
 # M.A.V.I.S. — Deep System Architecture & Algorithmic Formulation
 
-This document provides a comprehensive technical breakdown of the architecture, mathematical formulations, and engineering decisions implemented in M.A.V.I.S. (Multi-Modal Animal Vitality Intelligence System).
+This document provides a technical breakdown of the architecture, algorithmic formulations, and design decisions implemented in M.A.V.I.S. (Multi-Modal Animal Vitality Intelligence System).
 
 ---
 
-## 1. High-Level System Architecture
+## High-Level System Architecture & Data Flow
 
-The architecture decouples representation acquisition, statistical baseline learning, and clinical evaluation into three specialized, synchronized stages:
+![M.A.V.I.S. Architecture Diagram](images/architecture.png)
 
-![M.A.V.I.S. End-to-End Architecture](images/architecture.png)
-
-### Subsystem & Processing Budget Audit
-
-Modeled after standard technical engineering reports, the table below audits the layer descriptions, execution frequencies, and computational budgets across all three tiers:
-
-| Subsystem / Layer Module | Layer Description & Tensor/Payload Contract | Processing Frequency | Algorithmic Complexity | Execution Budget |
-|---|---|---|---|---|
-| **Optical PPG Acquisition** | MAX30102 Red & IR photodiode registers `[32-sample FIFO]` | 100 Hz (10 ms ticks) | $O(1)$ Peak Detect | Core 1 (APP_CPU) |
-| **Motion Gating & True HRV** | Accelerometer gating $\sqrt{\sum a_i^2} > 15 \text{m/s}^2$ + RMSSD 8-beat RR window | 100 Hz (Event-triggered) | $O(N)$ where $N=8$ | Core 1 (APP_CPU) |
-| **Inertial Rumination DSP** | MPU6050 Gyro Z zero-crossings ($0.25 \le \|\omega_z\| \le 1.8 \text{rad/s}$) | 100 Hz (Running integral) | $O(1)$ Zero-Crossing | Core 1 (APP_CPU) |
-| **Subcutaneous Temp** | DS18B20 1-Wire non-blocking scratchpad read (`setWaitForConversion(false)`) | 0.33 Hz (Every 3 sec) | $O(1)$ Silicon Read | Core 1 (APP_CPU) |
-| **Inter-Core Mailbox** | FreeRTOS Queue `[Length = 1, sizeof(TelemetryPacket)]` | Atomic overwrite | $O(1)$ Mailbox | FreeRTOS Kernel |
-| **Edge Network Dispatch** | HTTPClient POST payload to `/api/sensor` | 0.33 Hz (Every 3 sec) | Non-blocking lwIP | Core 0 (PRO_CPU) |
-| **Schema Ingestion & Joi** | Express Gateway input sanitization against strict Joi schema | Per request (<5 ms) | $O(K)$ field validation | Gateway Node.js |
-| **Welford Baseline Engine** | Streaming continuous mean & variance ($\bar{x}_k, M_{2,k}, \sigma_k$) | Ingestion tick | $O(1)$ Constant RAM | Gateway Memory |
-| **Spatial Herd Contagion** | Graph edge evaluation across shared pen co-presence matrix | Ingestion tick | $O(E)$ connected herd | Gateway Node.js |
-| **Non-Linear Risk Scoring** | Multi-modal synergy engine ($1.35\times$ Febrile Ruminal Cessation) | Ingestion tick | $O(R)$ rules | Gateway Node.js |
-| **Local SLM Cascade** | Ollama edge inference (`llama3.2:3b` / `phi3:mini`) + Deterministic Fallback | On-Demand (<3s) | 3B/4B quantized | Localhost GPU/CPU |
-| **Client Digital Twin UI** | React 18 + TS Socket.IO consumer (`sensorUpdate`, `alert`) | Real-time push | 60 FPS re-render | Client Browser |
+The system pipeline organizes data acquisition, statistical baseline learning, and risk evaluation into clear functional stages:
+1. **Edge Sensing Layer**: The ESP32 firmware executes a FreeRTOS dual-core loop. Core 1 samples the MAX30102 pulse oximeter, MPU6050 6-axis IMU, and DS18B20 1-Wire temperature probe. Core 0 handles network dispatch, transmitting structured JSON telemetry packets over Wi-Fi/HTTP every 3 seconds.
+2. **Gateway Ingestion & Evaluation**: The Node.js/Express gateway provides request schema sanitization via Joi, time-series storage in MongoDB, adaptive baseline computation, multi-modal risk scoring, and heuristic herd-exposure estimates.
+3. **Client Presentation**: The React 19 + TypeScript dashboard consumes real-time WebSocket events (`sensorUpdate`, `alert`) via Socket.IO, displaying digital twin vitals, multi-animal status matrices, historical trend charts, and clinical action logs.
+4. **Supporting Workflows**:
+   - *Simulation Daemon*: Background service capable of generating synthetic telemetry for development and demonstrations without a physical collar connected.
+   - *Optional Local AI*: Integration with Ollama for narrative summaries, with automatic fallback to an in-memory rule engine.
 
 ---
 
-## 2. Adaptive Baseline Engine (Welford's Algorithm)
+## Adaptive Baseline Engine (Welford's Algorithm)
 
-Rather than evaluating all animals against rigid, arbitrary thresholds, M.A.V.I.S. computes personalized circadian baselines using **Welford’s Algorithm** for numerically stable, streaming one-pass mean and variance calculation.
+Rather than evaluating all animals against rigid, static thresholds, M.A.V.I.S. computes individualized baselines using **Welford’s Algorithm** for numerically stable, streaming one-pass mean and variance calculation.
 
 ### Mathematical Formulation
-Given a continuous stream of observations $x_1, x_2, \dots, x_k$ for a vital sign (e.g., Core Body Temperature):
+Given a continuous stream of observations $x_1, x_2, \dots, x_k$ for a vital sign (e.g., temperature probe reading):
 
 $$\bar{x}_k = \bar{x}_{k-1} + \frac{x_k - \bar{x}_{k-1}}{k}$$
 
@@ -46,47 +33,56 @@ $$\sigma_k = \sqrt{\frac{M_{2,k}}{k - 1}} \quad (k \ge 2)$$
 
 From this streaming variance, the dynamic Z-Score is derived in $O(1)$ constant memory:
 
-$$Z = \frac{|x_{current} - \bar{x}_{baseline}|}{\max(\sigma_k, \sigma_{min})}$$
+$$Z = \frac{|x_{\text{current}} - \bar{x}_{\text{baseline}}|}{\max(\sigma_k, \sigma_{\text{min}})}$$
 
-* Where $\sigma_{min} = 1.0$ serves as a variance floor preventing division-by-zero during resting homeostasis.
-* When $Z \ge 2.5$, an individual vital deviation alert is triggered even if the absolute value falls within population-wide limits.
-
----
-
-## 3. Multi-Modal Risk Scoring Engine
-
-The clinical evaluation engine combines physiological thresholds with 6-axis behavioral state and environmental context. Rather than simple additive scoring, it models **pathophysiological synergies**:
-
-### Non-Linear Synergy Multipliers
-1. **Febrile Ruminal Cessation**:
-   When core body temperature indicates a fever ($T \ge 40.0^\circ\text{C}$) while rumination ceases ($\text{rumination} = \text{false}$), the engine flags acute bovine mastitis or ruminal acidosis risk with a **$1.35\times$ synergy multiplier**.
-2. **Behavioral Agitation with Tachycardia**:
-   When continuous head shaking ($\text{angularRate} > 3.5\text{ rad/s}$) coincides with elevated heart rate ($\text{HR} \ge 140\text{ BPM}$), the engine flags parasitic infestation (ticks/flies) or acute neurological distress.
-3. **Depressed Heart Rate Variability ($\text{HRV}$)**:
-   When true optical $\text{RMSSD} < 20\text{ ms}$, the engine adds high-priority autonomic stress points, indicating pain, endotoxemia, or shock.
-
-$$\text{Final Risk Score} = \min\left(100, \, \left(\sum \text{Base Risk Points}\right) \times \prod \text{Synergy Multipliers}\right)$$
+* Where $\sigma_{\text{min}} = 1.0$ serves as a variance floor preventing division-by-zero during resting periods.
+* When $Z \ge 2.5$, an individual vital deviation alert is flagged even if the raw value falls within general species bounds.
 
 ---
 
-## 4. Spatial Herd Contagion Graph
+## Multi-Modal Health-Risk Scoring Engine
 
-When an animal in an enclosed pen or pasture develops a contagious respiratory or febrile profile, M.A.V.I.S. assesses exposure likelihood across all co-located subjects.
+The health evaluation engine combines physiological thresholds with 6-axis behavioral state and environmental context. In `calculateRiskScore.js`, the engine applies **multi-modal synergy multipliers** when related warning signs occur concurrently:
 
-### Epidemiological Formulation
-The transmission probability between index subject $i$ and neighboring subject $j$ sharing zone $Z$ over duration $\Delta t$ is computed as:
+### Implemented Synergy Multipliers
+1. **Febrile Ruminal Cessation ($1.65\times$)**:
+   When an elevated temperature indicates a fever while rumination drops or ceases (`context.rumination === false`), the engine increases the composite score by $1.65\times$ (useful for screening acute mastitis or ruminal acidosis).
+2. **Febrile Lethargy ($1.50\times$)**:
+   When a fever coincides with absence of motion or prolonged lying down (`context.motion === false || context.lyingDown === true`), a $1.50\times$ multiplier is applied.
+3. **Cardiorespiratory Distress ($1.40\times$)**:
+   When tachycardia coincides with low blood oxygenation (`hasTachycardia && isHypoxic`), a $1.40\times$ multiplier is applied.
+4. **Febrile Tachycardia / Systemic Stress ($1.35\times$)**:
+   When elevated body temperature coincides with a significant heart rate elevation (`isFebrile && hasTachycardia`), a $1.35\times$ multiplier is applied.
+5. **Neuro-Parasitic Agitation ($1.30\times$)**:
+   When persistent head shaking coincides with an abnormal pulse rate (`hasTachycardia && context.headShaking === true`), a $1.30\times$ multiplier flags potential ear tick irritation or neurological distress.
+6. **Resting Tachycardia / Acute Pain ($1.25\times$)**:
+   When heart rate is significantly elevated during periods of zero motion in the absence of fever, a $1.25\times$ multiplier is applied.
 
-$$P_{\text{contagion}}(i, j) = 1 - \exp\left(-\beta \cdot w_{\text{species}} \cdot \Delta t_{\text{shared}}\right)$$
-
-* $\beta$: Transmission coefficient calibrated by ventilation and contact density ($0.85$ for enclosed barn, $0.35$ for open pasture).
-* $w_{\text{species}}$: Species susceptibility weight ($1.0$ for cross-cattle transmission, $0.6$ for inter-species contact).
+$$\text{Final Risk Score} = \min\left(100, \, \left(\sum \text{Base Risk Contributions}\right) \times \max(\text{Synergies})\right)$$
 
 ---
 
-## 5. Local-First AI Inference & Deterministic Safety Cascade
+## Heuristic Herd Exposure Graph
 
-For diagnostic summaries and differential assessments, M.A.V.I.S. uses on-premises Small Language Models (SLMs) via Ollama:
+When an animal in an enclosed pen or pasture develops an elevated risk profile, M.A.V.I.S. estimates potential exposure across co-located herd members using a weighted interaction model in `herdGraph.service.js`:
 
-1. **Primary Model**: `llama3.2:3b` / `llama3.2:1b` (optimized for edge reasoning).
-2. **Secondary Fallback**: `phi3:mini` / `phi3`.
-3. **Deterministic Safety Engine**: If the Ollama runtime is offline or unresponsive within a 5-second timeout, the system automatically falls back to an in-memory rule-based evaluation matrix that generates structured clinical actions with zero downtime.
+$$R_{\text{exposure}}(i) = \sum_{j \neq i} \left( R(j) \cdot W_{\text{species}}(i, j) \cdot W_{\text{zone}}(i, j) \right)$$
+
+### Weight Configuration
+* **Zone Weight ($W_{\text{zone}}$)**:
+  - $0.90$ if both subjects share the exact same pen, enclosure, or herd zone.
+  - $0.05$ if subjects are separated by a barrier or either subject is assigned to an isolation/quarantine pen.
+* **Species Susceptibility ($W_{\text{species}}$)**:
+  - $1.00$ for intra-species contact (e.g., cow to cow).
+  - $0.35$ for cross-ruminant contact (e.g., cattle and sheep).
+  - $0.05$ for non-ruminant domestic animals.
+
+This provides an automated screening indicator to suggest pen separation or observation before contagion spreads.
+
+---
+
+## Local Inference & Deterministic Safety Cascade
+
+For automated plain-language summaries:
+1. **Primary Route**: Queries local Ollama instance (`http://127.0.0.1:11434`) using configured lightweight models (`llama3.2:3b`, `phi3:mini`).
+2. **Deterministic Fallback**: If the local AI service is unavailable or times out, the backend invokes an in-memory rule-based evaluation matrix that generates structured screening observations with zero network dependency.

@@ -214,9 +214,7 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
                                     <div className="flex items-center gap-2">
                                         <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-50 text-slate-700 border border-slate-200">
                                             <Radio className="h-3.5 w-3.5 text-teal-600 animate-pulse" />
-                                            <span>LoRa Link: <strong className="text-slate-900">98%</strong></span>
-                                            <span className="text-slate-300">•</span>
-                                            <span className="text-[11px] text-slate-500">3s Interval</span>
+                                            <span>Telemetry Cycle: <strong className="text-slate-900">3s Interval</strong></span>
                                         </div>
                                         <span className={`text-[11px] px-3 py-1 rounded-full font-bold tracking-wider uppercase border ${
                                             hasLiveSignal 
