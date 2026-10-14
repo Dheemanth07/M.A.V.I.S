@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>M.A.V.I.S. System Architecture</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap');
+
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  body {
+    background: #ffffff;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #0f172a;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    width: 1400px;
+    height: 820px;
+    margin: 0 auto;
+  }
+
+  .canvas {
+    width: 1352px;
+    height: 772px;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 12px;
+  }
+  .title {
+    font-size: 26px;
+    font-weight: 800;
+    color: #091e42;
+    letter-spacing: -0.5px;
+    margin-bottom: 4px;
+  }
+  .subtitle {
+    font-size: 13.5px;
+    font-weight: 500;
+    color: #334155;
+    margin-bottom: 3px;
+  }
+  .meta-tag {
+    font-size: 11px;
+    font-weight: 600;
+    color: #64748b;
+    letter-spacing: 0.2px;
+  }
+
+  /* Main Flow Layout */
+  .main-flow {
+    display: grid;
+    grid-template-columns: 820px 512px;
+    gap: 16px;
+    align-items: stretch;
+    height: 480px;
+  }
+
+  /* Left Side: 2 Stacked Branches */
+  .left-branches {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    height: 100%;
+  }
+
+  .branch-container {
+    border-radius: 12px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 233px;
+    border: 1.5px solid;
+    position: relative;
+  }
+
+  .branch-blue {
+    background: #f8fbff;
+    border-color: #3b82f6;
+  }
+  .branch-red {
+    background: #fffafa;
+    border-color: #ef4444;
+  }
+
+  .branch-title {
+    font-size: 12.5px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+  }
+  .blue-title { color: #1d4ed8; }
+  .red-title { color: #b91c1c; }
+
+  .cards-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 100%;
+  }
+
+  .card {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 12px 10px;
+    border: 1.5px solid;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    height: 155px;
+  }
+
+  .card-blue { border-color: #3b82f6; }
+  .card-red { border-color: #ef4444; }
+  .card-green { border-color: #10b981; }
+  .card-orange { border-color: #f97316; }
+  .card-purple { border-color: #8b5cf6; }
+
+  .card-title {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.25;
+    margin-bottom: 4px;
+  }
+  .card-desc {
+    font-size: 10px;
+    color: #475569;
+    line-height: 1.35;
+    margin-bottom: 8px;
+    flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .card-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 4px 6px;
+    border: 1px solid;
+  }
+
+  .tag-blue { background: #eff6ff; color: #1d4ed8; border-color: #bfdbfe; }
+  .tag-red { background: #fef2f2; color: #b91c1c; border-color: #fecaca; }
+  .tag-green { background: #ecfdf5; color: #047857; border-color: #a7f3d0; }
+  .tag-orange { background: #fff7ed; color: #c2410c; border-color: #fed7aa; }
+  .tag-purple { background: #f5f3ff; color: #6d28d9; border-color: #ddd6fe; }
+
+  /* Arrows */
+  .arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  /* Right Side: Fusion & Gateway */
+  .gateway-container {
+    border-radius: 12px;
+    padding: 14px 16px;
+    background: #f6fdf9;
+    border: 1.5px solid #10b981;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .gateway-title {
+    font-size: 12.5px;
+    font-weight: 800;
+    color: #047857;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+  }
+
+  .gateway-top-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+
+  .gateway-sub-row {
+    display: flex;
+    gap: 12px;
+    margin-top: auto;
+  }
+
+  .sub-card {
+    flex: 1;
+    border-radius: 9px;
+    padding: 10px 12px;
+    border: 1.5px solid;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 110px;
+  }
+
+  .sub-purple { background: #faf5ff; border-color: #8b5cf6; color: #5b21b6; }
+  .sub-orange { background: #fff7ed; border-color: #f97316; color: #9a3412; }
+
+  .sub-title {
+    font-size: 11.5px;
+    font-weight: 700;
+    margin-bottom: 3px;
+  }
+  .sub-desc {
+    font-size: 9.5px;
+    line-height: 1.35;
+    opacity: 0.9;
+  }
+
+  /* Bottom Parameter Summary */
+  .summary-section {
+    background: #f8fafc;
+    border-radius: 12px;
+    border: 1.5px solid #e2e8f0;
+    padding: 12px 16px;
+  }
+
+  .summary-header {
+    font-size: 11.5px;
+    font-weight: 800;
+    color: #475569;
+    letter-spacing: 0.6px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+
+  .summary-box {
+    border-radius: 9px;
+    padding: 10px 14px;
+    background: #ffffff;
+    border: 1.5px solid;
+    text-align: center;
+  }
+
+  .summary-label {
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .summary-metric {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 15px;
+    font-weight: 800;
+    color: #0f172a;
+  }
+  .summary-sub {
+    font-size: 9.5px;
+    color: #64748b;
+    margin-top: 2px;
+  }
+</style>
+</head>
+<body>
+
+<div class="canvas">
+  <!-- Header -->
+  <div class="header">
+    <div class="title">M.A.V.I.S. Multi-Modal Telemetry & Clinical Intelligence Architecture</div>
+    <div class="subtitle">Edge Wearable DSP (FreeRTOS Dual-Core) + Stream Ingestion & Adaptive Baselining + Clinical Risk Engine</div>
+    <div class="meta-tag">Sampling Frequency: 100 Hz | Telemetry Cycle: 3s | Baseline Memory: O(1) Constant | Local SLM: Zero-Cloud</div>
+  </div>
+
+  <!-- Main Flow Diagram -->
+  <div class="main-flow">
+    <!-- Left Column: 2 Parallel Edge DSP Branches -->
+    <div class="left-branches">
+      
+      <!-- Branch 1: Optical Photoplethysmography -->
+      <div class="branch-container branch-blue">
+        <div class="branch-title blue-title">OPTICAL PPG & CARDIORESPIRATORY BRANCH (CORE 1 - APP_CPU)</div>
+        <div class="cards-row">
+          
+          <div class="card card-blue" style="width: 170px;">
+            <div class="card-title">MAX30102 PPG</div>
+            <div class="card-desc">Red (660nm) & IR (940nm) photodiode acquisition</div>
+            <div class="card-tag tag-blue">[100 Hz / I2C FIFO]</div>
+          </div>
+
+          <div class="arrow">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+
+          <div class="card card-blue" style="width: 185px;">
+            <div class="card-title">Motion-Gated Peak Detection</div>
+            <div class="card-desc">Suppresses beat detection if Accel &gt; 15 m/s² or Head Shaking</div>
+            <div class="card-tag tag-blue">[Anti-Artifact DSP]</div>
+          </div>
+
+          <div class="arrow">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+
+          <div class="card card-blue" style="width: 185px;">
+            <div class="card-title">Clinical HRV (RMSSD)</div>
+            <div class="card-desc">Root Mean Square of Successive RR differences over 8 beats</div>
+            <div class="card-tag tag-blue">[RMSSD Window = 8]</div>
+          </div>
+
+          <div class="arrow">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+
+          <div class="card card-blue" style="width: 175px;">
+            <div class="card-title">Beer-Lambert SpO2</div>
+            <div class="card-desc">Ratio of AC/DC ratios:<br>SpO2 = 110 - 25 &times; R</div>
+            <div class="card-tag tag-blue">[HR &bull; SpO2 &bull; HRV]</div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Branch 2: 6-Axis Motion, Rumination & Body Temp -->
+      <div class="branch-container branch-red">
+        <div class="branch-title red-title">6-AXIS KINEMATICS, RUMINATION & BODY TEMP BRANCH (CORE 1 - APP_CPU)</div>
+        <div class="cards-row">
+          
+          <div class="card card-red" style="width: 170px;">
+            <div class="card-title">MPU6050 6-Axis IMU</div>
+            <div class="card-desc">3-Axis Accel (&plusmn;8g) &amp; 3-Axis Gyro (&plusmn;500&deg;/s)</div>
+            <div class="card-tag tag-red">[Linear &amp; Angular DSP]</div>
+          </div>
+
+          <div class="arrow">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+
+          <div class="card card-red" style="width: 185px;">
+            <div class="card-title">Rumination Classifier</div>
+            <div class="card-desc">Gyro Z zero-crossing detection (0.25 to 1.8 rad/s jaw chews)</div>
+            <div class="card-tag tag-red">[Chews / Minute]</div>
+          </div>
+
+          <div class="arrow">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+
+          <div class="card card-red" style="width: 185px;">
+            <div class="card-title">Posture &amp; Async Temp</div>
+            <div class="card-desc">Static tilt (lying down) + DS18B20 1-Wire non-blocking</div>
+            <div class="card-tag tag-red">[Temp &bull; Posture &bull; Rum]</div>
+          </div>
+
+          <div class="arrow">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </div>
+
+          <div class="card card-red" style="width: 175px;">
+            <div class="card-title">Inter-Core Mailbox</div>
+            <div class="card-desc">FreeRTOS atomic Queue overwrite (Length = 1)</div>
+            <div class="card-tag tag-red">[Core 1 &rarr; Core 0]</div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Gateway Ingestion, Baseline Modeling & Clinical Engine -->
+    <div class="gateway-container">
+      <div class="gateway-title">GATEWAY INGESTION &amp; MULTI-MODAL CLINICAL EVALUATION</div>
+
+      <!-- Upper Pipeline Row -->
+      <div class="gateway-top-row">
+        
+        <div class="card card-green" style="flex: 1; height: 165px;">
+          <div class="card-title">Express REST API</div>
+          <div class="card-desc">Non-blocking HTTP POST, schema sanitization (Joi) &amp; rate guard</div>
+          <div class="card-tag tag-green">[/api/sensor (3s)]</div>
+        </div>
+
+        <div class="arrow">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+
+        <div class="card card-green" style="flex: 1.15; height: 165px;">
+          <div class="card-title">Welford Baseline Engine</div>
+          <div class="card-desc">Streaming mean &amp; variance: M2,k = M2,k-1 + (xk - &mu;k-1)(xk - &mu;k) in O(1) RAM</div>
+          <div class="card-tag tag-green">[Dynamic Z = (x - &mu;) / &sigma;]</div>
+        </div>
+
+        <div class="arrow">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </div>
+
+        <div class="card card-orange" style="flex: 1.15; height: 165px;">
+          <div class="card-title">Clinical Risk Engine</div>
+          <div class="card-desc">Pathophysiological synergy: 1.35&times; Febrile Ruminal Cessation (Mastitis / Acidosis)</div>
+          <div class="card-tag tag-orange">[Score: 0 &ndash; 100]</div>
+        </div>
+
+      </div>
+
+      <!-- Lower Evaluation Branches -->
+      <div class="gateway-sub-row">
+        
+        <div class="sub-card sub-purple">
+          <div class="sub-title">Spatial Herd Contagion Graph</div>
+          <div class="sub-desc">Co-presence exposure decay: P = 1 - exp(-&beta; &bull; w_species &bull; &Delta;t) across shared pen &amp; herd enclosures.</div>
+          <div style="margin-top: 4px; font-weight: 700; font-size: 10px;">[R0 Exposure Tracking]</div>
+        </div>
+
+        <div class="sub-card sub-orange">
+          <div class="sub-title">Local SLM &amp; Digital Twin UI</div>
+          <div class="sub-desc">Ollama (Llama 3.2 / Phi-3) edge inference with Deterministic Fallback + React 18 Socket.IO dashboard.</div>
+          <div style="margin-top: 4px; font-weight: 700; font-size: 10px;">[Real-Time &bull; Zero Cloud]</div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Bottom Section: Parameter & Performance Summary -->
+  <div class="summary-section">
+    <div class="summary-header">SUBSYSTEM ARCHITECTURE &amp; PERFORMANCE AUDIT</div>
+    <div class="summary-grid">
+      
+      <div class="summary-box" style="border-color: #3b82f6;">
+        <div class="summary-label" style="color: #1d4ed8;">Edge Optical &amp; IMU DSP</div>
+        <div class="summary-metric">100 Hz Continuous</div>
+        <div class="summary-sub">10 ms tick &bull; 0 ms blocking jitter</div>
+      </div>
+
+      <div class="summary-box" style="border-color: #ef4444;">
+        <div class="summary-label" style="color: #b91c1c;">Adaptive Baseline Model</div>
+        <div class="summary-metric">O(1) Constant RAM</div>
+        <div class="summary-sub">Welford streaming variance</div>
+      </div>
+
+      <div class="summary-box" style="border-color: #10b981;">
+        <div class="summary-label" style="color: #047857;">Gateway &amp; Health Engine</div>
+        <div class="summary-metric">&lt; 5 ms Ingestion</div>
+        <div class="summary-sub">Joi validation + Synergy rules</div>
+      </div>
+
+      <div class="summary-box" style="border-color: #f97316;">
+        <div class="summary-label" style="color: #c2410c;">End-to-End Latency</div>
+        <div class="summary-metric">&lt; 50 ms Push</div>
+        <div class="summary-sub">100% On-Premises &bull; Zero Cloud</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
