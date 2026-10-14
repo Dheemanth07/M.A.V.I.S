@@ -209,6 +209,14 @@ function AppContent() {
             loadInitialData();
         });
 
+        socket.on('sensorUpdate', () => {
+            loadInitialData();
+        });
+
+        socket.on('sensor:update', () => {
+            loadInitialData();
+        });
+
         // 2. Dynamic Telemetry Polling Timer based on user collarSettings
         const pollSec = user?.collarSettings?.syncInterval || 5;
         const pollTimer = setInterval(() => {

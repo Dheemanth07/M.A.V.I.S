@@ -34,6 +34,7 @@ class SensorController {
             const result = await service.createSensorData(req.body, io);
 
             io.emit("sensorUpdate", result);
+            io.emit("sensor:update", result);
 
             sendSuccess(res, 201, result, "Sensor reading created successfully");
         } catch (err) {

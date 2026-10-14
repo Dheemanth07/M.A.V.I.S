@@ -129,6 +129,7 @@ class TelemetryDaemon {
 
                     // Broadcast to Socket.IO clients
                     this.#io.emit("sensorUpdate", payload);
+                    this.#io.emit("sensor:update", payload);
 
                     if (this.#tick % 5 === 0) {
                         await SensorData.create(payload);
