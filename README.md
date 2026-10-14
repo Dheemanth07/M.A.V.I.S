@@ -1,238 +1,128 @@
 # M.A.V.I.S. (Multi-Modal Animal Vitality Intelligence System)
 
-M.A.V.I.S. is an end-to-end, on-premises Internet of Things (IoT) and clinical telemetry platform designed for continuous monitoring of animal and livestock health. The system captures streaming biometric and environmental data from ESP32-based smart collars, executes real-time multi-modal vital evaluations, maintains adaptive individual baselines, coordinates alert lifecycles, and synthesizes localized clinical assessments via on-device Small Language Models (SLMs) with zero cloud dependency.
+M.A.V.I.S. is an end-to-end, on-premises Internet of Things (IoT) and clinical telemetry platform for continuous health monitoring of livestock and domestic animals. The system captures streaming biometric and inertial telemetry from ESP32-based smart collars, performs real-time multi-modal vital evaluations, maintains adaptive individual baselines, tracks spatial contagion risks, and generates clinical assessments with zero external cloud dependencies.
 
 ---
 
 ## System Architecture
 
-The platform is structured into three primary tiers: Edge Hardware, Local Gateway Backend, and Client Dashboard.
+The platform consists of three primary tiers:
 
 ```mermaid
 graph TD
-    subgraph Edge Hardware
-        S1[MAX30102 Pulse Oximeter] -->|I2C / 100 Hz| ESP32[ESP32 Smart Collar MCU]
-        S2[DS18B20 Digital Temp] -->|OneWire| ESP32
-        S3[MPU6050 6-Axis IMU] -->|I2C| ESP32
-        S4[Battery Voltage ADC] -->|Analog| ESP32
+    subgraph Edge Hardware (ESP32)
+        S1[MAX30102 PPG] -->|I2C 100Hz DSP| CORE1[Core 1: BioSensors Task]
+        S2[DS18B20 1-Wire] -->|Async Non-Blocking| CORE1
+        S3[MPU6050 6-Axis IMU] -->|I2C Motion & Gyro| CORE1
+        S4[LiPo Battery ADC] -->|GPIO 34 Divider| CORE1
+        CORE1 -->|Mailbox Queue| CORE0[Core 0: Telemetry Task]
     end
 
-    subgraph Backend Gateway & Engine
-        ESP32 -->|HTTP POST /api/sensors 3s Cycle| API[Express.js REST Gateway]
+    subgraph Backend Gateway & Engine (Node.js)
+        CORE0 -->|HTTP POST /api/sensor 3s Cycle| API[Express.js REST Gateway]
         API --> VAL[Joi Schema Validation]
         VAL --> INGEST[Sensor Ingestion Service]
-        INGEST --> BASELINE[Adaptive Baseline Engine EMA]
-        INGEST --> DB[(MongoDB / In-Memory Fallback)]
-        INGEST --> HEALTH[Clinical Health Engine]
-        HEALTH --> CIRC[Circadian Rhythm Service]
-        HEALTH --> HERD[Herd Graph Epidemiology]
+        INGEST --> BASELINE[Welford Z-Score Baseline Engine]
+        INGEST --> HEALTH[Multi-Modal Clinical Health Engine]
+        HEALTH --> HERD[Spatial Herd Contagion Graph]
         HEALTH --> ALERTS[Alert Lifecycle Service]
-        ALERTS --> SIO[Socket.IO Event Hub]
+        ALERTS --> SIO[Socket.IO Event Stream]
     end
 
     subgraph Local Inference & Storage
-        AI_SVC[AI Insights Service] <-->|HTTP / 11434| OLLAMA[Ollama Local SLM Cascade\nLlama 3.2 / Phi-3]
-        AI_SVC -.->|Fallback| DET_ENG[Deterministic Clinical Safety Engine]
+        INGEST --> DB[(MongoDB / In-Memory Fallback)]
+        API <-->|HTTP 11434| OLLAMA[Ollama Local SLMs\nLlama 3.2 / Phi-3]
+        API -.->|Fallback| DET_ENG[Deterministic Clinical Safety Engine]
     end
 
-    subgraph Frontend Client
-        SIO -->|Real-Time Telemetry & Alerts| REACT[React 18 + TypeScript SPA]
-        REACT -->|REST Requests| API
-        REACT -->|Clinical Audit Export| PDF[Client-Side PDF Generator]
+    subgraph Frontend Client (React 18 + TypeScript)
+        SIO -->|Real-Time Vitals & Alerts| CLIENT[Interactive Client Dashboard]
+        CLIENT -->|REST API| API
+        CLIENT -->|Animal Profiles| ANIMALS[Animal Management & Vitals]
+        CLIENT -->|Clinical Reports| PDF[Client-Side Veterinary PDF Export]
     end
-
-    API <--> AI_SVC
-```
-
----
-
-## Telemetry Ingestion & Evaluation Pipeline
-
-The sequence below illustrates the lifecycle of a sensor transmission from hardware sampling to client dashboard rendering.
-
-```mermaid
-sequenceDiagram
-    autonumber
-    participant Hardware as ESP32 Collar
-    participant Backend as Node.js Gateway
-    participant DB as MongoDB
-    participant Engine as Health Engine
-    participant SIO as Socket.IO
-    participant Client as React Dashboard
-
-    Hardware->>Backend: POST /api/sensors (JSON payload)
-    Backend->>Backend: Validate schema (Joi)
-    Backend->>DB: Store raw time-series sensor document
-    Backend->>Engine: Run vital evaluation against individual baseline
-    Engine->>Engine: Calculate weighted composite risk score (0-100)
-    
-    alt Baseline Calibration Active (Readings < 10)
-        Engine->>DB: Accumulate calibration data
-    else Baseline Calibrated (Readings >= 10)
-        Engine->>DB: Update rolling baseline via Exponential Moving Average
-    end
-
-    alt Anomaly / Threshold Violation Detected
-        Engine->>DB: Create / Update Alert (Severity: Warning | Critical)
-        Engine->>SIO: Broadcast alert event
-        SIO->>Client: Push real-time alert + Audio chime
-    end
-
-    Backend->>SIO: Broadcast live telemetry packet
-    SIO->>Client: Update real-time charts & digital twin
-    Backend-->>Hardware: HTTP 201 Created (Release edge transmitter)
 ```
 
 ---
 
 ## Core Capabilities
 
-### 1. Edge Hardware & Sensor Ingestion
-- **Sampling & Smoothing**: High-frequency sampling (100 Hz MAX30102 PPG) with non-blocking event loops, 10-point moving average temperature smoothing, and motion detection.
-- **Transmission Cycle**: Structured JSON payload sent every 3 seconds over Wi-Fi / HTTP POST.
-- **Power Efficiency**: Instant acknowledgment response enables low-power radio duty cycles.
+### 1. Edge Firmware & Embedded DSP (`hardware/esp32_collar/`)
+- **FreeRTOS Dual-Core Affinity**:
+  - **Core 1 (APP_CPU)**: Dedicated 100 Hz signal processing loop for MAX30102 optical photoplethysmography and MPU6050 inertial measurement.
+  - **Core 0 (PRO_CPU)**: Dedicated network telemetry task with non-blocking Wi-Fi HTTP dispatch and 15s reconnection backoff.
+- **Motion-Gated Peak Detection**: Rejects optical motion artifacts when acceleration magnitude exceeds $15\text{ m/s}^2$ or during vigorous head shaking.
+- **Clinical HRV ($\text{RMSSD}$)**: Computes true Root Mean Square of Successive Differences across an 8-beat rolling window to measure autonomic nervous system stress.
+- **Beer-Lambert Optical $\text{SpO}_2$**: Derives arterial oxygen saturation from red and infrared AC/DC ratios.
+- **6-Axis Behavior Classification**:
+  - *Rumination*: Detects rhythmic jaw chew oscillations on Gyro Z zero-crossings ($0.25 \le |\omega_z| \le 1.8\text{ rad/s}$) to measure chews per minute.
+  - *Agitation / Head-Shaking*: Detects high angular velocity spikes indicative of fly or ear tick distress.
+  - *Posture*: Classifies standing vs. lying down via static gravity acceleration vectors.
+- **Non-Blocking 1-Wire Temperature**: DS18B20 sampling runs in asynchronous mode (`setWaitForConversion(false)`), eliminating the 750ms blocking freeze.
+- **I2C Bus Auto-Recovery**: Bit-bangs 9 clock pulses on SCL if SDA is held low during startup brownouts.
+- **Field Provisioning & Flash NVS**: SoftAP portal (`MAVIS-COLLAR-SETUP`) with dynamic 2.4 GHz Wi-Fi scanning for field configuration without code re-flashing.
 
-### 2. Adaptive Baseline & Clinical Health Engine
-- **Per-Subject Calibration**: Tracks individual baseline averages over an initial 10-reading calibration window.
-- **Dynamic EMA Learning**: After calibration, updates resting baselines dynamically using Exponential Moving Average ($\alpha = 0.05$).
-- **Circadian Rhythm Normalization**: Adjusts core body temperature and heart rate evaluations according to diurnal time-of-day cycles.
-- **Herd Graph Epidemiology**: Monitors correlated febrile spikes across subjects to detect contagious herd outbreak waves.
-- **Multi-Species Thresholds**: Species-specific decision matrices for Bovine (cattle), Canine (dogs), and Feline (cats).
+### 2. Backend Gateway & Clinical Health Engine (`backend/`)
+- **Enterprise Layered Architecture**: Strictly organized into vertical feature slices (`animals`, `sensors`, `alerts`, `health-engine`, `ai-insights`, `auth`).
+- **Streaming Adaptive Baselines**: Uses Welford's algorithm ($O(1)$ memory) to calculate continuous mean and variance for personalized circadian Z-score evaluations.
+- **Multi-Modal Risk Engine**: Evaluates physiological vitals, behavioral indicators, and multi-variable clinical synergies (e.g., febrile ruminal cessation indicating acute mastitis or acidosis).
+- **Spatial Herd Epidemiology**: Graph-based contact tracing modeling contagion risk decay across shared barns and grazing zones.
+- **100% Offline Local AI Inference**: Interacts with Ollama (`llama3.2`, `phi3`) over localhost, with automatic fallback to an in-memory Deterministic Clinical Safety Engine.
 
-### 3. Local-First AI Inference (100% On-Premises)
-- **Local SLM Cascade**: Queries local Ollama inference server (`127.0.0.1:11434`) using model priority:
-  1. `llama3.2:3b` / `llama3.2:1b`
-  2. `phi3:mini` / `phi3`
-  3. `gemma2:2b` / `qwen2.5:3b` / `mistral`
-- **Zero-Cloud Fallback**: If local LLM runtimes are unavailable, automatically falls back to an in-memory **Deterministic Clinical Safety Engine**.
-- **Clinical Prompts**: Veterinary prompts produce plain-language diagnostic summaries, differential considerations, and actionable directives.
-
-### 4. Alert Lifecycle State Machine
-- **State Progression**: `active` &rarr; `acknowledged` &rarr; `resolved`.
-- **Deduplication**: Suppresses redundant alert spam by updating existing active alerts instead of generating duplicates.
-
-```mermaid
-stateDiagram-v2
-    [*] --> Active: Anomaly Detected
-    Active --> Acknowledged: Caregiver Acknowledges
-    Acknowledged --> Resolved: Vitals Restabilize / Operator Closes
-    Active --> Resolved: Auto-resolved on Vitals Normalization
-    Resolved --> [*]
-```
-
-### 5. Client Dashboard & Clinical Tools
-- **Live Telemetry & Digital Twin**: Real-time vital metrics, posture indicators, and interactive 24-hour historical trend charts (Recharts).
-- **Role-Based Access**: Role switching between Caregiver (`User`) and Infrastructure (`Admin`) modes.
-- **Veterinary PDF Reports**: 2-page clinical audit report generator with vital summaries, range analysis, and print-ready formatting (`jspdf` / `html2canvas`).
-- **Telemetry Scenario Studio**: Built-in scenario injection suite (Calibration, Homeostasis, Tachypnea, Hyperthermia, Herd Outbreak, Low Battery).
+### 3. Frontend Dashboard & Digital Twin (`frontend/`)
+- **Real-Time Telemetry & Digital Twin**: Live Socket.IO connection monitoring core temperature, heart rate, respiration rate, $\text{SpO}_2$, rumination, and posture.
+- **Historical 24h & 7d Trends**: Multi-series timeline charts with clinical reference bands and trend direction indicators.
+- **Clinical Action & Treatment Log**: Interactive treatment tracker for recording veterinary medications, antibiotic regimens, and symptom notes.
+- **Animal Profile Management**: Dedicated modals to register, edit, and organize animals by name, species, breed, and herd ID.
+- **Veterinary Audit Reports**: Print-ready 2-page PDF export with comprehensive vitals summaries and diagnostic observations (`jspdf` / `html2canvas`).
 
 ---
 
-## Repository Structure
+## Hardware Pinout (ESP32)
 
-```text
-MAVIS/
-├── backend/
-│   ├── config/               # Database connection and runtime constants
-│   ├── features/
-│   │   ├── ai-insights/      # Ollama SLM cascade and clinical fallback engine
-│   │   ├── alerts/           # Alert repository, controller, and lifecycle service
-│   │   ├── animals/          # Animal profiles, baseline storage, and status aggregation
-│   │   ├── auth/             # JWT auth routes, bcrypt hashing, and User model
-│   │   ├── health-engine/    # Multi-modal evaluators, circadian service, and herd graph
-│   │   ├── sensors/          # Ingestion pipeline, Joi validation, and time-series model
-│   │   └── simulation/       # Autonomous TelemetryDaemon background service
-│   ├── middlewares/          # Global error handler and authentication middleware
-│   ├── scripts/              # Verification suites and scenario simulation runners
-│   ├── utils/                # Standardized AppError and Winston logger
-│   ├── Dockerfile            # Container definition for backend gateway
-│   └── server.js             # Express server entry point and Socket.IO wiring
-├── frontend/
-│   ├── public/               # Favicon and logo assets
-│   ├── src/
-│   │   ├── features/
-│   │   │   ├── admin/        # Admin command overview and hardware diagnostics
-│   │   │   ├── alerts/       # Alert center and emergency dispatch modal
-│   │   │   ├── analytics/    # Multi-species correlation charts and distributions
-│   │   │   ├── animals/      # Animal registry and 24h VitalsModal
-│   │   │   ├── auth/         # Authentication views and user profile modal
-│   │   │   ├── dashboard/    # User telemetry dashboard overview
-│   │   │   ├── digital-twin/ # Biological digital twin monitor and AI Copilot card
-│   │   │   ├── geofence/     # GPS perimeter guard component
-│   │   │   ├── landing/      # Product landing page with live interactive demo
-│   │   │   ├── reports/      # Veterinary audit PDF modal generator
-│   │   │   └── simulation/   # Scenario simulation studio
-│   │   ├── shared/           # Reusable components, Toast context, API client, types
-│   │   ├── App.tsx           # Route layout and Socket.IO connection manager
-│   │   └── index.css         # Tailwind tokens and clinical theme styles
-│   └── package.json
-├── hardware/
-│   └── esp32_collar/
-│       └── esp32_collar.ino  # Production ESP32 firmware for MAX30102, DS18B20, MPU6050
-├── docker-compose.yml        # Multi-container deployment specification
-└── README.md
-```
+| Sensor Module | Function | ESP32 Pin | Interface |
+|---|---|---|---|
+| **MAX30102** | Pulse Oximetry ($\text{SpO}_2$, HR, HRV) | SDA (GPIO 21), SCL (GPIO 22) | Hardware I2C (100 Hz) |
+| **DS18B20** | Body Core Temperature | Data (GPIO 4) + 4.7kΩ Pull-up | OneWire (Async) |
+| **MPU6050** | 6-Axis Motion, Rumination, Posture | SDA (GPIO 21), SCL (GPIO 22) | Hardware I2C |
+| **Voltage Divider** | LiPo Battery Level Monitoring | ADC (GPIO 34) | Analog IN |
 
 ---
 
 ## API Reference
 
-All requests and responses use JSON format. Failed requests return standardized error payloads: `{ "status": "fail", "message": "<reason>" }`.
+All REST endpoints operate under `/api` and consume/return JSON:
 
-### Animals
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/api/animals` | Register a new animal subject |
-| `GET` | `/api/animals` | Retrieve all registered animals |
-| `GET` | `/api/animals/:id` | Fetch animal profile by ID |
-| `PATCH` | `/api/animals/:id` | Update animal profile details |
-| `DELETE` | `/api/animals/:id` | Remove animal record |
-| `GET` | `/api/animals/:id/health` | Compute real-time health aggregation |
-
-### Sensor Telemetry
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/api/sensors` | Ingest sensor data packet |
-| `GET` | `/api/sensors/latest/:animalId` | Fetch latest sensor reading |
-| `GET` | `/api/sensors/history/:animalId` | Query time-series telemetry (`from`, `to`) |
-
-### Alerts
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/alerts/active` | Fetch all unresolved alerts |
-| `GET` | `/api/alerts/animal/:animalId` | Fetch alert history for specific subject |
-| `PATCH` | `/api/alerts/:alertId/status` | Mutate alert status (`active`, `acknowledged`, `resolved`) |
-
-### Clinical AI Insights
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `GET` | `/api/ai/:animalId` | Generate on-demand clinical assessment for subject |
-
-### Authentication
-
-| Method | Endpoint | Description |
-|---|---|---|
-| `POST` | `/api/auth/register` | Create user or admin account |
-| `POST` | `/api/auth/login` | Authenticate and obtain JWT token |
-| `GET` | `/api/auth/me` | Fetch authenticated user profile |
-| `PATCH` | `/api/auth/settings` | Update user notification/collar settings |
+| Domain | Method | Endpoint | Description |
+|---|---|---|---|
+| **Animals** | `GET` | `/api/animals` | List registered animals |
+| | `POST` | `/api/animals` | Register new animal |
+| | `GET` | `/api/animals/:id` | Get animal profile by ID |
+| | `PATCH` | `/api/animals/:id` | Update animal details (Name, Breed, Herd) |
+| | `DELETE` | `/api/animals/:id` | Remove animal record |
+| | `GET` | `/api/animals/:id/health` | Real-time health score calculation |
+| **Sensors** | `POST` | `/api/sensor` | Ingest telemetry packet (Collar / Daemon) |
+| | `GET` | `/api/sensor/latest/:animalId` | Fetch latest telemetry reading |
+| | `GET` | `/api/sensor/history/:animalId`| Query historical readings (`from`, `to` optional) |
+| **Alerts** | `GET` | `/api/alerts/active` | Fetch active unacknowledged alerts |
+| | `PATCH` | `/api/alerts/:alertId/status` | Update alert state (`acknowledged`, `resolved`) |
+| **AI Insights** | `GET` | `/api/ai/:animalId` | Trigger on-demand clinical diagnostic assessment |
+| **Auth** | `POST` | `/api/auth/register` | Register user account |
+| | `POST` | `/api/auth/login` | Authenticate and retrieve JWT |
+| | `GET` | `/api/auth/me` | Fetch authenticated user session |
 
 ---
 
 ## WebSocket Events (Socket.IO)
 
-The backend broadcasts real-time events over WebSocket at `ws://localhost:5000`:
+The gateway broadcasts real-time telemetry and clinical events over WebSocket on port 5000:
 
-| Event Name | Direction | Description |
+| Event Name | Direction | Payload |
 |---|---|---|
-| `sensor:update` | Server &rarr; Client | Real-time vital metrics packet broadcast every 3 seconds |
-| `alert` | Server &rarr; Client | Anomaly or threshold violation alert notification |
-| `alert:updated` | Server &rarr; Client | Alert status mutation (acknowledged or resolved) |
-| `animal:created` | Server &rarr; Client | New subject profile registered on mesh |
+| `sensor:update` | Server &rarr; Client | Real-time physiological, behavioral, and device packet |
+| `alert` | Server &rarr; Client | Newly triggered anomaly alert with severity and points |
+| `alert:updated` | Server &rarr; Client | Alert lifecycle mutation (`acknowledged`, `resolved`) |
+| `animal:created` | Server &rarr; Client | Newly registered subject broadcast |
 
 ---
 
@@ -241,12 +131,12 @@ The backend broadcasts real-time events over WebSocket at `ws://localhost:5000`:
 ### Prerequisites
 - **Node.js**: `v18.0.0` or higher
 - **npm**: `v9.0.0` or higher
-- *(Optional)* **Ollama**: For local SLM inference (`llama3.2`, `phi3`)
+- *(Optional)* **Ollama**: For local SLM inference (`ollama run llama3.2`)
 - *(Optional)* **Docker & Docker Compose**: For containerized deployment
 
 ---
 
-### Method 1: Local Development Run (Recommended)
+### Local Installation & Execution
 
 #### 1. Clone the repository
 ```bash
@@ -254,75 +144,51 @@ git clone https://github.com/Dheemanth07/M.A.V.I.S.git
 cd M.A.V.I.S
 ```
 
-#### 2. Start Backend
+#### 2. Start the Backend Gateway
 ```bash
 cd backend
 npm install
 npm run dev
 ```
 
-> **Database Note**: The backend connects to MongoDB if available via `MONGO_URI` (or `mongodb://127.0.0.1:27017/mavis`). If no MongoDB instance is running, it automatically starts an **in-memory MongoDB database** with zero extra setup required.
+> **Zero-Config Database**: The backend connects to MongoDB if `MONGO_URI` is configured. If MongoDB is not running locally, it automatically starts an in-memory MongoDB instance with zero extra configuration.
 
-#### 3. Start Frontend (in a separate terminal)
+#### 3. Start the Frontend Dashboard (in a separate terminal)
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
 
-#### 4. Access the Application
 Open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ---
 
-### Method 2: Docker Compose Deployment
-
-To deploy all services using Docker:
-
+### Docker Deployment
+To run the full stack via Docker Compose:
 ```bash
 docker compose up --build
 ```
 
 ---
 
-## Hardware Configuration & Pinout
+### Testing & Verification
 
-The collar firmware runs on standard ESP32 development boards with the following pin assignments:
-
-| Sensor Module | Function | ESP32 Pin | Interface |
-|---|---|---|---|
-| **MAX30102** | PPG Heart Rate & SpO2 | SDA (GPIO 21), SCL (GPIO 22) | I2C (100 Hz) |
-| **DS18B20** | Subcutaneous Body Temp | Data (GPIO 4) + 4.7kΩ Pull-up | OneWire |
-| **MPU6050** | 3-Axis Accelerometer / Gyro | SDA (GPIO 21), SCL (GPIO 22) | I2C |
-| **Voltage Divider** | Battery Depletion Monitor | ADC (GPIO 34) | Analog IN |
-
-### Firmware Deployment
-1. Open `hardware/esp32_collar/esp32_collar.ino` in the Arduino IDE.
-2. Install required libraries: `SparkFun MAX3010x`, `DallasTemperature`, `OneWire`, `Adafruit MPU6050`, `ArduinoJson`.
-3. Configure Wi-Fi SSID, password, and gateway IP address in the configuration block.
-4. Flash to the ESP32 board over USB.
-
----
-
-## Verification & Scenario Simulation
-
-To verify all system subsystems and test anomaly handling without physical hardware attached, run the automated scenario runner:
-
+Run the automated backend test suite (17/17 tests covering risk evaluation, baseline calibration, circadian rhythm, and herd contagion):
 ```bash
 cd backend
-node scripts/simulate_all_scenarios.js
+npm test
 ```
 
-This suite sequentially tests:
-1. **10-Step Baseline Calibration Stream** (locking in individualized baselines)
-2. **Healthy Homeostasis Transmission** (verifying zero false alerts)
-3. **Acute Respiratory Distress Injection** (SpO2 drop, tachypnea alert trigger)
-4. **Thermal Hyperthermia Overload** (41.6°C febrile alert trigger)
-5. **Multi-Subject Correlated Herd Outbreak Wave** (cluster contagion detection)
-6. **Hardware Low Battery Warning** (<15% supply threshold)
+Run frontend type checking and linter:
+```bash
+cd frontend
+npm run lint
+npm run build
+```
 
 ---
 
 ## License
 
-This project is licensed under the terms of the **MIT License**.
+This project is licensed under the **MIT License**.
