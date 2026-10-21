@@ -3,7 +3,6 @@ import type { Animal, HealthStatusResponse } from '../../shared/types';
 import { fetchHealthStatus } from '../../shared/services/api';
 import { RefreshCw, Thermometer, Heart, Battery, Zap, Activity, ShieldCheck, AlertCircle, Compass, Users, Droplets, Radio } from 'lucide-react';
 import { ClinicalAssessmentCard } from './ClinicalAssessmentCard';
-import { HistoricalTrendsCard } from './HistoricalTrendsCard';
 import { ClinicalTreatmentLogCard } from './ClinicalTreatmentLogCard';
 
 interface DigitalTwinMonitorProps {
@@ -493,16 +492,7 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
                         />
                     </div>
 
-                    {/* Historical Vital Trends & Baseline Deviation Curves (24 Hours vs 7 Days) */}
-                    <div className="lg:col-span-12">
-                        <HistoricalTrendsCard 
-                            animal={selectedAnimal}
-                            currentTemp={currentTemp}
-                            currentHR={currentHR}
-                            baseTemp={baseTemp}
-                            baseHR={baseHR}
-                        />
-                    </div>
+
 
                     {/* Clinical Action & Treatment Intervention Log */}
                     <div className="lg:col-span-12">
