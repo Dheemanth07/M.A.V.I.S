@@ -412,7 +412,7 @@ export const UserDashboardOverview: React.FC<UserDashboardOverviewProps> = ({
                         </div>
                         <h4 className="text-lg font-bold tracking-tight text-slate-900 m-0 font-display">Clinical Diagnostics</h4>
                         <p className="text-xs text-slate-500 font-normal leading-relaxed m-0">
-                            Review 24-hour diurnal circadian rhythms and individualized automated veterinary evaluations.
+                            Review continuous vitals progression and individualized automated veterinary evaluations.
                         </p>
                     </div>
                 </div>

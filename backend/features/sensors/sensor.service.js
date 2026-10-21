@@ -2,7 +2,6 @@ import AppError from "../../utils/AppError.js";
 import mavisEvents, { EVENTS } from "../../config/events.js";
 import { BATTERY_WARNING_THRESHOLD, FEVER_TEMPERATURE_THRESHOLD } from "../../config/constants.js";
 import { ensureValidObjectId } from "../../utils/validateObjectId.js";
-import { getSpeciesCircadianBaseline } from "../health-engine/circadian.service.js";
 
 /**
  * Validates animal ownership, stores sensor data, and executes Digital Twin baseline analytics
@@ -169,16 +168,11 @@ class SensorService {
                 bo:   { count: 10, mean: baselines.bloodOxygen, m2: 5.0 }
             };
 
-            // 1. Calculate Circadian Diurnal Baseline for Temperature
-            const speciesProfile = animal.species || "cattle";
-            const chrono = getSpeciesCircadianBaseline(speciesProfile, baselines.temperature, new Date(), {
-                motion: data.behavior?.motion,
-                thi: data.environment?.thi
-            });
-            const expectedDiurnalTemp = chrono.expectedBaseline;
+            // 1. Evaluate Against Calibrated Animal Baselines
+            const expectedTemp = baselines.temperature || 38.5;
 
             // 2. Compute Statistical Z-Scores
-            const tempZ = this.#computeZScore(temperature, expectedDiurnalTemp, welford.temp?.m2, welford.temp?.count, 0.35);
+            const tempZ = this.#computeZScore(temperature, expectedTemp, welford.temp?.m2, welford.temp?.count, 0.35);
             const hrZ   = this.#computeZScore(heartRate, baselines.heartRate, welford.hr?.m2, welford.hr?.count, 5.0);
             const rrZ   = this.#computeZScore(respiratoryRate, baselines.respiratoryRate, welford.rr?.m2, welford.rr?.count, 2.5);
             const boZ   = this.#computeZScore(bloodOxygen, baselines.bloodOxygen, welford.bo?.m2, welford.bo?.count, 2.0);
@@ -187,9 +181,9 @@ class SensorService {
             let hasAnomaly = false;
             let anomalyDetails = [];
 
-            if (tempZ.z >= 2.5 || Math.abs(temperature - expectedDiurnalTemp) > 1.2) {
+            if (tempZ.z >= 2.5 || Math.abs(temperature - expectedTemp) > 1.2) {
                 hasAnomaly = true;
-                anomalyDetails.push(`Temperature Z=${tempZ.z} (curr: ${temperature}°C, baseline: ${expectedDiurnalTemp}°C, σ=${tempZ.sigma})`);
+                anomalyDetails.push(`Temperature Z=${tempZ.z} (curr: ${temperature}°C, baseline: ${expectedTemp}°C, σ=${tempZ.sigma})`);
             }
             if (hrZ.z >= 2.5 || Math.abs(heartRate - baselines.heartRate) > 25) {
                 hasAnomaly = true;

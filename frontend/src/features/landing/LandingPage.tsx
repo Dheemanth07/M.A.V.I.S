@@ -137,7 +137,7 @@ export const LandingPage: React.FC = () => {
         },
         {
             q: "How does the collar hardware detect health deviations before visible symptoms appear?",
-            a: "The collar combines optical photoplethysmography (MAX30102), waterproof digital thermal probes (DS18B20), and 6-axis motion sensors (MPU6050). By comparing continuous readings against the animal's individual baseline and species circadian curve, MAVIS identifies subtle pulse spikes and subclinical fever hours before physical distress shows."
+            a: "The collar combines optical photoplethysmography (MAX30102), waterproof digital thermal probes (DS18B20), and 6-axis motion sensors (MPU6050). By comparing continuous readings against the animal's individual learned baseline, MAVIS identifies subtle pulse spikes and subclinical fever hours before physical distress shows."
         },
         {
             q: "What are the 3 physical sensors integrated inside the collar?",
@@ -483,21 +483,21 @@ export const LandingPage: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Pillar 2: Circadian Baseline Learning */}
+                    {/* Pillar 2: Individual Baseline Learning */}
                     <div className="bento-card p-6 bg-white border border-slate-200/90 shadow-sm rounded-3xl space-y-4 flex flex-col justify-between hover:shadow-md hover:-translate-y-1 transition duration-300 reveal-on-scroll">
                         <div className="space-y-3">
                             <div className="h-12 w-12 rounded-2xl bg-blue-50 border border-blue-100 text-blue-700 flex items-center justify-center">
                                 <Layers className="h-6 w-6" />
                             </div>
                             <h4 className="text-lg font-bold text-slate-900 font-display m-0">
-                                Circadian Baseline Learning
+                                Individual Baseline Learning
                             </h4>
                             <p className="text-xs text-slate-600 leading-relaxed m-0">
-                                Dynamic baseline calibration adapted to species chronobiology (diurnal cattle, crepuscular cats, canines) and running statistical variance.
+                                Continuous baseline calibration adapted to the animal's measured resting vitals, powered by single-pass Welford running variance.
                             </p>
                         </div>
                         <div className="pt-3 border-t border-slate-100 text-[11px] font-semibold text-blue-700 flex items-center gap-1">
-                            <span>Adaptive EMA (α=0.05) &amp; Welford</span>
+                            <span>Adaptive Baseline &amp; Welford Z-Score</span>
                             <ChevronRight className="h-3 w-3" />
                         </div>
                     </div>
