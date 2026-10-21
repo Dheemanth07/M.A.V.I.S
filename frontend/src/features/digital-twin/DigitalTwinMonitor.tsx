@@ -291,7 +291,7 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
                                         <div className="text-3xl font-bold tracking-tight text-slate-900">
                                             {currentRR !== undefined && currentRR !== null ? currentRR : <span className="text-slate-400 font-normal text-xl">--</span>}
                                         </div>
-                                        <p className="text-[10px] text-slate-500 font-normal m-0">Breaths Per Minute</p>
+                                        <p className="text-[10px] text-slate-500 font-normal m-0">Cardiorespiratory Pulse Coupling (1:4 Ratio)</p>
                                     </div>
 
                                     {/* Battery & Collar Health */}

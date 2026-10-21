@@ -224,6 +224,13 @@ export class ClinicalDecisionService {
     }
 
     /**
+     * Backward-compatible alias for discoverLocalSLMs.
+     */
+    async getAvailableLocalModels() {
+        return this.discoverLocalSLMs();
+    }
+
+    /**
      * Queries local Ollama SLM with strict JSON formatting and grounded clinical bounds.
      */
     async querySLM(modelName, animal, vitals, deterministicGroundTruth) {

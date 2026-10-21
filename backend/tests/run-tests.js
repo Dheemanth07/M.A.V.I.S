@@ -8,6 +8,7 @@ import {
     calculateZoneWeight, 
     calculateSpeciesWeight 
 } from "../features/health-engine/herdGraph.service.js";
+import { clinicalDecisionService } from "../features/ai-insights/ai.service.js";
 
 const healthyReading = {
     physiology: {
@@ -346,6 +347,61 @@ const tests = [
             assert.ok(httpServer, "HTTP server instance exists");
             assert.ok(io, "Socket.IO server instance exists");
             assert.equal(typeof app.listen, "function");
+        },
+    },
+    // Clinical Decision Support Engine Validation Tests
+    {
+        name: "clinicalDecisionService validates healthy vitals with low risk tier",
+        run: () => {
+            const animal = { name: "Bessie", species: "bovine", baselines: { temperature: 38.5, heartRate: 72 } };
+            const vitals = { temperature: 38.5, heartRate: 72, respiratoryRate: 22, bloodOxygen: 98, motion: true, rumination: true };
+            const report = clinicalDecisionService.evaluateClinicalStatus(animal, vitals);
+            assert.equal(report.riskLevel, "Low");
+            assert.ok(report.differentialDiagnosis.includes("Healthy Normal State"));
+            assert.equal(report.source, "Deterministic Clinical Safety Engine");
+        },
+    },
+    {
+        name: "clinicalDecisionService detects acute febrile ruminal cessation with critical tier",
+        run: () => {
+            const animal = { name: "Luna", species: "bovine", baselines: { temperature: 38.5, heartRate: 72 } };
+            const vitals = { temperature: 40.2, heartRate: 98, motion: false, lyingDown: true, rumination: false };
+            const report = clinicalDecisionService.evaluateClinicalStatus(animal, vitals);
+            assert.equal(report.riskLevel, "Critical");
+            assert.ok(report.differentialDiagnosis.some(d => d.includes("Mastitis")));
+            assert.ok(report.recommendations.some(r => r.includes("rumen motility") || r.includes("udder")));
+        },
+    },
+    {
+        name: "clinicalDecisionService detects febrile lethargy and sepsis risk",
+        run: () => {
+            const animal = { name: "Bella", species: "bovine", baselines: { temperature: 38.5, heartRate: 72 } };
+            const vitals = { temperature: 40.0, heartRate: 88, motion: false, lyingDown: true, rumination: true };
+            const report = clinicalDecisionService.evaluateClinicalStatus(animal, vitals);
+            assert.equal(report.riskLevel, "Critical");
+            assert.ok(report.differentialDiagnosis.some(d => d.includes("Fever") || d.includes("Heat")));
+        },
+    },
+    {
+        name: "clinicalDecisionService detects hypoxia and respiratory compromise",
+        run: () => {
+            const animal = { name: "Max", species: "canine", baselines: { temperature: 38.5, heartRate: 75 } };
+            const vitals = { temperature: 38.7, heartRate: 110, respiratoryRate: 48, bloodOxygen: 84, motion: false };
+            const report = clinicalDecisionService.evaluateClinicalStatus(animal, vitals);
+            assert.equal(report.riskLevel, "Critical");
+            assert.ok(report.differentialDiagnosis.some(d => d.includes("Respiratory")));
+        },
+    },
+    {
+        name: "clinicalDecisionService executes in under 5ms (deterministic latency proof)",
+        run: () => {
+            const animal = { name: "Daisy", species: "bovine", baselines: { temperature: 38.5, heartRate: 72 } };
+            const vitals = { temperature: 39.8, heartRate: 95, motion: false, lyingDown: false, rumination: false };
+            const t0 = performance.now();
+            const report = clinicalDecisionService.evaluateClinicalStatus(animal, vitals);
+            const dt = performance.now() - t0;
+            assert.ok(dt < 5.0, `Expected < 5ms, took ${dt}ms`);
+            assert.ok(report.summary.length > 0);
         },
     },
 ];
