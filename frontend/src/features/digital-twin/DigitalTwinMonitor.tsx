@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import type { Animal, HealthStatusResponse } from '../../shared/types';
 import { fetchHealthStatus } from '../../shared/services/api';
-import { RefreshCw, Thermometer, Heart, Battery, Zap, Activity, ShieldCheck, AlertCircle, Compass, Users, Droplets, Radio } from 'lucide-react';
+import { RefreshCw, Thermometer, Heart, Battery, Zap, Activity, ShieldCheck, AlertCircle, Compass, Users, Droplets } from 'lucide-react';
 import { ClinicalAssessmentCard } from './ClinicalAssessmentCard';
 import { ClinicalTreatmentLogCard } from './ClinicalTreatmentLogCard';
 
@@ -52,7 +52,6 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
 
     const baselineCount = healthSummary?.baselineReadingsCount ?? selectedAnimal?.baselineReadingsCount ?? 0;
     const isCalibrating = baselineCount < 10;
-    const hasLiveSignal = currentTemp !== undefined && currentTemp !== null;
 
     return (
         <div className="space-y-6 animate-in fade-in duration-300">
@@ -208,23 +207,6 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
                                         <p className="text-xs text-slate-500 font-normal m-0 mt-0.5">
                                             Comparing incoming telemetry readings against learned normal vitals
                                         </p>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200">
-                                            <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
-                                            <span>Stream: <strong>Demonstration Mode</strong></span>
-                                        </div>
-                                        <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-50 text-slate-700 border border-slate-200">
-                                            <Radio className="h-3.5 w-3.5 text-teal-600 animate-pulse" />
-                                            <span>Cycle: <strong className="text-slate-900">3s Interval</strong></span>
-                                        </div>
-                                        <span className={`text-[11px] px-3 py-1 rounded-full font-bold tracking-wider uppercase border ${
-                                            hasLiveSignal 
-                                                ? 'bg-emerald-50 text-emerald-700 border-emerald-200/80' 
-                                                : 'bg-amber-50 text-amber-700 border-amber-200/80'
-                                        }`}>
-                                            {hasLiveSignal ? 'Live Stream Active' : 'Waiting for Signal'}
-                                        </span>
                                     </div>
                                 </div>
 
