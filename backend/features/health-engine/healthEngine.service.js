@@ -44,12 +44,12 @@ export class HealthEngineService {
      * @returns {Object} Comprehensive clinical health report
      */
     evaluateHealth(payload = {}) {
-        const temp = normalizeMetric(payload.temperature);
-        const hr = normalizeMetric(payload.heartRate);
-        const spo2 = normalizeMetric(payload.oxygen);
-        const hum = normalizeMetric(payload.humidity);
-        const batt = normalizeMetric(payload.battery);
-        const thiValue = normalizeMetric(payload.thi);
+        const temp = normalizeMetric(payload.temperature ?? payload.physiology?.temperature);
+        const hr = normalizeMetric(payload.heartRate ?? payload.physiology?.heartRate);
+        const spo2 = normalizeMetric(payload.oxygen ?? payload.bloodOxygen ?? payload.physiology?.bloodOxygen ?? payload.physiology?.oxygen);
+        const hum = normalizeMetric(payload.humidity ?? payload.environment?.humidity);
+        const batt = normalizeMetric(payload.battery ?? payload.batteryLevel ?? payload.device?.batteryLevel ?? payload.device?.battery);
+        const thiValue = normalizeMetric(payload.thi ?? payload.environment?.thi);
 
         // 1. Evaluate individual physiological and environmental metrics
         const evaluations = {

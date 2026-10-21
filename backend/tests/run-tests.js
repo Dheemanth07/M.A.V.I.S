@@ -404,11 +404,57 @@ const tests = [
             assert.ok(report.summary.length > 0);
         },
     },
+    {
+        name: "healthEngine correctly evaluates real nested collar telemetry packets (physiology + device)",
+        run: () => {
+            const nestedCollarPayload = {
+                animalId: "507f1f77bcf86cd799439011",
+                collarId: "COLLAR-01",
+                physiology: {
+                    temperature: 40.2,
+                    heartRate: 112,
+                    bloodOxygen: 87,
+                    respiratoryRate: 44,
+                    hrv: 18.5
+                },
+                behavior: {
+                    motion: false,
+                    lyingDown: true,
+                    rumination: false,
+                    headShaking: false
+                },
+                device: {
+                    batteryLevel: 14,
+                    contactDetected: true,
+                    sensorStatus: "optimal"
+                }
+            };
+
+            const report = evaluateHealth(nestedCollarPayload);
+            assert.ok(report.temperature !== null, "Temperature evaluation must not be null");
+            assert.equal(report.temperature.state, "Fever");
+            assert.ok(report.heartRate !== null, "Heart Rate evaluation must not be null");
+            assert.equal(report.heartRate.state, "Tachycardia");
+            assert.ok(report.oxygen !== null, "Blood Oxygen evaluation must not be null");
+            assert.equal(report.oxygen.state, "Mild Hypoxia");
+            assert.ok(report.battery !== null, "Battery evaluation must not be null");
+            assert.equal(report.battery.state, "Low Battery");
+            assert.equal(report.overallHealthStatus, "critical");
+            assert.ok(report.mergedAlerts.length >= 3, "Must generate alerts for fever, tachycardia, hypoxia, and battery");
+        },
+    },
+    {
+        name: "animalSchema explicitly declares welfordStats ensuring dynamic variance state is persisted",
+        run: async () => {
+            const AnimalModel = (await import("../features/animals/animal.model.js")).default;
+            assert.ok(AnimalModel.schema.path("welfordStats"), "welfordStats field must be registered on animalSchema");
+        },
+    },
 ];
 
 let passed = 0;
 for (const test of tests) {
-    test.run();
+    await test.run();
     console.log(`✓ PASS: ${test.name}`);
     passed++;
 }

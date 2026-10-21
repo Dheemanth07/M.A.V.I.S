@@ -10,6 +10,7 @@ import SensorData from "../sensors/sensor.model.js";
 import AlertData from "../alerts/alert.model.js";
 import logger from "../../utils/logger.js";
 import { getDemoEmail } from "./userSeed.service.js";
+import mavisEvents, { EVENTS } from "../../config/events.js";
 
 class TelemetryDaemon {
     #io;
@@ -133,7 +134,11 @@ class TelemetryDaemon {
                     this.#io.emit("sensor:update", payload);
 
                     if (this.#tick % 5 === 0) {
-                        await SensorData.create(payload);
+                        const saved = await SensorData.create(payload);
+                        mavisEvents.emit(EVENTS.SENSOR_DATA_RECEIVED, {
+                            animalId: animal._id,
+                            payload: saved
+                        });
                     }
                 }
             } catch (err) {}

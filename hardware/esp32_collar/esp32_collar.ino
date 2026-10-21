@@ -365,10 +365,10 @@ void taskBioSensors(void* parameter) {
             lastPeriodicRead = millis();
 
             // Asynchronous, Non-blocking DS18B20 temperature read (0ms delay)
-            float rawTemp = 38.5f;
+            float rawTemp = 0.0f;
             if (tempConnected) {
                 float t = tempSensor.getTempCByIndex(0);
-                if (t != DEVICE_DISCONNECTED_C && t > 25.0f && t < 45.0f) {
+                if (t != DEVICE_DISCONNECTED_C && t > 10.0f && t < 50.0f) {
                     rawTemp = t;
                 }
                 // Trigger next conversion in background silicon (non-blocking)
@@ -385,15 +385,15 @@ void taskBioSensors(void* parameter) {
                 if (batteryPct < 0)   batteryPct = 0;
             }
 
-            float cleanTemp = tempFilter.add(rawTemp);
-            float cleanHR   = hrFilter.add((float)beatAvg);
+            float cleanTemp = (rawTemp > 0.0f) ? tempFilter.add(rawTemp) : 0.0f;
+            float cleanHR   = contactDetected ? hrFilter.add((float)beatAvg) : 0.0f;
 
             // Derived respiratory rate via cardiorespiratory coupling (1:4 ratio + exertion modulation)
-            float derivedRR = cleanHR / 4.0f;
-            if (motionActive) derivedRR += 6.0f;
-            if (derivedRR < 12.0f) derivedRR = 12.0f;
+            float derivedRR = (cleanHR > 0.0f) ? (cleanHR / 4.0f) : 0.0f;
+            if (motionActive && cleanHR > 0.0f) derivedRR += 6.0f;
+            if (derivedRR > 0.0f && derivedRR < 12.0f) derivedRR = 12.0f;
             if (derivedRR > 60.0f) derivedRR = 60.0f;
-            float cleanRR = rrFilter.add(derivedRR);
+            float cleanRR = (derivedRR > 0.0f) ? rrFilter.add(derivedRR) : 0.0f;
 
             unsigned long windowDur = (millis() - ruminationWindowStart) / 1000;
             int calculatedRuminationRate = (windowDur > 0) ? (ruminationCycles * 60 / windowDur) : 0;
@@ -403,10 +403,10 @@ void taskBioSensors(void* parameter) {
 
             TelemetryPacket packet;
             packet.temperature = round(cleanTemp * 10.0f) / 10.0f;
-            packet.heartRate = round(cleanHR);
-            packet.respiratoryRate = round(cleanRR);
-            packet.bloodOxygen = contactDetected ? round(calculatedSpO2) : 98.0f;
-            packet.hrv = round(calculatedHRV * 10.0f) / 10.0f;
+            packet.heartRate = contactDetected ? round(cleanHR) : 0;
+            packet.respiratoryRate = contactDetected ? round(cleanRR) : 0;
+            packet.bloodOxygen = contactDetected ? round(calculatedSpO2) : 0;
+            packet.hrv = contactDetected ? round(calculatedHRV * 10.0f) / 10.0f : 0.0f;
             packet.motion = motionActive;
             packet.lyingDown = lyingDownState;
             packet.rumination = isRuminating;

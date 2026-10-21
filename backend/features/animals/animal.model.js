@@ -97,6 +97,11 @@ const animalSchema = new mongoose.Schema(
             bloodOxygen: { type: Number, default: 0 }
         },
 
+        welfordStats: {
+            type: mongoose.Schema.Types.Mixed,
+            default: null
+        },
+
         welfordM2: {
             temperature: { type: Number, default: 0 },
             heartRate: { type: Number, default: 0 }
