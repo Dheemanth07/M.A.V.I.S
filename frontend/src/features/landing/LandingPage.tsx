@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/context/AuthContext';
 import {
-    Activity, Heart, Thermometer, Wind, Battery,
+    Activity, Heart, Thermometer, Battery, Droplets,
     Cpu, ChevronRight, CheckCircle2, ArrowRight,
     Layers, TrendingUp, Users, FileText
 } from 'lucide-react';
@@ -19,25 +19,25 @@ export const LandingPage: React.FC = () => {
     const [scrollProgress, setScrollProgress] = useState(0);
 
     // Metric toggle for Demo Interactive Telemetry Chart
-    const [activeMetric, setActiveMetric] = useState<'temp' | 'hr' | 'rr'>('temp');
+    const [activeMetric, setActiveMetric] = useState<'temp' | 'hr' | 'spo2'>('temp');
 
     // State for FAQ accordion
     const [openFaq, setOpenFaq] = useState<number | null>(0);
 
     // 24-Hour Mock Telemetry Data for Interactive Demo Chart
     const telemetryData = [
-        { time: '00:00', temp: 38.2, hr: 68, rr: 22 },
-        { time: '02:00', temp: 38.1, hr: 64, rr: 20 },
-        { time: '04:00', temp: 38.0, hr: 62, rr: 19 },
-        { time: '06:00', temp: 38.3, hr: 70, rr: 23 },
-        { time: '08:00', temp: 38.5, hr: 78, rr: 26 },
-        { time: '10:00', temp: 38.7, hr: 82, rr: 28 },
-        { time: '12:00', temp: 38.9, hr: 85, rr: 29 },
-        { time: '14:00', temp: 38.8, hr: 84, rr: 27 },
-        { time: '16:00', temp: 38.6, hr: 79, rr: 25 },
-        { time: '18:00', temp: 38.4, hr: 74, rr: 24 },
-        { time: '20:00', temp: 38.3, hr: 71, rr: 22 },
-        { time: '22:00', temp: 38.2, hr: 67, rr: 21 },
+        { time: '00:00', temp: 38.2, hr: 68, spo2: 98 },
+        { time: '02:00', temp: 38.1, hr: 64, spo2: 98 },
+        { time: '04:00', temp: 38.0, hr: 62, spo2: 98 },
+        { time: '06:00', temp: 38.3, hr: 70, spo2: 97 },
+        { time: '08:00', temp: 38.5, hr: 78, spo2: 98 },
+        { time: '10:00', temp: 38.7, hr: 82, spo2: 97 },
+        { time: '12:00', temp: 38.9, hr: 85, spo2: 96 },
+        { time: '14:00', temp: 38.8, hr: 84, spo2: 97 },
+        { time: '16:00', temp: 38.6, hr: 79, spo2: 98 },
+        { time: '18:00', temp: 38.4, hr: 74, spo2: 98 },
+        { time: '20:00', temp: 38.3, hr: 71, spo2: 98 },
+        { time: '22:00', temp: 38.2, hr: 67, spo2: 98 },
     ];
 
     const metricConfig = {
@@ -71,20 +71,20 @@ export const LandingPage: React.FC = () => {
             peak: '85 BPM',
             status: 'Resting Normal'
         },
-        rr: {
-            title: 'Respiration & Breathing Rate',
-            unit: 'RR',
-            key: 'rr',
-            color: '#7c3aed',
-            gradientId: 'rrGrad',
-            domain: [15, 35] as [number, number],
-            baseline: 24,
-            baselineLabel: 'Calm Baseline (24 RR)',
-            threshold: 32,
-            thresholdLabel: 'Fast Breathing (32 RR)',
-            avg: '23.8 RR',
-            peak: '29 RR',
-            status: 'Clear Breathing'
+        spo2: {
+            title: 'Blood Oxygen Saturation (SpO2)',
+            unit: '%',
+            key: 'spo2',
+            color: '#10b981',
+            gradientId: 'spo2Grad',
+            domain: [90, 100] as [number, number],
+            baseline: 98,
+            baselineLabel: 'Optimal Baseline (98%)',
+            threshold: 93,
+            thresholdLabel: 'Hypoxia Line (93%)',
+            avg: '97.6%',
+            peak: '98%',
+            status: 'Normoxic Range'
         }
     }[activeMetric];
 
@@ -236,7 +236,7 @@ export const LandingPage: React.FC = () => {
 
                         {/* Subtitle */}
                         <p className="text-base sm:text-lg text-slate-600 font-normal leading-relaxed max-w-2xl">
-                            M.A.V.I.S combines custom ESP32 collar hardware with on-premises physiological health modeling to monitor core body temperature, pulse, respiration rate, and rumination posture in real time — keeping livestock, herd subjects, and domestic pets healthy without cloud dependencies.
+                            M.A.V.I.S combines custom ESP32 collar hardware with on-premises physiological health modeling to monitor core body temperature, pulse, blood oxygen (SpO2), and rumination posture in real time — keeping livestock, herd subjects, and domestic pets healthy without cloud dependencies.
                         </p>
 
                         {/* Hero Action Buttons */}
@@ -319,10 +319,10 @@ export const LandingPage: React.FC = () => {
 
                                 <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
                                     <div className="flex items-center gap-1.5 text-xs text-slate-500 font-semibold">
-                                        <Wind className="h-3.5 w-3.5 text-purple-600" /> Breathing Rate
+                                        <Droplets className="h-3.5 w-3.5 text-emerald-600" /> Blood Oxygen
                                     </div>
-                                    <div className="text-xl font-bold font-mono text-slate-900">24 RR</div>
-                                    <div className="text-[10px] text-purple-700 font-medium">Clear Respiration</div>
+                                    <div className="text-xl font-bold font-mono text-slate-900">98%</div>
+                                    <div className="text-[10px] text-emerald-700 font-medium">Optimal Saturation</div>
                                 </div>
 
                                 <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
@@ -493,7 +493,7 @@ export const LandingPage: React.FC = () => {
                                 Circadian Baseline Learning
                             </h4>
                             <p className="text-xs text-slate-600 leading-relaxed m-0">
-                                Dynamic baseline calibration adapted to species chronobiology (diurnal cattle, crepuscular cats, canines) and ambient Temperature-Humidity Index (THI).
+                                Dynamic baseline calibration adapted to species chronobiology (diurnal cattle, crepuscular cats, canines) and running statistical variance.
                             </p>
                         </div>
                         <div className="pt-3 border-t border-slate-100 text-[11px] font-semibold text-blue-700 flex items-center gap-1">
@@ -671,15 +671,15 @@ export const LandingPage: React.FC = () => {
                                 <span>Heart Rate</span>
                             </button>
                             <button
-                                onClick={() => setActiveMetric('rr')}
+                                onClick={() => setActiveMetric('spo2')}
                                 className={`px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
-                                    activeMetric === 'rr'
-                                        ? 'bg-white text-purple-800 shadow-sm'
+                                    activeMetric === 'spo2'
+                                        ? 'bg-white text-emerald-800 shadow-sm'
                                         : 'text-slate-600 hover:text-slate-900'
                                 }`}
                             >
-                                <Wind className="h-3.5 w-3.5 text-purple-600" />
-                                <span>Respiration</span>
+                                <Droplets className="h-3.5 w-3.5 text-emerald-600" />
+                                <span>Blood Oxygen (SpO2)</span>
                             </button>
                         </div>
 

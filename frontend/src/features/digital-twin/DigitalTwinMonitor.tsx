@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import type { Animal, HealthStatusResponse } from '../../shared/types';
 import { fetchHealthStatus } from '../../shared/services/api';
-import { RefreshCw, Thermometer, Heart, Wind, Battery, Zap, Activity, ShieldCheck, AlertCircle, Compass, Users, Droplets, Radio } from 'lucide-react';
+import { RefreshCw, Thermometer, Heart, Battery, Zap, Activity, ShieldCheck, AlertCircle, Compass, Users, Droplets, Radio } from 'lucide-react';
 import { ClinicalAssessmentCard } from './ClinicalAssessmentCard';
 import { HistoricalTrendsCard } from './HistoricalTrendsCard';
 import { ClinicalTreatmentLogCard } from './ClinicalTreatmentLogCard';
@@ -44,12 +44,11 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
 
     const currentTemp = healthSummary?.currentMetrics?.temperature;
     const currentHR = healthSummary?.currentMetrics?.heartRate;
-    const currentRR = healthSummary?.currentMetrics?.respiratoryRate;
+    const currentSpO2 = healthSummary?.currentMetrics?.bloodOxygen;
     const currentBattery = healthSummary?.currentMetrics?.battery;
 
     const baseTemp = healthSummary?.baselines?.temperature ?? selectedAnimal?.baselines?.temperature;
     const baseHR = healthSummary?.baselines?.heartRate ?? selectedAnimal?.baselines?.heartRate;
-    const baseRR = healthSummary?.baselines?.respiratoryRate ?? selectedAnimal?.baselines?.respiratoryRate;
     const baseSpO2 = healthSummary?.baselines?.bloodOxygen ?? selectedAnimal?.baselines?.bloodOxygen;
 
     const baselineCount = healthSummary?.baselineReadingsCount ?? selectedAnimal?.baselineReadingsCount ?? 0;
@@ -162,24 +161,24 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
                                         </div>
                                         <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
                                             <div className="text-[11px] font-semibold text-slate-600 flex items-center gap-1.5">
-                                                <Wind className="h-3.5 w-3.5 text-purple-600" /> Normal Breathing
+                                                <Droplets className="h-3.5 w-3.5 text-emerald-600" /> Normal Oxygen
                                             </div>
                                             <div className="text-base font-bold tracking-tight text-slate-900 mt-1">
-                                                {baseRR ? `${baseRR} BPM` : '--'}
+                                                {baseSpO2 ? `${baseSpO2}%` : '98%'}
                                             </div>
                                             <span className="text-[9px] text-slate-400 block mt-0.5">
-                                                Resting Respiration
+                                                Optical SpO2 (MAX30102)
                                             </span>
                                         </div>
                                         <div className="bg-slate-50 p-3 rounded-xl border border-slate-200">
                                             <div className="text-[11px] font-semibold text-slate-600 flex items-center gap-1.5">
-                                                <Droplets className="h-3.5 w-3.5 text-emerald-600" /> Normal Oxygen
+                                                <Compass className="h-3.5 w-3.5 text-blue-600" /> Posture Baseline
                                             </div>
                                             <div className="text-base font-bold tracking-tight text-slate-900 mt-1">
-                                                {baseSpO2 ? `${baseSpO2}%` : '--'}
+                                                Standing
                                             </div>
                                             <span className="text-[9px] text-slate-400 block mt-0.5">
-                                                Blood Oxygenation
+                                                6-Axis Kinematics (MPU6050)
                                             </span>
                                         </div>
                                     </div>
@@ -276,22 +275,26 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
                                         <p className="text-[10px] text-slate-500 font-normal m-0">Collar Pulse Oximeter (MAX30102)</p>
                                     </div>
 
-                                    {/* Respiratory Rate */}
+                                    {/* Blood Oxygen SpO2 */}
                                     <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-2.5">
                                         <div className="flex items-center justify-between text-xs">
                                             <span className="flex items-center gap-2 font-semibold text-slate-700">
-                                                <Wind className="h-4 w-4 text-purple-600" /> Breathing Rate
+                                                <Droplets className="h-4 w-4 text-emerald-600" /> Blood Oxygen (SpO2)
                                             </span>
                                             <span className="text-[11px] font-semibold text-slate-500">
-                                                Diff: <strong className="text-teal-700 font-bold">
-                                                    {healthSummary?.deviations?.respiratoryRate !== undefined ? `+${healthSummary.deviations.respiratoryRate}` : '--'}
+                                                Diff: <strong className={healthSummary?.deviations?.bloodOxygen && healthSummary.deviations.bloodOxygen > 5 ? 'text-rose-600 font-bold' : 'text-teal-700 font-bold'}>
+                                                    {healthSummary?.deviations?.bloodOxygen !== undefined ? `-${healthSummary.deviations.bloodOxygen}%` : '--'}
                                                 </strong>
                                             </span>
                                         </div>
                                         <div className="text-3xl font-bold tracking-tight text-slate-900">
-                                            {currentRR !== undefined && currentRR !== null ? currentRR : <span className="text-slate-400 font-normal text-xl">--</span>}
+                                            {currentSpO2 !== undefined && currentSpO2 !== null && currentSpO2 > 0 ? (
+                                                <>{currentSpO2}<span className="text-lg text-slate-500 font-normal">%</span></>
+                                            ) : (
+                                                <span className="text-slate-400 font-normal text-xl">-- %</span>
+                                            )}
                                         </div>
-                                        <p className="text-[10px] text-slate-500 font-normal m-0">Cardiorespiratory Pulse Coupling (1:4 Ratio)</p>
+                                        <p className="text-[10px] text-slate-500 font-normal m-0">Collar Optical Sensor (MAX30102)</p>
                                     </div>
 
                                     {/* Battery & Collar Health */}

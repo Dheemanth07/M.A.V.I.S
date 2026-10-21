@@ -680,7 +680,7 @@ export const SimulationStudioModal: React.FC<SimulationStudioModalProps> = ({ on
 
                                 <div>
                                     <div className="flex justify-between font-semibold text-slate-600 mb-1">
-                                        <span>Respiration:</span>
+                                        <span>Respiration (Derived HR/4):</span>
                                         <span className="text-teal-700 font-bold font-mono">{customRR} BPM</span>
                                     </div>
                                     <input 

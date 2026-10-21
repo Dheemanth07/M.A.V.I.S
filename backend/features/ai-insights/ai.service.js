@@ -110,8 +110,10 @@ export class ClinicalDecisionService {
         // 3. Cardiorespiratory Distress / Hypoxia
         else if ((spo2 && spo2 < 90) || (rr && rr >= 45)) {
             riskLevel = "Critical";
-            summary = `Low blood oxygen saturation (${spo2 ? `${spo2}%` : 'compromised'}) and elevated respiration rate detected for ${animal.name}.`;
-            differentialDiagnosis = ["Bovine Respiratory Disease (BRD)", "Acute Pulmonary Congestion", "Airway Obstruction"];
+            summary = spo2 && spo2 < 90
+                ? `Low arterial blood oxygen saturation (${spo2}%) detected for ${animal.name} by optical pulse oximeter.`
+                : `Elevated physiological strain and tachypneic vitals detected for ${animal.name}.`;
+            differentialDiagnosis = ["Bovine Respiratory Disease (BRD)", "Acute Hypoxemia", "Cardiopulmonary Compromise"];
             recommendations = [
                 "Perform thoracic auscultation to check for wheezing or crackles.",
                 "Inspect nasal passages for discharge and ensure clear airway.",

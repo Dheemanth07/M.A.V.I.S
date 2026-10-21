@@ -16,7 +16,6 @@ export const VeterinaryReportModal: React.FC<VeterinaryReportModalProps> = ({ an
 
     const baseTemp = animal.baselines?.temperature ? Number(animal.baselines.temperature) : 38.5;
     const baseHR = animal.baselines?.heartRate ? Number(animal.baselines.heartRate) : 72;
-    const baseRR = animal.baselines?.respiratoryRate ? Number(animal.baselines.respiratoryRate) : 22;
 
     const isLuna = animal.name.includes('Luna');
     const isBella = animal.name.includes('Bella');
@@ -24,12 +23,13 @@ export const VeterinaryReportModal: React.FC<VeterinaryReportModalProps> = ({ an
 
     const liveTemp = isBella ? 40.2 : isLuna ? 39.8 : Number((baseTemp + 0.1).toFixed(1));
     const liveHR = isLuna ? 104 : Number(baseHR + 2);
-    const liveRR = isLuna ? 48 : Number(baseRR + 1);
+    const baseSpO2 = animal.baselines?.bloodOxygen || 98;
+    const liveSpO2 = isLuna ? 91 : isBella ? 96 : 98;
     const liveBattery = isDaisy ? 12 : 94;
 
     const tempDelta = Number((liveTemp - baseTemp).toFixed(1));
     const hrDelta = liveHR - baseHR;
-    const rrDelta = liveRR - baseRR;
+    const spo2Delta = liveSpO2 - baseSpO2;
 
     const isCritical = animal.healthStatus === 'critical' || isLuna;
     const isWarning = animal.healthStatus === 'warning' || isBella || isDaisy;
@@ -50,12 +50,12 @@ export const VeterinaryReportModal: React.FC<VeterinaryReportModalProps> = ({ an
 
     // 24-Hour Telemetry Audit Table
     const telemetryLog = [
-        { time: '00:00 (Midnight)', temp: (baseTemp - 0.3).toFixed(1), hr: baseHR - 4, rr: baseRR - 2, motion: 'Resting (Sleep)' },
-        { time: '04:00 AM', temp: (baseTemp - 0.2).toFixed(1), hr: baseHR - 3, rr: baseRR - 1, motion: 'Resting (Sleep)' },
-        { time: '08:00 AM', temp: baseTemp.toFixed(1), hr: baseHR, rr: baseRR, motion: 'Active (Grazing)' },
-        { time: '12:00 PM (Noon)', temp: (baseTemp + 0.2).toFixed(1), hr: baseHR + 4, rr: baseRR + 2, motion: 'Moderate Activity' },
-        { time: '16:00 (04:00 PM)', temp: liveTemp.toFixed(1), hr: liveHR, rr: liveRR, motion: isCritical ? 'Elevated Respiration' : 'Steady Gait' },
-        { time: '20:00 (08:00 PM)', temp: (baseTemp + 0.1).toFixed(1), hr: baseHR + 1, rr: baseRR, motion: 'Resting in Pen' },
+        { time: '00:00 (Midnight)', temp: (baseTemp - 0.3).toFixed(1), hr: baseHR - 4, spo2: baseSpO2, motion: 'Resting (Sleep)' },
+        { time: '04:00 AM', temp: (baseTemp - 0.2).toFixed(1), hr: baseHR - 3, spo2: baseSpO2, motion: 'Resting (Sleep)' },
+        { time: '08:00 AM', temp: baseTemp.toFixed(1), hr: baseHR, spo2: baseSpO2, motion: 'Active (Grazing)' },
+        { time: '12:00 PM (Noon)', temp: (baseTemp + 0.2).toFixed(1), hr: baseHR + 4, spo2: baseSpO2, motion: 'Moderate Activity' },
+        { time: '16:00 (04:00 PM)', temp: liveTemp.toFixed(1), hr: liveHR, spo2: liveSpO2, motion: isCritical ? 'Restless Posture' : 'Steady Gait' },
+        { time: '20:00 (08:00 PM)', temp: (baseTemp + 0.1).toFixed(1), hr: baseHR + 1, spo2: baseSpO2, motion: 'Resting in Pen' },
     ];
 
     const handlePrint = () => {
@@ -244,16 +244,16 @@ export const VeterinaryReportModal: React.FC<VeterinaryReportModalProps> = ({ an
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td className="p-3 font-semibold text-slate-900">Breathing Rate</td>
-                                                <td className="p-3 font-bold font-mono">{liveRR} RR</td>
-                                                <td className="p-3 font-mono">{baseRR} RR</td>
-                                                <td className={`p-3 font-bold font-mono ${rrDelta > 8 ? 'text-rose-600' : 'text-slate-600'}`}>
-                                                    {rrDelta > 0 ? `+${rrDelta}` : rrDelta} RR
+                                                <td className="p-3 font-semibold text-slate-900">Blood Oxygen (SpO2)</td>
+                                                <td className="p-3 font-bold font-mono">{liveSpO2}%</td>
+                                                <td className="p-3 font-mono">{baseSpO2}%</td>
+                                                <td className={`p-3 font-bold font-mono ${spo2Delta < -3 ? 'text-rose-600' : 'text-slate-600'}`}>
+                                                    {spo2Delta > 0 ? `+${spo2Delta}` : spo2Delta}%
                                                 </td>
-                                                <td className="p-3 text-slate-500">15 – 30 RR</td>
+                                                <td className="p-3 text-slate-500">95% – 100%</td>
                                                 <td className="p-3 text-right">
-                                                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${rrDelta > 8 ? 'bg-rose-100 text-rose-800' : 'bg-emerald-100 text-emerald-800'}`}>
-                                                        {rrDelta > 8 ? 'TACHYPNEA' : 'NORMAL'}
+                                                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${spo2Delta < -3 ? 'bg-rose-100 text-rose-800' : 'bg-emerald-100 text-emerald-800'}`}>
+                                                        {spo2Delta < -3 ? 'HYPOXIA' : 'NORMAL'}
                                                     </span>
                                                 </td>
                                             </tr>
@@ -282,7 +282,7 @@ export const VeterinaryReportModal: React.FC<VeterinaryReportModalProps> = ({ an
                                 <p className="text-slate-700 leading-relaxed m-0">
                                     Continuous telemetry packet ingestion confirms calibrated baseline tracking for <strong>{animal.name}</strong>. 
                                     {isCritical 
-                                        ? ' Animal exhibits acute respiratory rate elevation and elevated pulse harmonic indicative of exertion or hypoxic strain. Immediate clinical intervention and shade relocation recommended.' 
+                                        ? ' Animal exhibits acute hypoxemic desaturation and elevated pulse harmonic indicative of exertion or physiological strain. Immediate clinical intervention and shade relocation recommended.' 
                                         : isWarning 
                                         ? ' Animal displays minor thermal deviation or battery service threshold. Routine hydration check and observation advised.' 
                                         : ' All vital signs reside firmly within homeostatic tolerances. Cardiovascular rhythm and resting core body temperature demonstrate optimal physiological wellness.'}
@@ -323,7 +323,7 @@ export const VeterinaryReportModal: React.FC<VeterinaryReportModalProps> = ({ an
                                                 <th className="p-2.5">Time Interval</th>
                                                 <th className="p-2.5">Temperature</th>
                                                 <th className="p-2.5">Heart Rate</th>
-                                                <th className="p-2.5">Respiration</th>
+                                                <th className="p-2.5">Blood Oxygen (SpO2)</th>
                                                 <th className="p-2.5 text-right">Activity & Motion</th>
                                             </tr>
                                         </thead>
@@ -333,7 +333,7 @@ export const VeterinaryReportModal: React.FC<VeterinaryReportModalProps> = ({ an
                                                     <td className="p-2.5 font-medium text-slate-900">{row.time}</td>
                                                     <td className="p-2.5 font-mono">{row.temp}°C</td>
                                                     <td className="p-2.5 font-mono">{row.hr} BPM</td>
-                                                    <td className="p-2.5 font-mono">{row.rr} RR</td>
+                                                    <td className="p-2.5 font-mono">{row.spo2}%</td>
                                                     <td className="p-2.5 text-right font-medium text-slate-600">{row.motion}</td>
                                                 </tr>
                                             ))}
@@ -507,12 +507,12 @@ export const VeterinaryReportModal: React.FC<VeterinaryReportModalProps> = ({ an
                                         <td className="p-2.5 text-right font-bold">{hrDelta > 15 ? 'TACHYCARDIA' : 'NORMAL'}</td>
                                     </tr>
                                     <tr>
-                                        <td className="p-2.5 font-semibold">Breathing Rate</td>
-                                        <td className="p-2.5 font-bold font-mono">{liveRR} RR</td>
-                                        <td className="p-2.5 font-mono">{baseRR} RR</td>
-                                        <td className="p-2.5 font-mono">{rrDelta > 0 ? `+${rrDelta}` : rrDelta} RR</td>
-                                        <td className="p-2.5 text-slate-600">15 – 30 RR</td>
-                                        <td className="p-2.5 text-right font-bold">{rrDelta > 8 ? 'TACHYPNEA' : 'NORMAL'}</td>
+                                        <td className="p-2.5 font-semibold">Blood Oxygen (SpO2)</td>
+                                        <td className="p-2.5 font-bold font-mono">{liveSpO2}%</td>
+                                        <td className="p-2.5 font-mono">{baseSpO2}%</td>
+                                        <td className="p-2.5 font-mono">{spo2Delta > 0 ? `+${spo2Delta}` : spo2Delta}%</td>
+                                        <td className="p-2.5 text-slate-600">95% – 100%</td>
+                                        <td className="p-2.5 text-right font-bold">{spo2Delta < -3 ? 'HYPOXIA' : 'NORMAL'}</td>
                                     </tr>
                                     <tr>
                                         <td className="p-2.5 font-semibold">Collar Battery & Power</td>
@@ -534,7 +534,7 @@ export const VeterinaryReportModal: React.FC<VeterinaryReportModalProps> = ({ an
                         <p className="text-slate-800 leading-relaxed m-0">
                             Continuous telemetry packet ingestion confirms calibrated baseline tracking for <strong>{animal.name}</strong>. 
                             {isCritical 
-                                ? ' Animal exhibits acute respiratory rate elevation and elevated pulse harmonic indicative of exertion or hypoxic strain. Immediate clinical intervention and shade relocation recommended.' 
+                                ? ' Animal exhibits acute hypoxemic desaturation and elevated pulse harmonic indicative of exertion or physiological strain. Immediate clinical intervention and shade relocation recommended.' 
                                 : isWarning 
                                 ? ' Animal displays minor thermal deviation or battery service threshold. Routine hydration check and observation advised.' 
                                 : ' All vital signs reside firmly within homeostatic tolerances. Cardiovascular rhythm and resting core body temperature demonstrate optimal physiological wellness.'}
@@ -570,7 +570,7 @@ export const VeterinaryReportModal: React.FC<VeterinaryReportModalProps> = ({ an
                                         <th className="p-2">Time Interval</th>
                                         <th className="p-2">Temperature</th>
                                         <th className="p-2">Heart Rate</th>
-                                        <th className="p-2">Respiration</th>
+                                        <th className="p-2">Blood Oxygen (SpO2)</th>
                                         <th className="p-2 text-right">Activity & Motion</th>
                                     </tr>
                                 </thead>
@@ -580,7 +580,7 @@ export const VeterinaryReportModal: React.FC<VeterinaryReportModalProps> = ({ an
                                             <td className="p-2 font-medium">{row.time}</td>
                                             <td className="p-2 font-mono">{row.temp}°C</td>
                                             <td className="p-2 font-mono">{row.hr} BPM</td>
-                                            <td className="p-2 font-mono">{row.rr} RR</td>
+                                            <td className="p-2 font-mono">{row.spo2}%</td>
                                             <td className="p-2 text-right">{row.motion}</td>
                                         </tr>
                                     ))}

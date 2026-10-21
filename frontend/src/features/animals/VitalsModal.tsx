@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Thermometer, Heart, Wind, Battery, Activity, Clock, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { X, Thermometer, Heart, Droplets, Battery, Activity, Clock, RefreshCw, CheckCircle2 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine } from 'recharts';
 import type { Animal, AIInsight } from '../../shared/types';
 import { fetchAIInsight } from '../../shared/services/api';
@@ -9,7 +9,7 @@ interface VitalsModalProps {
     onClose: () => void;
 }
 
-type VitalTab = 'temperature' | 'heartRate' | 'respiration' | 'battery';
+type VitalTab = 'temperature' | 'heartRate' | 'oxygen' | 'battery';
 type TimeRange = '24h' | '12h' | '6h';
 
 export const VitalsModal: React.FC<VitalsModalProps> = ({ animal, onClose }) => {
@@ -41,7 +41,7 @@ export const VitalsModal: React.FC<VitalsModalProps> = ({ animal, onClose }) => 
 
     const baseTemp = animal.baselines?.temperature ? Number(animal.baselines.temperature) : 38.5;
     const baseHR = animal.baselines?.heartRate ? Number(animal.baselines.heartRate) : 72;
-    const baseRR = animal.baselines?.respiratoryRate ? Number(animal.baselines.respiratoryRate) : 22;
+    const baseSpO2 = animal.baselines?.bloodOxygen ? Number(animal.baselines.bloodOxygen) : 98;
 
     const isLuna = animal.name.includes('Luna');
     const isBella = animal.name.includes('Bella');
@@ -49,23 +49,23 @@ export const VitalsModal: React.FC<VitalsModalProps> = ({ animal, onClose }) => 
 
     // 24-Hour Comprehensive Multi-Point Historical Telemetry Series (12 Hourly Timings)
     const full24hData = [
-        { time: '12:00 AM', temp: baseTemp - 0.3, hr: baseHR - 4, rr: baseRR - 2, battery: 98 },
-        { time: '02:00 AM', temp: baseTemp - 0.4, hr: baseHR - 6, rr: baseRR - 3, battery: 97 },
-        { time: '04:00 AM', temp: baseTemp - 0.3, hr: baseHR - 4, rr: baseRR - 2, battery: 96 },
-        { time: '06:00 AM', temp: baseTemp - 0.1, hr: baseHR - 2, rr: baseRR - 1, battery: 95 },
-        { time: '08:00 AM', temp: baseTemp, hr: baseHR, rr: baseRR, battery: 94 },
-        { time: '10:00 AM', temp: baseTemp + 0.1, hr: baseHR + 3, rr: baseRR + 1, battery: 93 },
-        { time: '12:00 PM', temp: baseTemp + 0.2, hr: baseHR + 6, rr: baseRR + 2, battery: 92 },
-        { time: '02:00 PM', temp: baseTemp + 0.3, hr: baseHR + 8, rr: baseRR + 3, battery: 91 },
-        { time: '04:00 PM', temp: isBella ? 40.3 : isLuna ? 39.8 : baseTemp + 0.2, hr: isLuna ? 104 : baseHR + 4, rr: isLuna ? 48 : baseRR + 2, battery: isDaisy ? 14 : 90 },
-        { time: '06:00 PM', temp: isBella ? 40.1 : isLuna ? 39.7 : baseTemp + 0.1, hr: isLuna ? 102 : baseHR + 2, rr: isLuna ? 46 : baseRR + 1, battery: isDaisy ? 12 : 89 },
-        { time: '08:00 PM', temp: baseTemp, hr: baseHR, rr: baseRR, battery: isDaisy ? 12 : 88 },
-        { time: '10:00 PM', temp: baseTemp - 0.1, hr: baseHR - 2, rr: baseRR - 1, battery: isDaisy ? 11 : 87 },
+        { time: '12:00 AM', temp: baseTemp - 0.3, hr: baseHR - 4, spo2: 98, battery: 98 },
+        { time: '02:00 AM', temp: baseTemp - 0.4, hr: baseHR - 6, spo2: 98, battery: 97 },
+        { time: '04:00 AM', temp: baseTemp - 0.3, hr: baseHR - 4, spo2: 98, battery: 96 },
+        { time: '06:00 AM', temp: baseTemp - 0.1, hr: baseHR - 2, spo2: 98, battery: 95 },
+        { time: '08:00 AM', temp: baseTemp, hr: baseHR, spo2: 98, battery: 94 },
+        { time: '10:00 AM', temp: baseTemp + 0.1, hr: baseHR + 3, spo2: 98, battery: 93 },
+        { time: '12:00 PM', temp: baseTemp + 0.2, hr: baseHR + 6, spo2: 97, battery: 92 },
+        { time: '02:00 PM', temp: baseTemp + 0.3, hr: baseHR + 8, spo2: 97, battery: 91 },
+        { time: '04:00 PM', temp: isBella ? 40.3 : isLuna ? 39.8 : baseTemp + 0.2, hr: isLuna ? 104 : baseHR + 4, spo2: isLuna ? 88 : 98, battery: isDaisy ? 14 : 90 },
+        { time: '06:00 PM', temp: isBella ? 40.1 : isLuna ? 39.7 : baseTemp + 0.1, hr: isLuna ? 102 : baseHR + 2, spo2: isLuna ? 88 : 98, battery: isDaisy ? 12 : 89 },
+        { time: '08:00 PM', temp: baseTemp, hr: baseHR, spo2: 98, battery: isDaisy ? 12 : 88 },
+        { time: '10:00 PM', temp: baseTemp - 0.1, hr: baseHR - 2, spo2: 98, battery: isDaisy ? 11 : 87 },
     ].map(p => ({
         ...p,
         temp: Number(p.temp.toFixed(1)),
         hr: Math.round(p.hr),
-        rr: Math.round(p.rr),
+        spo2: Math.round(p.spo2),
         battery: Math.round(p.battery)
     }));
 
@@ -102,17 +102,17 @@ export const VitalsModal: React.FC<VitalsModalProps> = ({ animal, onClose }) => 
             baselineLabel: `Resting Pulse (${baseHR} BPM)`,
             tooltipFormatter: (v: any) => [`${Math.round(v)} BPM`, 'Heart Rate']
         },
-        respiration: {
-            title: "Breathing & Respiration Rate (Breaths/min)",
-            subtitle: "Respiratory expansion frequency and ventilation curve",
-            dataKey: "rr",
-            unit: " RR",
-            stroke: "#a855f7",
-            gradientStart: "#a855f7",
-            gradientId: "colorRR",
-            baselineVal: baseRR,
-            baselineLabel: `Normal Respiration (${baseRR} RR)`,
-            tooltipFormatter: (v: any) => [`${Math.round(v)} Breaths/min`, 'Respiratory Rate']
+        oxygen: {
+            title: "Blood Oxygen Saturation (SpO2 %)",
+            subtitle: "Optical arterial oxygenation percentage from MAX30102 sensor",
+            dataKey: "spo2",
+            unit: "%",
+            stroke: "#10b981",
+            gradientStart: "#10b981",
+            gradientId: "colorSpO2",
+            baselineVal: baseSpO2,
+            baselineLabel: `Optimal Saturation (${baseSpO2}%)`,
+            tooltipFormatter: (v: any) => [`${Math.round(v)}%`, 'Blood Oxygen']
         },
         battery: {
             title: "Collar Battery & Power Curve (%)",
@@ -140,8 +140,8 @@ export const VitalsModal: React.FC<VitalsModalProps> = ({ animal, onClose }) => 
         cleanDomain = [roundedMin, roundedMax];
     } else if (selectedTab === 'heartRate') {
         cleanDomain = [Math.floor((minVal - 10) / 10) * 10, Math.ceil((maxVal + 10) / 10) * 10];
-    } else if (selectedTab === 'respiration') {
-        cleanDomain = [Math.max(0, Math.floor((minVal - 5) / 5) * 5), Math.ceil((maxVal + 5) / 5) * 5];
+    } else if (selectedTab === 'oxygen') {
+        cleanDomain = [Math.max(70, Math.floor((minVal - 2) / 2) * 2), Math.min(100, Math.ceil((maxVal + 2) / 2) * 2)];
     } else if (selectedTab === 'battery') {
         cleanDomain = [0, 100];
     }
@@ -217,23 +217,25 @@ export const VitalsModal: React.FC<VitalsModalProps> = ({ animal, onClose }) => 
                         <div className="text-[11px] text-blue-700 font-medium mt-0.5">Resting Normal</div>
                     </button>
 
-                    {/* Respiration */}
+                    {/* Blood Oxygen SpO2 */}
                     <button
                         type="button"
-                        onClick={() => setSelectedTab('respiration')}
+                        onClick={() => setSelectedTab('oxygen')}
                         className={`p-4 rounded-2xl border text-left transition-all duration-200 cursor-pointer ${
-                            selectedTab === 'respiration'
-                                ? 'bg-purple-50/80 border-purple-300 ring-2 ring-purple-500/20 shadow-xs'
+                            selectedTab === 'oxygen'
+                                ? 'bg-emerald-50/80 border-emerald-300 ring-2 ring-emerald-500/20 shadow-xs'
                                 : 'bg-slate-50/80 border-slate-100 hover:bg-slate-100/80'
                         }`}
                     >
                         <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 mb-1">
-                            <Wind className="h-3.5 w-3.5 text-purple-600" /> Breathing Rate
+                            <Droplets className="h-3.5 w-3.5 text-emerald-600" /> Blood Oxygen (SpO2)
                         </div>
                         <div className="text-2xl font-bold text-slate-900 font-mono tracking-tight">
-                            {baseRR} RR
+                            {isLuna ? '88%' : `${baseSpO2}%`}
                         </div>
-                        <div className="text-[11px] text-purple-700 font-medium mt-0.5">Normal Respiration</div>
+                        <div className={`text-[11px] font-medium mt-0.5 ${isLuna ? 'text-rose-600 font-bold' : 'text-emerald-700'}`}>
+                            {isLuna ? 'Hypoxia Alert' : 'Optimal Saturation'}
+                        </div>
                     </button>
 
                     {/* Battery */}
