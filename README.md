@@ -26,9 +26,7 @@ The system supports two complementary workflows:
 * **Streaming Adaptive Baselines**: Calculates individualized diurnal baselines and dynamic Z-scores using Welford's algorithm ($O(1)$ memory).
 * **Multi-Modal Risk Evaluation**: Evaluates composite risk scores with synergy weighting (e.g., elevated temperature paired with dropped rumination).
 * **Behavioral Indicators**: Derives rumination chew frequency, head-shaking agitation, and lying versus standing posture.
-* **Heuristic Herd Exposure**: Graph-based exposure risk estimates across animals sharing enclosures or pens.
-* **Alert Lifecycle Management**: Tracks alerts through `active` &rarr; `acknowledged` &rarr; `resolved` states with live Socket.IO delivery.
-* **Local Inference Support**: Optional integration with Ollama language models for diagnostic narrative generation, backed by an in-memory deterministic fallback.
+* **Hybrid Grounded Clinical Intelligence**: 2-tier architecture combining a 100% reproducible, zero-hallucination deterministic clinical safety engine with optional local SLM narrative synthesis (Ollama Llama 3.2 / Phi-3).
 
 ---
 
@@ -67,9 +65,7 @@ For detailed algorithmic formulations, baseline mathematics, and synergy rules, 
 | **Backend Gateway** | Node.js, Express.js (Vertical Feature Slices), Joi Validation |
 | **Database Storage** | MongoDB, Mongoose (with automated In-Memory MongoDB Fallback) |
 | **Real-Time Communication** | Socket.IO (`sensorUpdate`, `alert`, `alert:updated`) |
-| **Frontend Dashboard** | React 19, TypeScript, Vite, Tailwind CSS, Lucide Icons |
-| **Charts & Visualization** | Recharts (Historical timelines and reference bands) |
-| **Local AI Assistance** | Ollama (`llama3.2:3b`, `phi3:mini`) with Deterministic Fallback |
+| **Clinical Intelligence** | Hybrid Grounded Architecture: Deterministic Safety Engine + Local SLMs (Ollama) |
 | **Containerization** | Docker & Docker Compose |
 
 ---

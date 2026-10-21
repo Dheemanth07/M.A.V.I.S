@@ -388,6 +388,7 @@ void taskBioSensors(void* parameter) {
             float cleanTemp = tempFilter.add(rawTemp);
             float cleanHR   = hrFilter.add((float)beatAvg);
 
+            // Derived respiratory rate via cardiorespiratory coupling (1:4 ratio + exertion modulation)
             float derivedRR = cleanHR / 4.0f;
             if (motionActive) derivedRR += 6.0f;
             if (derivedRR < 12.0f) derivedRR = 12.0f;

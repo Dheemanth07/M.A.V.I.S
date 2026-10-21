@@ -2,7 +2,6 @@ import type { Animal } from '../../shared/types';
 import { useToast } from '../../shared/context/ToastContext';
 import { Shield, Database, Activity, RefreshCw, Cpu, Server } from 'lucide-react';
 import { CollarHardwareMonitor } from './CollarHardwareMonitor';
-import { GeofenceMonitor } from '../geofence/GeofenceMonitor';
 
 interface AdminOverviewProps {
     animals: Animal[];
@@ -72,9 +71,6 @@ export const AdminOverview: React.FC<AdminOverviewProps> = ({ animals, onRefresh
 
             {/* Hardware Mesh Diagnostic Component */}
             <CollarHardwareMonitor animals={animals} />
-
-            {/* Interactive GPS Geofence & Location Component */}
-            <GeofenceMonitor animals={animals} />
 
             <div className="bento-card p-6 bg-white border border-slate-200/90">
                 <div className="flex items-center justify-between mb-4">

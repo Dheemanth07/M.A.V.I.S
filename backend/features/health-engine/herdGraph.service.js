@@ -1,8 +1,8 @@
 /**
- * @file Herd Interaction Graph Engine (Object-Oriented Architecture)
- * Computes dynamic graph-based contagion risk across multi-herd agricultural and clinical environments:
- * R(i) = sum_j ( R(j) * W(i,j) )
- * W(i,j) = W_species(i,j) * W_zone(i,j)
+ * @file Enclosure & Pen Contagion Exposure Service
+ * Evaluates cross-infection exposure risk based on co-located enclosure zones
+ * and species transmission factors between animals in the same facility:
+ * Exposure Risk = sum_j ( Neighbor Risk * W_species * W_zone )
  */
 
 const RUMINANT_KEYWORDS = ['cow', 'bovine', 'cattle', 'sheep', 'goat'];
