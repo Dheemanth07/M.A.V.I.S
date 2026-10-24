@@ -1,0 +1,1379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>M.A.V.I.S. - Professional A3 Project Expo Poster (RNSIT CSE)</title>
+<style>
+  /* ==========================================================================
+     GLOBAL PAGE GEOMETRY: ISO A3 LANDSCAPE (420mm x 297mm) - STRICT SINGLE PAGE
+     ========================================================================== */
+  @page {
+    size: 420mm 297mm;
+    margin: 0;
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    width: 420mm;
+    height: 297mm;
+    background: #0f172a;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    width: 420mm;
+    height: 297mm;
+    max-height: 297mm;
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #ffffff;
+    color: #1e293b;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  /* ==========================================================================
+     HEADER: 2-TIER INSTITUTIONAL ARCHITECTURE (~49 MM TOTAL)
+     ========================================================================== */
+  header {
+    padding: 2.8mm 9mm 1.2mm 9mm;
+    border-bottom: 2px solid #990000;
+    background: #ffffff;
+    flex-shrink: 0;
+  }
+
+  /* Row 1: Institutional Logos */
+  .inst-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 15.5mm;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 1mm;
+  }
+
+  .inst-left {
+    display: flex;
+    align-items: center;
+    gap: 3.5mm;
+    flex: 1;
+    justify-content: flex-start;
+  }
+
+  .brand-logo {
+    height: 13mm;
+    width: auto;
+    object-fit: contain;
+    display: block;
+  }
+
+  .logo-rnsit { height: 13mm; }
+  .logo-vtu   { height: 12.5mm; }
+
+  .brand-sep {
+    width: 1.2px;
+    height: 10mm;
+    background: #cbd5e1;
+  }
+
+  .inst-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 2;
+  }
+
+  .brand-banner {
+    height: 12.5mm;
+    width: auto;
+    object-fit: contain;
+    display: block;
+  }
+
+  .inst-right {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex: 1;
+  }
+
+  .logo-25 { height: 13mm; }
+
+  /* Row 2: Title & Project Metadata */
+  .title-meta-row {
+    display: grid;
+    grid-template-columns: 256mm 144mm;
+    align-items: center;
+    height: 31mm;
+    padding-top: 1mm;
+  }
+
+  .title-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8mm;
+  }
+
+  .project-title-line {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .project-acronym {
+    font-size: 28pt;
+    font-weight: 900;
+    letter-spacing: -0.5px;
+    color: #0f2942;
+    line-height: 1.0;
+  }
+
+  .project-fullname {
+    font-size: 14.5pt;
+    font-weight: 800;
+    color: #990000;
+    letter-spacing: -0.2px;
+  }
+
+  .project-subtitle {
+    font-size: 8.8pt;
+    font-weight: 600;
+    color: #0f766e;
+    line-height: 1.15;
+  }
+
+  .header-meta {
+    display: flex;
+    justify-content: flex-end;
+    gap: 3.5mm;
+  }
+
+  .meta-card {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    padding: 1.4mm 2.8mm;
+    font-size: 7.5pt;
+  }
+
+  .meta-card h4 {
+    font-size: 7pt;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #0f2942;
+    margin-bottom: 0.8mm;
+    border-bottom: 1.5px solid #990000;
+    padding-bottom: 0.4mm;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .students-grid {
+    display: grid;
+    grid-template-columns: 35mm 23mm;
+    row-gap: 0.6mm;
+    column-gap: 2mm;
+    font-size: 7.4pt;
+  }
+
+  .students-grid .s-name { font-weight: 700; color: #0f2942; }
+  .students-grid .s-usn  { font-weight: 700; color: #990000; font-family: monospace; }
+
+  .guide-box {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3mm;
+    font-size: 7.4pt;
+    min-width: 41mm;
+  }
+
+  .guide-box .g-name { font-size: 8.8pt; font-weight: 800; color: #0f2942; }
+  .guide-box .g-role { font-weight: 600; color: #334155; }
+  .guide-box .g-dept { font-weight: 700; color: #990000; }
+
+  /* ==========================================================================
+     MAIN CONTENT: 3-COLUMN ACADEMIC LAYOUT (STRICT SINGLE PAGE BUDGET)
+     ========================================================================== */
+  main {
+    flex: 1;
+    padding: 1.8mm 9mm 1mm 9mm;
+    display: grid;
+    grid-template-columns: 128mm 146mm 128mm;
+    gap: 4mm;
+    height: 236mm;
+    max-height: 236mm;
+  }
+
+  .column {
+    display: flex;
+    flex-direction: column;
+    gap: 2.6mm;
+    height: 100%;
+  }
+
+  .panel {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    padding: 2.2mm 2.8mm;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+    display: flex;
+    flex-direction: column;
+    gap: 1.4mm;
+  }
+
+  .panel-distribute {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .panel-header {
+    display: flex;
+    align-items: center;
+    gap: 1.8mm;
+    border-bottom: 1.5px solid #e2e8f0;
+    padding-bottom: 0.6mm;
+  }
+
+  .panel-num {
+    background: #0f2942;
+    color: #ffffff;
+    font-size: 7.2pt;
+    font-weight: 800;
+    padding: 0.3mm 1.3mm;
+    border-radius: 2px;
+    letter-spacing: 0.5px;
+  }
+
+  .panel-num.crimson { background: #990000; }
+  .panel-num.teal    { background: #0f766e; }
+
+  .panel-title {
+    font-size: 9.6pt;
+    font-weight: 800;
+    color: #0f2942;
+    letter-spacing: -0.2px;
+    text-transform: uppercase;
+  }
+
+  p, li {
+    font-size: 7.3pt;
+    color: #334155;
+    line-height: 1.30;
+  }
+
+  strong { color: #0f2942; font-weight: 700; }
+
+  /* Problem Statement Card */
+  .problem-card {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-left: 2.5px solid #990000;
+    border-radius: 3px;
+    padding: 1.2mm 1.8mm;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6mm;
+  }
+
+  .problem-lead {
+    font-size: 7.1pt;
+    font-weight: 700;
+    color: #0f2942;
+    line-height: 1.22;
+  }
+
+  .problem-bullets {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5mm;
+  }
+
+  .p-bullet {
+    display: flex;
+    align-items: baseline;
+    gap: 1.2mm;
+    font-size: 6.8pt;
+    color: #334155;
+    line-height: 1.22;
+  }
+
+  .p-bullet-dot {
+    width: 1.3mm;
+    height: 1.3mm;
+    background: #990000;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 0.6mm;
+  }
+
+  .problem-conclusion {
+    font-size: 6.8pt;
+    color: #0f766e;
+    background: #f0fdfa;
+    border: 1px solid #ccfbf1;
+    border-radius: 2px;
+    padding: 0.7mm 1.4mm;
+    line-height: 1.22;
+  }
+
+  /* Objectives List */
+  .obj-header {
+    font-size: 7.2pt;
+    font-weight: 800;
+    color: #0f2942;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-top: 0.2mm;
+  }
+
+  .objectives-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.7mm;
+  }
+
+  .objective-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.4mm;
+    background: #ffffff;
+    border: 1px solid #f1f5f9;
+    border-radius: 2px;
+    padding: 0.8mm 1.2mm;
+  }
+
+  .obj-badge {
+    background: #0f766e;
+    color: #ffffff;
+    font-size: 6.2pt;
+    font-weight: 800;
+    width: 3.4mm;
+    height: 3.4mm;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 2px;
+    flex-shrink: 0;
+    margin-top: 0.3mm;
+  }
+
+  .obj-text {
+    font-size: 6.8pt;
+    color: #334155;
+    line-height: 1.24;
+  }
+
+  /* SVG Vector Schematic */
+  .schematic-box {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    padding: 1.4mm;
+  }
+
+  .schematic-title {
+    font-size: 7.2pt;
+    font-weight: 800;
+    color: #0f2942;
+    text-transform: uppercase;
+    margin-bottom: 0.6mm;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .schematic-svg {
+    width: 100%;
+    height: 44mm;
+    display: block;
+  }
+
+  /* Streamlined Sensor Specs (2x2 Grid) */
+  .sensor-spec-table {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8mm;
+  }
+
+  .spec-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2mm;
+  }
+
+  .spec-cell {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 3px;
+    padding: 0.9mm 1.2mm;
+    font-size: 6.5pt;
+    color: #334155;
+    line-height: 1.22;
+  }
+
+  .spec-tag {
+    font-size: 5.6pt;
+    font-weight: 800;
+    padding: 0.2mm 0.7mm;
+    border-radius: 2px;
+    color: #ffffff;
+    display: inline-block;
+    margin-right: 0.6mm;
+  }
+
+  .spec-tag.navy    { background: #0f2942; }
+  .spec-tag.teal    { background: #0f766e; }
+  .spec-tag.crimson { background: #990000; }
+  .spec-tag.amber   { background: #d97706; }
+
+  /* DSP Flow Box */
+  .dsp-flow-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 3px;
+    padding: 1mm 1.4mm;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8mm;
+    font-size: 6.6pt;
+  }
+
+  .dsp-row {
+    display: flex;
+    align-items: baseline;
+    gap: 1.4mm;
+  }
+
+  .dsp-badge {
+    font-size: 5.8pt;
+    font-weight: 800;
+    padding: 0.2mm 0.7mm;
+    border-radius: 2px;
+    background: #0f2942;
+    color: #ffffff;
+    white-space: nowrap;
+  }
+
+  .caveat-banner {
+    background: #fffbeb;
+    border: 1px solid #fef3c7;
+    border-left: 2.5px solid #d97706;
+    border-radius: 3px;
+    padding: 1.1mm 1.6mm;
+    font-size: 6.3pt;
+    color: #92400e;
+    line-height: 1.22;
+  }
+
+  /* ==========================================================================
+     COLUMN 2: ARCHITECTURE PIPELINE & STATISTICAL SCREENING
+     ========================================================================== */
+  .flow-card {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    padding: 1.4mm;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .flow-img {
+    width: 100%;
+    height: auto;
+    max-height: 50mm;
+    object-fit: contain;
+    display: block;
+    border-radius: 2px;
+  }
+
+  /* Baseline Dynamics Graph */
+  .baseline-graph-box {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    padding: 1.4mm;
+  }
+
+  .baseline-graph-title {
+    font-size: 7pt;
+    font-weight: 800;
+    color: #0f2942;
+    text-transform: uppercase;
+    margin-bottom: 0.5mm;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .baseline-svg {
+    width: 100%;
+    height: 30mm;
+    display: block;
+  }
+
+  /* Mathematical Engine Card */
+  .math-card {
+    background: #f8fafc;
+    border: 1.5px solid #0f2942;
+    border-radius: 4px;
+    padding: 1.2mm 1.8mm;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8mm;
+  }
+
+  .math-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px dashed #cbd5e1;
+    padding-bottom: 0.5mm;
+  }
+
+  .math-equation {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: "Cambria Math", "Times New Roman", serif;
+    font-size: 11pt;
+    font-weight: 700;
+    color: #0f2942;
+  }
+
+  .fraction {
+    display: inline-flex;
+    flex-direction: column;
+    vertical-align: middle;
+    text-align: center;
+    padding: 0 3px;
+  }
+
+  .fraction .numerator {
+    border-bottom: 1.8px solid #0f2942;
+    padding-bottom: 1px;
+    font-size: 8.8pt;
+    font-weight: 700;
+  }
+
+  .fraction .denominator {
+    padding-top: 1px;
+    font-size: 8.8pt;
+    font-weight: 700;
+  }
+
+  .z-badge {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #990000;
+    font-size: 6.4pt;
+    font-weight: 800;
+    padding: 0.3mm 1.2mm;
+    border-radius: 2px;
+  }
+
+  .math-details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1mm;
+    font-size: 6.6pt;
+  }
+
+  .math-step {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 3px;
+    padding: 0.8mm 1.1mm;
+    line-height: 1.24;
+  }
+
+  /* Multipliers 2x3 Grid */
+  .synergy-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.9mm;
+  }
+
+  .synergy-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 3px;
+    padding: 0.7mm 1.1mm;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .synergy-label { font-size: 6.4pt; font-weight: 700; color: #0f2942; }
+  .synergy-val   { font-size: 6.3pt; font-weight: 800; color: #990000; font-family: monospace; white-space: nowrap; }
+
+  /* Condensed Secondary Environmental & Herd Contagion Note */
+  .secondary-note-box {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 3px;
+    padding: 0.9mm 1.6mm;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5mm;
+    font-size: 6.1pt;
+    color: #334155;
+    line-height: 1.22;
+  }
+
+  .mono-code {
+    font-family: monospace;
+    font-weight: 700;
+    color: #0f766e;
+  }
+
+  /* ==========================================================================
+     COLUMN 3: REAL-TIME DIGITAL TWIN, VERIFICATION & SCOPE
+     ========================================================================== */
+  .ui-mock-frame {
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #0f172a;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ui-bar {
+    background: #1e293b;
+    padding: 0.6mm 1.6mm;
+    display: flex;
+    align-items: center;
+    gap: 1mm;
+  }
+
+  .ui-dots { display: flex; gap: 0.7mm; }
+  .ui-dot { width: 1.6mm; height: 1.6mm; border-radius: 50%; }
+  .ui-title { font-size: 5.8pt; color: #94a3b8; font-family: monospace; flex: 1; text-align: center; }
+
+  .ui-img {
+    width: 100%;
+    height: 45mm;
+    object-fit: cover;
+    object-position: top;
+    display: block;
+  }
+
+  .verif-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 6.5pt;
+  }
+
+  .verif-table th {
+    background: #0f2942;
+    color: #ffffff;
+    font-weight: 700;
+    text-align: left;
+    padding: 1mm 1.4mm;
+    letter-spacing: 0.2px;
+  }
+
+  .verif-table td {
+    padding: 1mm 1.4mm;
+    border-bottom: 1px solid #e2e8f0;
+    color: #334155;
+    line-height: 1.20;
+  }
+
+  .verif-table tr:nth-child(even) td { background: #f8fafc; }
+
+  .v-assertion {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+    font-weight: 800;
+    padding: 0.2mm 0.8mm;
+    border-radius: 2px;
+    font-size: 5.4pt;
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  .v-proto {
+    background: #f0fdf4;
+    color: #047857;
+    border: 1px solid #a7f3d0;
+    font-weight: 800;
+    padding: 0.2mm 0.8mm;
+    border-radius: 2px;
+    font-size: 5.4pt;
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  .v-source {
+    background: #eff6ff;
+    color: #1d4ed8;
+    border: 1px solid #bfdbfe;
+    font-weight: 800;
+    padding: 0.2mm 0.8mm;
+    border-radius: 2px;
+    font-size: 5.4pt;
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  .v-pending {
+    background: #fffbeb;
+    color: #b45309;
+    border: 1px solid #fde68a;
+    font-weight: 800;
+    padding: 0.2mm 0.8mm;
+    border-radius: 2px;
+    font-size: 5.4pt;
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  .benchmark-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.1mm;
+    margin-top: 0.4mm;
+  }
+
+  .benchmark-item {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 3px;
+    padding: 1.1mm 0.8mm;
+    text-align: center;
+  }
+
+  .benchmark-val {
+    font-size: 8.5pt;
+    font-weight: 900;
+    color: #0f2942;
+    font-family: monospace;
+  }
+
+  .benchmark-lbl {
+    font-size: 5.4pt;
+    color: #64748b;
+    font-weight: 700;
+    text-transform: uppercase;
+    margin-top: 0.3mm;
+  }
+
+  .repo-card-box {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 3px;
+    padding: 1.2mm 1.8mm;
+    display: flex;
+    align-items: center;
+    gap: 2mm;
+    min-width: 44mm;
+  }
+
+  .repo-qr-img {
+    width: 11mm;
+    height: 11mm;
+    object-fit: contain;
+    border: 1px solid #e2e8f0;
+    border-radius: 2px;
+    display: block;
+    flex-shrink: 0;
+  }
+
+  .repo-text-block {
+    font-size: 6pt;
+    color: #475569;
+    line-height: 1.22;
+  }
+
+  .repo-text-block strong { color: #0f2942; }
+
+  /* ==========================================================================
+     GLOBAL FOOTER: COMPACT REFERENCE & QUALIFICATION LINE (~5.5 MM)
+     ========================================================================== */
+  .poster-footer {
+    height: 5.5mm;
+    padding: 0.5mm 9mm 1.5mm 9mm;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    border-top: 1px solid #e2e8f0;
+    background: #fafcff;
+  }
+
+  .footer-ref {
+    width: 100%;
+    font-size: 5.7pt;
+    color: #64748b;
+    line-height: 1.25;
+  }
+
+  .footer-ref strong {
+    color: #0f2942;
+  }
+</style>
+</head>
+<body>
+
+  <!-- ========================================================================
+       TOP BANNER: 2-TIER COMPACT ARCHITECTURE (~49 MM TOTAL)
+       ======================================================================== -->
+  <header>
+    <!-- Row 1: Institutional Logos Justified Left, Center & Right -->
+    <div class="inst-row">
+      <div class="inst-left">
+        <img src="rnsit_logo.png" class="brand-logo logo-rnsit" alt="RNS Institute of Technology">
+        <div class="brand-sep"></div>
+        <img src="vtu_logo.png" class="brand-logo logo-vtu" alt="Visvesvaraya Technological University">
+      </div>
+      <div class="inst-center">
+        <img src="rnsit_dept_banner.png" class="brand-banner" alt="RNS Institute of Technology - Department of Computer Science & Engineering">
+      </div>
+      <div class="inst-right">
+        <img src="rnsit_25_logo.png" class="brand-logo logo-25" alt="RNSIT 25 Years">
+      </div>
+    </div>
+
+    <!-- Row 2: Project Title, Subtitle, Team & Guide Panels -->
+    <div class="title-meta-row">
+      <div class="title-box">
+        <div class="project-title-line">
+          <span class="project-acronym">M.A.V.I.S.</span>
+          <span class="project-fullname">Multi-Modal Animal Vitality Intelligence System</span>
+        </div>
+        <div class="project-subtitle">
+          An IoT-Enabled Smart Collar &amp; Statistical Digital Twin for Livestock Health Monitoring and Early Anomaly Screening
+        </div>
+      </div>
+
+      <div class="header-meta">
+        <div class="meta-card">
+          <h4>Project Team <span>(CSE)</span></h4>
+          <div class="students-grid">
+            <span class="s-name">Akash Gowda S</span><span class="s-usn">1RN23CS019</span>
+            <span class="s-name">Chirag H S</span><span class="s-usn">1RN23CS059</span>
+            <span class="s-name">Dheemanth D</span><span class="s-usn">1RN23CS072</span>
+            <span class="s-name">Dheemanth P</span><span class="s-usn">1RN23CS073</span>
+          </div>
+        </div>
+
+        <div class="meta-card">
+          <h4>Under the Guidance of</h4>
+          <div class="guide-box">
+            <span class="g-name">Dr. Hemanth S</span>
+            <span class="g-role">Professor</span>
+            <span class="g-dept">Dept. of CSE, RNSIT</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       MAIN POSTER: 3-COLUMN ACADEMIC ENGINEERING LAYOUT
+       ======================================================================== -->
+  <main>
+
+    <!-- ======================================================================
+         COLUMN 1: PHYSICAL HARDWARE & EDGE SENSING DSP
+         ====================================================================== -->
+    <div class="column">
+      
+      <!-- Panel 1.1: Problem Statement & Objectives -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-num crimson">01</span>
+          <span class="panel-title">Problem Statement &amp; Objectives</span>
+        </div>
+
+        <!-- Problem Statement Card (from PPT) -->
+        <div class="problem-card">
+          <div class="problem-lead">
+            Conventional animal health monitoring relies on manual and fragmented methods:
+          </div>
+          <div class="problem-bullets">
+            <div class="p-bullet">
+              <span class="p-bullet-dot"></span>
+              <div><strong>Infrequent Manual Checks:</strong> Visual inspections fail to catch rapid physiological changes between checks.</div>
+            </div>
+            <div class="p-bullet">
+              <span class="p-bullet-dot"></span>
+              <div><strong>Flawed Static Thresholds:</strong> Generic limits cause false alarms and miss subtle individual anomalies.</div>
+            </div>
+            <div class="p-bullet">
+              <span class="p-bullet-dot"></span>
+              <div><strong>Unnoticed Contagion &amp; Cloud Dependency:</strong> Isolated monitoring misses herd outbreaks, while remote farms lack reliable internet.</div>
+            </div>
+          </div>
+          <div class="problem-conclusion">
+            <strong>Engineering Need:</strong> A low-cost, local-first IoT system delivering continuous, personalized, and real-time vitality monitoring.
+          </div>
+        </div>
+
+        <!-- Project Objectives (from PPT) -->
+        <div class="obj-header">Project Objectives</div>
+        <div class="objectives-list">
+          <div class="objective-item">
+            <div class="obj-badge">1</div>
+            <div class="obj-text"><strong>Wearable IoT Collar &amp; Ingestion:</strong> ESP32 collar integrating MAX30102, DS18B20, and MPU6050 for continuous vitals capture with 3-second JSON streaming.</div>
+          </div>
+          <div class="objective-item">
+            <div class="obj-badge">2</div>
+            <div class="obj-text"><strong>Adaptive Baseline &amp; Circadian Rules:</strong> Maintain personalized baseline profiles via rolling EMA (α = 0.05) and multi-modal risk normalization.</div>
+          </div>
+          <div class="objective-item">
+            <div class="obj-badge">3</div>
+            <div class="obj-text"><strong>Herd Contagion &amp; Alert Engine:</strong> Correlate simultaneous febrile spikes across co-located animals to flag contagion with automated alert lifecycle management.</div>
+          </div>
+          <div class="objective-item">
+            <div class="obj-badge">4</div>
+            <div class="obj-text"><strong>Interactive Digital Twin Dashboard:</strong> Deliver real-time web telemetry streaming, digital twin visualization, 24h historical trends, and exportable audit reports.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel 1.2: Collar Circuit & Hardware Architecture -->
+      <div class="panel panel-distribute" style="flex: 1;">
+        <div class="panel-header">
+          <span class="panel-num navy">02</span>
+          <span class="panel-title">Collar Hardware &amp; Sensor Subsystem</span>
+        </div>
+
+        <!-- SVG Vector Circuit & Pinout Block Diagram -->
+        <div class="schematic-box">
+          <div class="schematic-title">
+            <span>Embedded Hardware Schematic (ESP32 Xtensa Dual-Core)</span>
+            <span style="font-family: monospace; font-size: 6.2pt; color: #0f766e;">100 Hz sensor task (nominal 10 ms loop)</span>
+          </div>
+          <svg class="schematic-svg" viewBox="0 0 460 156" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="460" height="156" rx="4" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+
+            <!-- ESP32 Main MCU -->
+            <rect x="175" y="8" width="110" height="140" rx="5" fill="#0f2942" stroke="#1e3a8a" stroke-width="1.5"/>
+            <text x="230" y="24" fill="#ffffff" font-size="9" font-weight="800" text-anchor="middle" font-family="sans-serif">ESP32-WROOM</text>
+            <text x="230" y="34" fill="#38bdf8" font-size="6.4" font-weight="700" text-anchor="middle" font-family="sans-serif">Xtensa 32-bit Dual-Core</text>
+
+            <!-- Dual Core Divisions -->
+            <rect x="183" y="41" width="94" height="42" rx="3" fill="#1e293b"/>
+            <text x="230" y="53" fill="#a7f3d0" font-size="6.5" font-weight="700" text-anchor="middle" font-family="sans-serif">CORE 1: DSP Engine</text>
+            <text x="230" y="64" fill="#94a3b8" font-size="5.8" text-anchor="middle" font-family="sans-serif">100Hz Sensor Polling</text>
+            <text x="230" y="74" fill="#94a3b8" font-size="5.8" text-anchor="middle" font-family="sans-serif">O(1) Running SMA Buffers</text>
+
+            <rect x="183" y="89" width="94" height="52" rx="3" fill="#1e293b"/>
+            <text x="230" y="101" fill="#fde68a" font-size="6.5" font-weight="700" text-anchor="middle" font-family="sans-serif">CORE 0: Comms Stack</text>
+            <text x="230" y="112" fill="#94a3b8" font-size="5.8" text-anchor="middle" font-family="sans-serif">Wi-Fi 802.11 b/g/n Client</text>
+            <text x="230" y="122" fill="#94a3b8" font-size="5.8" text-anchor="middle" font-family="sans-serif">FreeRTOS Mailbox Queue</text>
+            <text x="230" y="132" fill="#94a3b8" font-size="5.8" text-anchor="middle" font-family="sans-serif">Auto-Provisioning Web Portal</text>
+
+            <!-- Left Sensor: DS18B20 -->
+            <rect x="12" y="10" width="125" height="39" rx="3" fill="#f8fafc" stroke="#3b82f6" stroke-width="1.2"/>
+            <text x="20" y="23" fill="#0f2942" font-size="7.2" font-weight="800" font-family="sans-serif">DS18B20 1-Wire Probe</text>
+            <text x="20" y="33" fill="#475569" font-size="6" font-family="sans-serif">Waterproof Collar Surface Probe</text>
+            <text x="20" y="42" fill="#1d4ed8" font-size="5.8" font-family="monospace">±0.5°C Sensor Rating (Probe Temp)</text>
+            <path d="M137 30 L175 30" stroke="#3b82f6" stroke-width="1.5" stroke-dasharray="3,2"/>
+            <text x="156" y="26" fill="#1d4ed8" font-size="5.5" font-weight="700" text-anchor="middle" font-family="monospace">GPIO 4</text>
+
+            <!-- Left Sensor: MAX30102 -->
+            <rect x="12" y="57" width="125" height="41" rx="3" fill="#f8fafc" stroke="#0f766e" stroke-width="1.2"/>
+            <text x="20" y="70" fill="#0f2942" font-size="7.2" font-weight="800" font-family="sans-serif">MAX30102 Optical PPG</text>
+            <text x="20" y="80" fill="#475569" font-size="6" font-family="sans-serif">Red (660nm) &amp; IR (880nm)</text>
+            <text x="20" y="90" fill="#0f766e" font-size="5.8" font-family="monospace">Pulse HR • Optical SpO2 • PRV RMSSD</text>
+            <path d="M137 78 L175 78" stroke="#0f766e" stroke-width="1.5"/>
+            <text x="156" y="74" fill="#0f766e" font-size="5.5" font-weight="700" text-anchor="middle" font-family="monospace">I2C 21/22</text>
+
+            <!-- Left Sensor: MPU6050 -->
+            <rect x="12" y="106" width="125" height="39" rx="3" fill="#f8fafc" stroke="#990000" stroke-width="1.2"/>
+            <text x="20" y="119" fill="#0f2942" font-size="7.2" font-weight="800" font-family="sans-serif">MPU6050 6-Axis IMU</text>
+            <text x="20" y="129" fill="#475569" font-size="6" font-family="sans-serif">Acc + Gyro Triple-Axis</text>
+            <text x="20" y="138" fill="#990000" font-size="5.8" font-family="monospace">Motion • Recumbency • Rumination</text>
+            <path d="M137 126 L175 126" stroke="#990000" stroke-width="1.5"/>
+            <text x="156" y="126" fill="#990000" font-size="5.5" font-weight="700" text-anchor="middle" font-family="monospace">I2C 21/22</text>
+
+            <!-- Right: Power Subsystem -->
+            <rect x="325" y="14" width="122" height="42" rx="3" fill="#fffbeb" stroke="#d97706" stroke-width="1.2"/>
+            <text x="333" y="28" fill="#92400e" font-size="7.2" font-weight="800" font-family="sans-serif">Power &amp; Battery Fuel</text>
+            <text x="333" y="39" fill="#78350f" font-size="6" font-family="sans-serif">3.7 V LiPo battery</text>
+            <text x="333" y="49" fill="#b45309" font-size="5.8" font-family="monospace">2:1 Divider -&gt; GPIO 34 ADC</text>
+            <path d="M285 35 L325 35" stroke="#d97706" stroke-width="1.5"/>
+            <text x="305" y="31" fill="#d97706" font-size="5.5" font-weight="700" text-anchor="middle" font-family="monospace">GPIO 34</text>
+
+            <!-- Right: I2C Auto-Recovery Routine -->
+            <rect x="325" y="66" width="122" height="40" rx="3" fill="#f1f5f9" stroke="#64748b" stroke-width="1.2"/>
+            <text x="333" y="79" fill="#0f2942" font-size="7.2" font-weight="800" font-family="sans-serif">I2C Bus Recovery</text>
+            <text x="333" y="90" fill="#475569" font-size="6" font-family="sans-serif">9-Clock Recovery Routine</text>
+            <text x="333" y="100" fill="#0f766e" font-size="5.8" font-family="monospace">For SDA-Low Condition</text>
+            <path d="M285 86 L325 86" stroke="#64748b" stroke-width="1.5" stroke-dasharray="3,2"/>
+            <text x="305" y="82" fill="#64748b" font-size="5.5" font-weight="700" text-anchor="middle" font-family="monospace">SCL Pulses</text>
+
+            <!-- Right: Radio Wi-Fi Output -->
+            <rect x="325" y="116" width="122" height="29" rx="3" fill="#f0fdfa" stroke="#0f766e" stroke-width="1.2"/>
+            <text x="386" y="134" fill="#0f766e" font-size="7" font-weight="800" text-anchor="middle" font-family="sans-serif">📡 Wi-Fi REST JSON (~3s)</text>
+            <path d="M285 130 L325 130" stroke="#0f766e" stroke-width="1.5"/>
+          </svg>
+        </div>
+
+        <!-- Streamlined Sensor & DSP Specifications (No Duplication) -->
+        <div class="sensor-spec-table">
+          <div class="spec-row">
+            <div class="spec-cell"><span class="spec-tag navy">DS18B20</span> <strong>Surface Temp (GPIO 4):</strong> Non-blocking 1-Wire interface with background conversion; ±0.5°C rated.</div>
+            <div class="spec-cell"><span class="spec-tag teal">MAX30102</span> <strong>Optical PPG (I²C 21/22):</strong> Dual Red/IR absorption yields pulse HR, uncalibrated optical SpO₂, and PRV RMSSD.</div>
+          </div>
+          <div class="spec-row">
+            <div class="spec-cell"><span class="spec-tag crimson">MPU6050</span> <strong>6-Axis IMU (I²C 21/22):</strong> Tri-axial accelerometer &amp; gyro tracks activity (|a| &gt; 12 m/s²), head-shaking, and rest.</div>
+            <div class="spec-cell"><span class="spec-tag amber">RUMINATION</span> <strong>Chew Cadence (Gyro-Z):</strong> Zero-crossing oscillation frequency (30–80 CPM) flags rumination cessation.</div>
+          </div>
+        </div>
+
+        <!-- Firmware DSP Algorithms -->
+        <div class="dsp-flow-box">
+          <div class="dsp-row">
+            <span class="dsp-badge">10-SAMPLE MOVING AVERAGE</span>
+            <span>10-sample moving average smooths short-term fluctuations in sensor readings in constant time without heap fragmentation.</span>
+          </div>
+          <div class="dsp-row">
+            <span class="dsp-badge">MOTION ARTIFACT GATING</span>
+            <span>Discards optical pulse calculations during vigorous movement (|a| &gt; 15 m/s²), suppressing motion-induced pulse spikes.</span>
+          </div>
+          <div class="dsp-row">
+            <span class="dsp-badge">I²C BUS AUTO-RECOVERY</span>
+            <span>Bit-bangs a 9-clock SCL recovery pulse train to release an SDA-low bus hang without resetting the microcontroller.</span>
+          </div>
+        </div>
+
+        <div class="caveat-banner">
+          <strong>Measurement Qualifications:</strong> Surface probe reflects skin-contact interface rather than core rectal vitals; SpO₂ is an uncalibrated optical Beer-Lambert proxy; respiratory rate is derived via cardiorespiratory coupling (HR/4 + motion).
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ======================================================================
+         COLUMN 2: ARCHITECTURE PIPELINE & STATISTICAL SCREENING
+         ====================================================================== -->
+    <div class="column">
+      
+      <!-- Panel 2.1: System Architecture & Telemetry Pipeline -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-num teal">03</span>
+          <span class="panel-title">System Architecture &amp; Telemetry Pipeline</span>
+        </div>
+
+        <!-- High-Resolution Enlarged 5-Tier Architecture Diagram -->
+        <div class="flow-card">
+          <img class="flow-img" src="architecture.png" alt="M.A.V.I.S. 5-Tier System Architecture & Data Pipeline">
+        </div>
+      </div>
+
+      <!-- Panel 2.2: Adaptive Baseline Response to an Anomalous Reading -->
+      <div class="panel panel-distribute" style="flex: 1;">
+        <div class="panel-header">
+          <span class="panel-num crimson">04</span>
+          <span class="panel-title">Adaptive Baseline Response to an Anomalous Reading</span>
+        </div>
+
+        <!-- SVG Graph: Illustrative Anomaly Isolation -->
+        <div class="baseline-graph-box">
+          <div class="baseline-graph-title">
+            <span>Adaptive Baseline Response to an Anomalous Reading</span>
+            <span style="color: #64748b; font-family: sans-serif; font-size: 6.2pt; font-style: italic;">Illustrative example — not recorded livestock data</span>
+          </div>
+          <svg class="baseline-svg" viewBox="0 0 530 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="530" height="130" rx="3" fill="#fafcff" stroke="#e2e8f0" stroke-width="1"/>
+
+            <!-- Grid Lines & Y-Axis Labels -->
+            <line x1="45" y1="18" x2="515" y2="18" stroke="#f1f5f9" stroke-width="1"/>
+            <line x1="45" y1="42" x2="515" y2="42" stroke="#f1f5f9" stroke-width="1"/>
+            <line x1="45" y1="72" x2="515" y2="72" stroke="#e2e8f0" stroke-width="1"/>
+            <line x1="45" y1="102" x2="515" y2="102" stroke="#f1f5f9" stroke-width="1"/>
+
+            <text x="38" y="21" fill="#dc2626" font-size="6.5" font-weight="700" text-anchor="end" font-family="monospace">41.0°C</text>
+            <text x="38" y="45" fill="#d97706" font-size="6.5" font-weight="700" text-anchor="end" font-family="monospace">39.5°C</text>
+            <text x="38" y="75" fill="#0f766e" font-size="6.5" font-weight="700" text-anchor="end" font-family="monospace">38.5°C</text>
+            <text x="38" y="105" fill="#64748b" font-size="6.5" font-weight="700" text-anchor="end" font-family="monospace">37.5°C</text>
+
+            <!-- Time Labels -->
+            <text x="50" y="121" fill="#94a3b8" font-size="6" font-family="monospace">00:00</text>
+            <text x="140" y="121" fill="#94a3b8" font-size="6" font-family="monospace">06:00</text>
+            <text x="230" y="121" fill="#94a3b8" font-size="6" font-family="monospace">12:00</text>
+            <text x="330" y="121" fill="#94a3b8" font-size="6" font-family="monospace">16:00 (Fever Spike)</text>
+            <text x="440" y="121" fill="#94a3b8" font-size="6" font-family="monospace">20:00</text>
+            <text x="510" y="121" fill="#94a3b8" font-size="6" font-family="monospace">24:00</text>
+
+            <!-- Normal Reference Band (38.2 to 38.8) -->
+            <rect x="45" y="65" width="470" height="16" fill="#ecfdf5" opacity="0.6"/>
+            <text x="55" y="77" fill="#059669" font-size="5.8" font-weight="700" font-family="sans-serif">NORMAL INDIVIDUAL BASELINE REFERENCE BAND</text>
+
+            <!-- Curve 1: Adaptive Baseline B_t -->
+            <path d="M45,77 C100,81 150,72 220,69 C280,67 320,67 380,68 C430,70 480,74 515,76" fill="none" stroke="#0f766e" stroke-width="2.2" stroke-dasharray="4,2"/>
+            <text x="110" y="64" fill="#0f766e" font-size="6.2" font-weight="800" font-family="sans-serif">Adaptive Baseline B(t) [α = 0.05]</text>
+
+            <!-- Curve 2: Observed Temperature with Acute Spike -->
+            <path d="M45,79 Q80,82 130,74 T210,70 T280,69 L320,67 L340,22 L370,20 L390,67 L450,71 T515,77" fill="none" stroke="#dc2626" stroke-width="2"/>
+            <circle cx="355" cy="21" r="3.5" fill="#dc2626"/>
+            <text x="355" y="14" fill="#dc2626" font-size="6.8" font-weight="900" text-anchor="middle" font-family="sans-serif">SPIKE: 40.8°C (Screening Flag)</text>
+
+            <!-- Anomaly Isolation Callout -->
+            <rect x="325" y="38" width="84" height="23" rx="2" fill="#fff1f2" stroke="#fecdd3" stroke-width="1"/>
+            <text x="367" y="47" fill="#991b1b" font-size="5.6" font-weight="800" text-anchor="middle" font-family="sans-serif">BASELINE ISOLATION</text>
+            <text x="367" y="56" fill="#991b1b" font-size="5.1" text-anchor="middle" font-family="sans-serif">Updates Skipped (Prevents Contamination)</text>
+          </svg>
+        </div>
+
+        <!-- Mathematical Formula Card -->
+        <div class="math-card">
+          <div class="math-header-row">
+            <div class="math-equation">
+              <span>z =</span>
+              <div class="fraction">
+                <span class="numerator">|X<sub>t</sub> − B<sub>t</sub>|</span>
+                <span class="denominator">max(σ<sub>Welford</sub>, σ<sub>min</sub>)</span>
+              </div>
+            </div>
+            <div class="z-badge">
+              SCREENING CRITERION: z ≥ 2.5 (Configured Statistical Cutoff)
+            </div>
+          </div>
+
+          <div class="math-details-grid">
+            <div class="math-step">
+              <strong>1. Baseline Initialization (N = 10):</strong> First 10 valid ingested readings compute initial arithmetic mean: B<sub>0</sub> = (∑ X) / 10. Assumes initial resting state.
+            </div>
+            <div class="math-step">
+              <strong>2. Adaptive EMA Drift (α = 0.05):</strong> B<sub>t</sub> = 0.05·X<sub>t</sub> + 0.95·B<sub>t−1</sub> tracks gradual drift when readings pass screening checks.
+            </div>
+            <div class="math-step">
+              <strong>3. Welford's Single-Pass (M2):</strong> Iterative single-pass variance estimator calculates standard deviation σ = √(M2 / (n−1)) in O(1) memory.
+            </div>
+            <div class="math-step">
+              <strong>4. Baseline Contamination Guard:</strong> If z ≥ 2.5 or absolute limits fail, alert fires and baseline updates are skipped to protect reference integrity.
+            </div>
+          </div>
+        </div>
+
+        <!-- Heuristic Risk Score Multipliers (from calculateRiskScore.js) -->
+        <div style="font-size: 7.2pt; font-weight: 800; color: #0f2942; margin-top: 0.1mm;">
+          Heuristic Risk-Score Multipliers (calculateRiskScore.js — Not Diagnostic Probabilities):
+        </div>
+        <div class="synergy-grid">
+          <div class="synergy-card">
+            <span class="synergy-label">Fever + Rumination Cessation</span>
+            <span class="synergy-val">1.65× Multiplier</span>
+          </div>
+          <div class="synergy-card">
+            <span class="synergy-label">Fever + Low Motion / Recumbency</span>
+            <span class="synergy-val">1.50× Multiplier</span>
+          </div>
+          <div class="synergy-card">
+            <span class="synergy-label">Critical Heart Rate + Critical Low Oxygen</span>
+            <span class="synergy-val">1.40× Multiplier</span>
+          </div>
+          <div class="synergy-card">
+            <span class="synergy-label">Fever + Critical Heart Rate</span>
+            <span class="synergy-val">1.35× Multiplier</span>
+          </div>
+          <div class="synergy-card">
+            <span class="synergy-label">Critical Heart Rate + Head Shaking</span>
+            <span class="synergy-val">1.30× Multiplier</span>
+          </div>
+          <div class="synergy-card">
+            <span class="synergy-label">Critical Heart Rate at Rest, Without Fever</span>
+            <span class="synergy-val">1.25× Multiplier</span>
+          </div>
+        </div>
+
+        <!-- Condensed Secondary Environmental & Herd Contagion Note -->
+        <div class="secondary-note-box">
+          <div><strong>NRC Heat Stress Index (THI):</strong> <span class="mono-code">THI = (1.8·T + 32) − (0.55 − 0.0055·RH)·(1.8·T − 26)</span> — <em>Requires external barn RH data; collar lacks onboard humidity sensor.</em></div>
+          <div><strong>Spatial Herd Contagion Risk:</strong> <span class="mono-code">Risk_herd(i) = ∑ NeighborRisk_j · W_spec · W_zone</span> — <em>Proximity factor: shared pen (0.90) vs. quarantine (0.05).</em></div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- ======================================================================
+         COLUMN 3: LIVE DIGITAL TWIN, EMPIRICAL EVIDENCE & SCOPE
+         ====================================================================== -->
+    <div class="column">
+      
+      <!-- Panel 3.1: Live Digital Twin Interface -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-num teal">05</span>
+          <span class="panel-title">Real-Time Digital Twin Dashboard</span>
+        </div>
+
+        <!-- High-Res Live Dashboard Preview -->
+        <div class="ui-mock-frame">
+          <div class="ui-bar">
+            <div class="ui-dots">
+              <div class="ui-dot" style="background: #ef4444;"></div>
+              <div class="ui-dot" style="background: #f59e0b;"></div>
+              <div class="ui-dot" style="background: #10b981;"></div>
+            </div>
+            <div class="ui-title">MAVIS Web Dashboard • Simulated Telemetry Stream (React 19)</div>
+          </div>
+          <img src="digital-twin-monitor.png" alt="MAVIS Digital Twin Monitor" class="ui-img" onerror="this.src='digital-twin-monitor.png';">
+        </div>
+
+        <!-- Tier 1 Clinical Triage Matrix -->
+        <div style="background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 3px; padding: 1.4mm 2mm; margin-top: 0.8mm;">
+          <div style="font-size: 7.2pt; font-weight: 800; color: #6b21a8; margin-bottom: 0.6mm; display: flex; justify-content: space-between;">
+            <span>Deterministic Triage &amp; Inspection Rules (createEvaluator.js):</span>
+            <span style="font-family: monospace; font-size: 5.8pt;">Screening Rules (Not Clinical Diagnoses)</span>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.2mm; font-size: 6.5pt;">
+            <div style="background: #ffffff; padding: 1mm 1.4mm; border-radius: 2px; border: 1px solid #f3e8ff; line-height: 1.26;">
+              <strong style="color: #990000;">Febrile Rumen Cessation:</strong> Elevated temp + low chew count → Priority inspection of udder, rumen motility &amp; milk yield.
+            </div>
+            <div style="background: #ffffff; padding: 1mm 1.4mm; border-radius: 2px; border: 1px solid #f3e8ff; line-height: 1.26;">
+              <strong style="color: #990000;">Febrile Prolonged Inactivity:</strong> Elevated temp + continuous rest → Evaluate hydration, stall shade &amp; vital signs.
+            </div>
+            <div style="background: #ffffff; padding: 1mm 1.4mm; border-radius: 2px; border: 1px solid #f3e8ff; line-height: 1.26;">
+              <strong style="color: #b45309;">Cardiorespiratory Strain:</strong> Tachycardia + SpO2 proxy &lt; 90% → Perform thoracic check; verify barn airflow.
+            </div>
+            <div style="background: #ffffff; padding: 1mm 1.4mm; border-radius: 2px; border: 1px solid #f3e8ff; line-height: 1.26;">
+              <strong style="color: #0f766e;">Persistent Agitation:</strong> High angular velocity + elevated HR → Inspect ear canal and skin for parasite irritation.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel 3.2: Verification Status, Benchmarks & Scope -->
+      <div class="panel panel-distribute" style="flex: 1;">
+        <div class="panel-header">
+          <span class="panel-num crimson">06</span>
+          <span class="panel-title">Verification Status, Benchmarks &amp; Scope</span>
+        </div>
+
+        <table class="verif-table">
+          <thead>
+            <tr>
+              <th>Evaluation Focus</th>
+              <th>Implementation / Target</th>
+              <th>Observed / Tested Status</th>
+              <th>Evidence Level</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Decision Engine Latency</strong></td>
+              <td>calculateRiskScore.js local rules</td>
+              <td>Source includes a local timing assertion; not end-to-end latency.</td>
+              <td><span class="v-assertion">LOCAL TIMING ASSERTION (&lt;5ms)</span></td>
+            </tr>
+            <tr>
+              <td><strong>Edge Telemetry Cadence</strong></td>
+              <td>ESP32 FreeRTOS 100Hz DSP; ~3s POST</td>
+              <td>Firmware scheduler &amp; queue implemented</td>
+              <td><span class="v-proto">PROTOTYPE IMPLEMENTED</span></td>
+            </tr>
+            <tr>
+              <td><strong>Baseline Adaptation</strong></td>
+              <td>Welford M2 variance &amp; EMA (α = 0.05)</td>
+              <td>Implemented in source; focused test required.</td>
+              <td><span class="v-source">IMPLEMENTED IN SOURCE</span></td>
+            </tr>
+            <tr>
+              <td><strong>Outlier Isolation Guard</strong></td>
+              <td>Readings with z ≥ 2.5 skip baseline updates</td>
+              <td>Implemented in source; focused test required.</td>
+              <td><span class="v-source">IMPLEMENTED IN SOURCE</span></td>
+            </tr>
+            <tr>
+              <td><strong>Livestock Field Efficacy</strong></td>
+              <td>Real-world false-alarm rejection &amp; screening</td>
+              <td>Pending livestock field validation.</td>
+              <td><span class="v-pending">PENDING FIELD VALIDATION</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Measured Performance Benchmarks -->
+        <div class="benchmark-strip">
+          <div class="benchmark-item">
+            <div class="benchmark-val">&lt; 5 ms</div>
+            <div class="benchmark-lbl">Local Unit Timing</div>
+          </div>
+          <div class="benchmark-item">
+            <div class="benchmark-val">3.0 s</div>
+            <div class="benchmark-lbl">Ingestion Interval</div>
+          </div>
+          <div class="benchmark-item">
+            <div class="benchmark-val">N = 10</div>
+            <div class="benchmark-lbl">Baseline Window</div>
+          </div>
+          <div class="benchmark-item">
+            <div class="benchmark-val">z = 2.5</div>
+            <div class="benchmark-lbl">Screening Cutoff</div>
+          </div>
+        </div>
+
+        <!-- Conclusions & Future Scope with In-Panel Repo Badge -->
+        <div style="display: flex; flex-direction: column; gap: 1.2mm; margin-top: 0.8mm;">
+          <div style="background: #f8fafc; border: 1px solid #cbd5e1; border-left: 3px solid #0f766e; border-radius: 3px; padding: 1.3mm 1.8mm;">
+            <div style="font-size: 7.2pt; font-weight: 800; color: #0f2942; margin-bottom: 0.3mm;">
+              Prototype Engineering Summary:
+            </div>
+            <p style="font-size: 7pt; line-height: 1.32; margin: 0; color: #334155;">
+              The MAVIS prototype integrates multi-modal edge sensing with FreeRTOS DSP and dynamic statistical baselines, designed to screen physiological deviations while filtering transient motion spikes. While local unit timing assertions validate core decision speed, comprehensive livestock field validation across operational farm conditions remains to be conducted.
+            </p>
+          </div>
+
+          <div style="display: flex; gap: 2mm; align-items: stretch;">
+            <div style="flex: 1; background: #f8fafc; border: 1px solid #cbd5e1; border-left: 3px solid #990000; border-radius: 3px; padding: 1.2mm 1.8mm;">
+              <div style="font-size: 7pt; font-weight: 800; color: #0f2942; margin-bottom: 0.3mm;">
+                Limitations &amp; Future Scope:
+              </div>
+              <p style="font-size: 6.4pt; color: #475569; line-height: 1.26; margin: 0;">
+                • Livestock field trials to quantify sensitivity &amp; false-alarm rates.<br>
+                • Collar probe temp cross-calibration against internal core vitals.<br>
+                • Transition from Wi-Fi to Sub-GHz LoRaWAN mesh for kilometer-range pasture coverage.
+              </p>
+            </div>
+
+            <!-- In-Panel Open Source QR Badge -->
+            <div class="repo-card-box">
+              <img src="github_qr.png" alt="GitHub Repository QR" class="repo-qr-img" onerror="this.src='github_qr.png';">
+              <div class="repo-text-block">
+                <strong>Open-Source Repository:</strong><br>
+                github.com/Dheemanth07/M.A.V.I.S
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ========================================================================
+       GLOBAL FOOTER: COMPACT REFERENCE & QUALIFICATION LINE (~5.5 MM)
+       ======================================================================== -->
+  <footer class="poster-footer">
+    <div class="footer-ref">
+      <strong>References &amp; Sensor Specifications:</strong> DS18B20 ±0.5°C accuracy applies within −10°C to +85°C (Analog Devices datasheet) to collar surface contact, not core internal temperature. Relative humidity must be supplied externally for THI calculation. SpO₂ is an uncalibrated optical Beer-Lambert proxy; respiratory rate is derived via cardiorespiratory coupling.
+    </div>
+  </footer>
+
+</body>
+</html>

@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <title>M.A.V.I.S. System Architecture & Data Pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap');
-
   * {
     box-sizing: border-box;
     margin: 0;
@@ -19,14 +20,12 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 24px;
-    width: 1380px;
-    box-sizing: border-box;
+    padding: 6px 8px;
     margin: 0 auto;
   }
 
   .canvas {
-    width: 1344px;
+    width: 1320px;
     background: #ffffff;
     display: flex;
     flex-direction: column;
@@ -35,204 +34,262 @@
   /* Header */
   .header {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 12px;
   }
   .title {
     font-size: 26px;
     font-weight: 800;
-    color: #0f172a;
-    letter-spacing: -0.5px;
-    margin-bottom: 4px;
+    color: #0f2942;
+    letter-spacing: -0.4px;
+    margin-bottom: 5px;
   }
   .subtitle {
-    font-size: 13.5px;
+    font-size: 13px;
     font-weight: 500;
     color: #475569;
+    letter-spacing: 0.1px;
+  }
+  .subtitle span {
+    color: #0f766e;
+    font-weight: 600;
   }
 
   /* Main Flow Container */
   .pipeline-grid {
     display: grid;
-    grid-template-columns: 215px 44px 210px 44px 235px 46px 210px 56px 215px;
+    grid-template-columns: 220px 42px 220px 42px 230px 42px 220px 48px 220px;
     align-items: stretch;
   }
 
+  /* Unified Card Base */
   .stage-card {
     background: #ffffff;
-    border-radius: 12px;
-    padding: 16px 13px 13px;
+    border-radius: 10px;
+    padding: 12px 11px 9px;
     border: 1.5px solid;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    height: 435px;
-    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.03), 0 2px 4px -2px rgba(0,0,0,0.03);
-    position: relative;
+    height: 410px;
+    box-shadow: 0 2px 5px -1px rgba(15, 23, 42, 0.05), 0 1px 3px -1px rgba(15, 23, 42, 0.03);
     box-sizing: border-box;
-  }
-
-  /* Stage Color Coding */
-  .stage-blue   { border-color: #3b82f6; background: #fafcff; }
-  .stage-cyan   { border-color: #0284c7; background: #f8fbfe; }
-  .stage-purple { border-color: #8b5cf6; background: #faf9fe; }
-  .stage-emerald{ border-color: #10b981; background: #f7fdfa; }
-  .stage-slate  { border-color: #0d9488; background: #f4fbf9; }
-
-  .stage-badge {
-    display: inline-block;
-    font-size: 9.5px;
-    font-weight: 800;
-    letter-spacing: 0.6px;
-    text-transform: uppercase;
-    margin-bottom: 7px;
-    padding: 3px 7px;
-    border-radius: 6px;
-    align-self: flex-start;
-  }
-
-  .badge-blue    { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
-  .badge-amber   { background: #fffbeb; color: #b45309; border: 1px solid #fde68a; }
-  .badge-cyan    { background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; }
-  .badge-purple  { background: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe; }
-  .badge-emerald { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
-  .badge-slate   { background: #f0fdfa; color: #0f766e; border: 1px solid #99f6e4; }
-
-  .stage-title {
-    font-size: 14.5px;
-    font-weight: 800;
-    color: #0f172a;
-    line-height: 1.25;
-    margin-bottom: 10px;
-  }
-
-  .items-list {
-    display: flex;
-    flex-direction: column;
-    gap: 9px;
-    flex-grow: 1;
-  }
-
-  .item-box {
-    background: #ffffff;
-    border-radius: 8px;
-    padding: 9px 9px;
-    border: 1px solid #e2e8f0;
-    font-size: 11px;
-    color: #334155;
-    line-height: 1.38;
-  }
-
-  .item-box strong {
-    color: #0f172a;
-    display: block;
-    font-size: 11.5px;
-    margin-bottom: 2px;
-  }
-
-  .stage-footer {
-    margin-top: 10px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
-    font-weight: 600;
-    color: #64748b;
-    padding-top: 7px;
-    border-top: 1px dashed #e2e8f0;
-    white-space: nowrap;
-  }
-
-  /* Connectors */
-  .flow-arrow {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    color: #64748b;
-    font-size: 8.5px;
-    font-weight: 600;
-    text-align: center;
-  }
-
-  .flow-arrow svg {
-    color: #94a3b8;
   }
 
   /* Split Dual-Box Columns */
   .dual-stage {
     display: flex;
     flex-direction: column;
-    gap: 11px;
-    height: 435px;
-    justify-content: space-between;
+    gap: 12px;
+    height: 410px;
+    box-sizing: border-box;
   }
 
   .sub-card {
     background: #ffffff;
     border-radius: 10px;
-    padding: 13px 12px;
+    padding: 10px 10px 8px;
     border: 1.5px solid;
-    height: 212px;
+    flex: 1;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    box-shadow: 0 2px 4px -1px rgba(0,0,0,0.03);
+    box-shadow: 0 2px 4px -1px rgba(15, 23, 42, 0.04);
     box-sizing: border-box;
   }
 
-  .sub-hw    { border-color: #3b82f6; background: #fafcff; }
-  .sub-sim   { border-color: #f59e0b; background: #fffdfa; }
-  .sub-db    { border-color: #10b981; background: #f7fdfa; }
-  .sub-event { border-color: #0284c7; background: #f8fbfe; }
+  /* Card Color Schemes - Refined Academic Palette */
+  .card-collar    { border-color: #0f766e; background: #fafdfc; }
+  .card-daemon    { border-color: #d97706; background: #fffdf9; }
+  .card-gateway   { border-color: #0284c7; background: #fafcfe; }
+  .card-engine    { border-color: #4f46e5; background: #fafaff; }
+  .card-db        { border-color: #059669; background: #f9fdfb; }
+  .card-socket    { border-color: #0284c7; background: #f9fcfe; }
+  .card-client    { border-color: #0f2942; background: #fafbfa; }
 
-  /* Dual connector between stage 4 and 5: top has no arrow (terminal sink), bottom has WebSocket push */
-  .dual-connector {
-    display: flex;
-    flex-direction: column;
-    height: 435px;
-    justify-content: space-between;
+  /* Badges */
+  .stage-badge {
+    display: inline-block;
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    padding: 2.5px 7px;
+    border-radius: 4px;
+    align-self: flex-start;
   }
 
-  .connector-sink {
-    height: 212px;
+  .badge-collar  { background: #e6fffa; color: #0f766e; border: 1px solid #99f6e4; }
+  .badge-daemon  { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+  .badge-gateway { background: #f0f9ff; color: #0369a1; border: 1px solid #bae6fd; }
+  .badge-engine  { background: #eef2ff; color: #3730a3; border: 1px solid #c7d2fe; }
+  .badge-db      { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
+  .badge-socket  { background: #f0f9ff; color: #0284c7; border: 1px solid #bae6fd; }
+  .badge-client  { background: #f1f5f9; color: #0f2942; border: 1px solid #cbd5e1; }
+
+  .card-heading {
+    font-size: 14.5px;
+    font-weight: 800;
+    color: #0f2942;
+    line-height: 1.25;
+    margin-bottom: 5px;
+  }
+
+  /* Items List & Content Boxes */
+  .items-list {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    flex-grow: 1;
+    justify-content: flex-start;
+  }
+
+  .item-box {
+    background: #ffffff;
+    border-radius: 6px;
+    padding: 7px 8.5px;
+    border: 1px solid #e2e8f0;
+    font-size: 10.8px;
+    color: #334155;
+    line-height: 1.35;
+  }
+
+  .item-box strong {
+    color: #0f2942;
+    display: block;
+    font-size: 11.8px;
+    margin-bottom: 2px;
+  }
+
+  .item-box code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.8px;
+    background: #f1f5f9;
+    padding: 1px 4.5px;
+    border-radius: 3px;
+    color: #0f766e;
+    font-weight: 600;
+  }
+
+  /* Sensor Bullets in Collar & Daemon Cards */
+  .sensor-bullets {
+    display: flex;
+    flex-direction: column;
+    gap: 4.5px;
+    font-size: 10.5px;
+    color: #334155;
+    line-height: 1.3;
+    flex-grow: 1;
+    justify-content: center;
+  }
+  .sensor-bullet-item {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 5px;
+    padding: 5px 7.5px;
+  }
+  .sensor-bullet-item strong {
+    color: #0f2942;
+    font-weight: 700;
+  }
+
+  /* AI Sidecar Chip */
+  .sidecar-chip {
+    background: #fdf4ff;
+    border: 1px dashed #d8b4fe;
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 10.2px;
+    color: #6b21a8;
+    line-height: 1.3;
+  }
+  .sidecar-chip strong {
+    color: #581c87;
+    display: block;
+    font-size: 11px;
+    margin-bottom: 1.5px;
+  }
+  .sidecar-chip code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.4px;
+    background: #fae8ff;
+    padding: 1px 3.5px;
+    border-radius: 2px;
+    color: #6b21a8;
+  }
+
+  /* Card Bottom Metadata Strip */
+  .card-footer {
+    margin-top: 5px;
+    font-size: 9.5px;
+    font-weight: 700;
+    color: #64748b;
+    padding-top: 4px;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .card-footer-mono {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9.2px;
+  }
+
+  .flow-arrow {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    color: #94a3b8;
+    gap: 4px;
+    color: #475569;
+    font-size: 9px;
+    font-weight: 700;
+    text-align: center;
+    line-height: 1.15;
+  }
+
+  .flow-arrow svg {
+    color: #0f766e;
+  }
+
+  .dual-connector {
+    display: flex;
+    flex-direction: column;
+    height: 410px;
+    box-sizing: border-box;
+    justify-content: space-between;
+  }
+
+  .connector-sink {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #64748b;
     font-size: 8px;
-    font-weight: 600;
+    font-weight: 700;
     text-align: center;
     gap: 3px;
+    line-height: 1.15;
   }
 
   .connector-push {
-    height: 212px;
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     color: #0284c7;
-    font-size: 8.5px;
-    font-weight: 700;
+    font-size: 8px;
+    font-weight: 800;
     text-align: center;
     gap: 4px;
-  }
-
-  .sidecar-chip {
-    background: #fdf4ff;
-    border: 1px dashed #c084fc;
-    border-radius: 6px;
-    padding: 6px 8px;
-    margin-top: 8px;
-    font-size: 10px;
-    color: #7e22ce;
-    line-height: 1.35;
-  }
-  .sidecar-chip strong {
-    color: #581c87;
-    display: block;
-    font-size: 10.5px;
-    margin-bottom: 1px;
+    line-height: 1.15;
   }
 </style>
 </head>
@@ -242,53 +299,63 @@
   <!-- Header -->
   <div class="header">
     <div class="title">M.A.V.I.S. System Architecture &amp; Data Pipeline</div>
-    <div class="subtitle">Hardware &amp; Simulated Ingestion &bull; Baseline &amp; Synergy Evaluation &bull; Decoupled Persistence &bull; Real-Time Push</div>
+    <div class="subtitle">
+      <span>Edge &amp; Ingestion</span> &bull; 
+      <span>Adaptive Baseline &amp; Risk Engine</span> &bull; 
+      <span>Decoupled Persistence</span> &bull; 
+      <span>Real-Time WebSocket Push</span>
+    </div>
   </div>
 
   <!-- Main Pipeline Flow -->
   <div class="pipeline-grid">
     
-    <!-- Step 1: Telemetry Data Sources (Dual Sources: Hardware Collar + Simulation Daemon) -->
+    <!-- Tier 1: Dual Data Sources (Collar + Daemon) -->
     <div class="dual-stage">
-      <!-- 1A: Physical Collar -->
-      <div class="sub-card sub-hw">
+      <!-- 1A: Physical Smart Collar -->
+      <div class="sub-card card-collar">
         <div>
-          <span class="stage-badge badge-blue">Physical Edge</span>
-          <div style="font-size: 13px; font-weight: 800; color: #1d4ed8; margin-bottom: 3px;">ESP32 Smart Collar</div>
+          <span class="stage-badge badge-collar">Physical Edge</span>
+          <div class="card-heading" style="color: #0f766e;">ESP32 Smart Collar</div>
         </div>
-        <div style="font-size: 10.5px; color: #334155; line-height: 1.35;">
-          <strong>MAX30102</strong>: PPG, SpO2 &amp; RMSSD HRV<br>
-          <strong>DS18B20</strong>: 1-Wire core body temperature<br>
-          <strong>MPU6050</strong>: Rumination jaw rate &amp; posture
+        <div class="sensor-bullets">
+          <div class="sensor-bullet-item"><strong>MAX30102:</strong> PPG, SpO2 &amp; RMSSD PRV</div>
+          <div class="sensor-bullet-item"><strong>DS18B20:</strong> 1-Wire collar probe temperature</div>
+          <div class="sensor-bullet-item"><strong>MPU6050:</strong> Rumination rate &amp; posture</div>
         </div>
-        <div class="stage-footer" style="margin-top: 4px; padding-top: 5px;">Core 1: 100 Hz DSP &bull; Core 0: Wi-Fi</div>
+        <div class="card-footer card-footer-mono" style="color: #0f766e;">
+          Core 1: 100 Hz DSP &bull; Core 0: Wi-Fi
+        </div>
       </div>
 
       <!-- 1B: Simulation Daemon -->
-      <div class="sub-card sub-sim">
+      <div class="sub-card card-daemon">
         <div>
-          <span class="stage-badge badge-amber">Alternate Source</span>
-          <div style="font-size: 13px; font-weight: 800; color: #b45309; margin-bottom: 3px;">Telemetry Daemon</div>
+          <span class="stage-badge badge-daemon">Alternate Source</span>
+          <div class="card-heading" style="color: #b45309;">Telemetry Daemon</div>
         </div>
-        <div style="font-size: 10.5px; color: #334155; line-height: 1.35;">
-          Generates autonomous multi-species herd streams for software evaluation.<br>
-          Simulates diurnal drift, febrile events, and enclosure co-location without hardware.
+        <div class="sensor-bullets">
+          <div class="sensor-bullet-item"><strong>Autonomous Stream:</strong> Multi-species synthesis</div>
+          <div class="sensor-bullet-item"><strong>Pathology Modeling:</strong> Diurnal drift &amp; fever</div>
+          <div class="sensor-bullet-item"><strong>Spatial Matrix:</strong> Pen enclosure co-location</div>
         </div>
-        <div class="stage-footer" style="margin-top: 4px; padding-top: 5px; color: #b45309;">Development &amp; Demo Streaming</div>
+        <div class="card-footer" style="color: #b45309;">
+          Development &amp; Demo Streaming
+        </div>
       </div>
     </div>
 
-    <!-- Arrow 1: Both Sources Feed into Express -->
+    <!-- Arrow 1: Sources -> Ingestion Gateway -->
     <div class="flow-arrow">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       <span>HTTP POST<br>(3s Stream)</span>
     </div>
 
-    <!-- Step 2: Express Gateway & Optional Sidecar -->
-    <div class="stage-card stage-cyan">
+    <!-- Tier 2: Express Gateway & Optional Sidecar -->
+    <div class="stage-card card-gateway">
       <div>
-        <span class="stage-badge badge-cyan">Gateway Tier</span>
-        <div class="stage-title">Express API Gateway</div>
+        <span class="stage-badge badge-gateway">Gateway Tier</span>
+        <div class="card-heading" style="color: #0369a1;">Express API Gateway</div>
       </div>
       <div class="items-list">
         <div class="item-box">
@@ -297,37 +364,39 @@
         </div>
         <div class="item-box">
           <strong>Joi Schema Validation</strong>
-          Enforces boundary constraints on vitals &amp; sensor packets
+          Enforces physiological boundary constraints on packets
         </div>
         <div class="item-box">
           <strong>Multi-Tenant Isolation</strong>
           Pairs packets with registered animal subjects &amp; pens
         </div>
-        <!-- Optional Sidecar: Ollama LLM -->
+        <!-- Optional Sidecar -->
         <div class="sidecar-chip">
           <strong>Ollama AI (Optional Sidecar)</strong>
           On-demand narrative synthesis via <code>llama3.2</code> with deterministic rule fallback.
         </div>
       </div>
-      <div class="stage-footer">Node.js Gateway on Port 5000</div>
+      <div class="card-footer card-footer-mono" style="color: #0369a1;">
+        Node.js Gateway on Port 5000
+      </div>
     </div>
 
-    <!-- Arrow 2 -->
+    <!-- Arrow 2: Gateway -> Engine -->
     <div class="flow-arrow">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       <span>Ingested<br>Stream</span>
     </div>
 
-    <!-- Step 3: Health & Risk Engine -->
-    <div class="stage-card stage-purple">
+    <!-- Tier 3: Health & Risk Engine -->
+    <div class="stage-card card-engine">
       <div>
-        <span class="stage-badge badge-purple">Analysis Engine</span>
-        <div class="stage-title">Health &amp; Risk Engine</div>
+        <span class="stage-badge badge-engine">Analysis Engine</span>
+        <div class="card-heading" style="color: #3730a3;">Health &amp; Risk Engine</div>
       </div>
-      <div class="items-list">
+      <div class="items-list" style="justify-content: space-around;">
         <div class="item-box">
           <strong>Adaptive Baselines</strong>
-          Welford streaming variance &amp; dynamic individual Z-Scores (O(1) memory)
+          Welford streaming variance &amp; dynamic individual Z-Scores in <code>O(1)</code> memory
         </div>
         <div class="item-box">
           <strong>Multi-Modal Synergy</strong>
@@ -338,69 +407,79 @@
           Estimates cross-infection risk across shared pens (+ 0.20 &times; Herd Risk)
         </div>
       </div>
-      <div class="stage-footer">Composite Risk Score (0-100)</div>
+      <div class="card-footer" style="color: #3730a3; font-weight: 700;">
+        Composite Risk Score (0–100)
+      </div>
     </div>
 
-    <!-- Arrow 3: Dual Output from Backend (Persistence vs Event Broadcast) -->
+    <!-- Arrow 3: Engine -> Storage & Broadcast -->
     <div class="flow-arrow">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       <span>Evaluated<br>State</span>
     </div>
 
-    <!-- Step 4: Decoupled Storage vs Broadcast -->
+    <!-- Tier 4: Decoupled Storage vs Broadcast -->
     <div class="dual-stage">
-      <!-- 4A: MongoDB Storage (Terminal Persistence Sink) -->
-      <div class="sub-card sub-db">
+      <!-- 4A: MongoDB Storage (Persistence Sink) -->
+      <div class="sub-card card-db">
         <div>
-          <span class="stage-badge badge-emerald">Persistence Tier</span>
-          <div style="font-size: 13px; font-weight: 800; color: #047857; margin-bottom: 4px;">MongoDB Database</div>
+          <span class="stage-badge badge-db">Persistence Tier</span>
+          <div class="card-heading" style="color: #065f46;">MongoDB Database</div>
         </div>
-        <div style="font-size: 10.5px; color: #334155; line-height: 1.4;">
-          Persists animal profiles, time-series telemetry packets, and alert audit records.<br>
-          <em style="color: #64748b; font-size: 9.5px; display: block; margin-top: 4px;">(Automated in-memory fallback for local dev)</em>
+        <div class="sensor-bullets">
+          <div class="sensor-bullet-item"><strong>Telemetry Archival:</strong> Time-series packet logging</div>
+          <div class="sensor-bullet-item"><strong>Audit Trail:</strong> Alert state transitions &amp; clinical logs</div>
+          <div class="sensor-bullet-item" style="color: #64748b; font-size: 8.8px;">(Automated in-memory fallback for local dev)</div>
         </div>
-        <div class="stage-footer" style="margin-top: 4px; padding-top: 5px; color: #047857;">Data Sink &bull; No Client Push</div>
+        <div class="card-footer" style="color: #065f46;">
+          Data Sink &bull; No Client Push
+        </div>
       </div>
 
       <!-- 4B: Socket.IO Server (Broadcast to Clients) -->
-      <div class="sub-card sub-event">
+      <div class="sub-card card-socket">
         <div>
-          <span class="stage-badge badge-cyan">Broadcast Tier</span>
-          <div style="font-size: 13px; font-weight: 800; color: #0369a1; margin-bottom: 4px;">Socket.IO Events</div>
+          <span class="stage-badge badge-socket">Broadcast Tier</span>
+          <div class="card-heading" style="color: #0369a1;">Socket.IO Events</div>
         </div>
-        <div style="font-size: 10.5px; color: #334155; line-height: 1.4;">
-          Backend emits real-time events to connected browser sessions:
-          <ul style="padding-left: 14px; margin-top: 4px; font-family: 'JetBrains Mono', monospace; font-size: 9.5px; color: #0284c7;">
-            <li>sensorUpdate</li>
-            <li>alert / alert:updated</li>
-          </ul>
+        <div class="sensor-bullets">
+          <div class="sensor-bullet-item">
+            <strong>Real-Time Broadcast:</strong>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 8.8px; color: #0284c7;">sensorUpdate</span>
+          </div>
+          <div class="sensor-bullet-item">
+            <strong>Clinical Alerts:</strong>
+            <span style="font-family: 'JetBrains Mono', monospace; font-size: 8.8px; color: #0284c7;">alert / alert:updated</span>
+          </div>
         </div>
-        <div class="stage-footer" style="margin-top: 4px; padding-top: 5px; color: #0284c7;">WebSocket Push Gateway</div>
+        <div class="card-footer" style="color: #0369a1;">
+          WebSocket Push Gateway
+        </div>
       </div>
     </div>
 
-    <!-- Arrow 4: Connects ONLY from Socket.IO Broadcast to React Dashboard! -->
+    <!-- Arrow 4: Connects ONLY from Socket.IO to Client UI -->
     <div class="dual-connector">
-      <!-- Top: MongoDB is a terminal sink, no arrow to dashboard -->
+      <!-- Top: MongoDB Sink (no UI arrow) -->
       <div class="connector-sink">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         <span>Persistent<br>Storage</span>
       </div>
 
-      <!-- Bottom: Socket.IO pushes directly to React Dashboard -->
+      <!-- Bottom: Socket.IO Push to Dashboard -->
       <div class="connector-push">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-        <span style="white-space: nowrap; font-size: 8.5px; color: #0284c7; font-weight: 700;">WebSocket<br>Push to UI</span>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        <span>WebSocket<br>Push to UI</span>
       </div>
     </div>
 
-    <!-- Step 5: React Dashboard (Client Tier) -->
-    <div class="stage-card stage-slate">
+    <!-- Tier 5: React Dashboard -->
+    <div class="stage-card card-client">
       <div>
-        <span class="stage-badge badge-slate">Client Tier</span>
-        <div class="stage-title">React Dashboard</div>
+        <span class="stage-badge badge-client">Client Tier</span>
+        <div class="card-heading" style="color: #0f2942;">React Dashboard</div>
       </div>
-      <div class="items-list">
+      <div class="items-list" style="justify-content: space-around;">
         <div class="item-box">
           <strong>Digital Twin Monitor</strong>
           Live vitals, 3s streaming cycle, and baseline deviation gauges
@@ -414,7 +493,9 @@
           Historical Recharts timelines &amp; veterinary PDF export
         </div>
       </div>
-      <div class="stage-footer">React 19 &bull; TypeScript &bull; Vite</div>
+      <div class="card-footer card-footer-mono" style="color: #0f2942;">
+        React 19 &bull; TypeScript &bull; Vite
+      </div>
     </div>
 
   </div>

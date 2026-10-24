@@ -81,7 +81,7 @@ export class HerdGraphService {
         for (const neighbor of allAnimals) {
             const neighborId = String(neighbor._id || neighbor.id);
             if (neighborId === currentId) continue;
-            if (currentOwnerStr && neighbor.owner && String(neighbor.owner) !== currentOwnerStr) continue;
+            if (String(neighbor.owner || '') !== String(currentAnimal.owner || '')) continue;
 
             let neighborRisk = 0;
             if (neighbor.healthStatus === 'critical') {

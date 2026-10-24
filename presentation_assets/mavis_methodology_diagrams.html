@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M.A.V.I.S. - Core Algorithms & Methodology Diagrams</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    themeVariables: {
+      fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      fontSize: '13px',
+      primaryColor: '#eff6ff',
+      primaryBorderColor: '#1d4ed8',
+      primaryTextColor: '#0f2942',
+      lineColor: '#334155'
+    }
+  });
+</script>
+<style>
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #0f172a;
+    color: #f8fafc;
+    margin: 0;
+    padding: 30px;
+  }
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .card {
+    background: #ffffff;
+    color: #0f2942;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 35px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    border: 1px solid #e2e8f0;
+  }
+  h1 {
+    color: #38bdf8;
+    margin-top: 0;
+    font-size: 26px;
+    font-weight: 800;
+  }
+  h2 {
+    color: #0f2942;
+    border-bottom: 2px solid #0f766e;
+    padding-bottom: 8px;
+    margin-top: 0;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .badge {
+    background: #0f766e;
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .note {
+    background: #f8fafc;
+    border-left: 4px solid #0f766e;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #334155;
+    margin-top: 18px;
+    border-radius: 0 4px 4px 0;
+    line-height: 1.5;
+  }
+  .note strong {
+    color: #0f2942;
+  }
+  .mermaid {
+    display: flex;
+    justify-content: center;
+    background: #fafcff;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 20px;
+    overflow-x: auto;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>M.A.V.I.S. Core Methodology &amp; Mathematical Architecture Diagrams</h1>
+  <p style="color: #94a3b8; font-size: 14px; margin-bottom: 25px;">
+    Architectural and algorithmic diagrams verified against active source code in <code>sensor.service.js</code>, <code>calculateRiskScore.js</code>, and <code>herdGraph.service.js</code>.
+  </p>
+
+  <!-- DIAGRAM 1 -->
+  <div class="card">
+    <h2>1. Adaptive Baseline &amp; Statistical Anomaly-Screening Pipeline <span class="badge">sensor.service.js</span></h2>
+    <div class="mermaid">
+flowchart TD
+    classDef inputNode fill:#eff6ff,stroke:#1d4ed8,stroke-width:2px,color:#0f2942,font-weight:bold;
+    classDef decisionNode fill:#fffbeb,stroke:#d97706,stroke-width:2px,color:#78350f,font-weight:bold;
+    classDef processNode fill:#f0fdfa,stroke:#0f766e,stroke-width:1.5px,color:#0f2942;
+    classDef normalNode fill:#ecfdf5,stroke:#059669,stroke-width:2px,color:#064e3b,font-weight:bold;
+    classDef alertNode fill:#fef2f2,stroke:#dc2626,stroke-width:2px,color:#991b1b,font-weight:bold;
+    classDef metricNode fill:#f8fafc,stroke:#475569,stroke-width:1.5px,color:#0f2942;
+
+    START["Incoming Ingested Telemetry X(t)<br/>(Temp, Heart Rate, Respiratory Rate, SpO2)"]:::inputNode --> CHK_COUNT{"Calibration Check:<br/>Readings Count &lt; 10?"}:::decisionNode
+
+    subgraph PHASE1 ["Phase 1: Initial Baseline Calibration (First 10 Ingested Readings)"]
+        CHK_COUNT -- "Yes (Count &lt; 10)" --> BUF_ACC["Accumulate Reading:<br/>Acc(metric) += X(t)"]:::processNode
+        BUF_ACC --> W_INIT["Update Initial Online Welford Stats:<br/>Count, Mean, and M2 Variance Accumulation"]:::processNode
+        W_INIT --> CHK_TEN{"Readings Count == 10?"}:::decisionNode
+        CHK_TEN -- "No (&lt; 10)" --> STATUS_CAL["Status: CALIBRATING<br/>(Store Ingested Vitals; Await 10-Reading Window)"]:::processNode
+        CHK_TEN -- "Yes (Count = 10)" --> LOCK_BASE["Lock Initial Reference Baseline:<br/><b>B_0 = (1 / 10) &middot; &sum; X(t)</b><br/><i>(Assumes reasonable baseline; not guaranteed resting)</i>"]:::normalNode
+    end
+
+    subgraph PHASE2 ["Phase 2: Adaptive Monitoring &amp; Statistical Screening (Readings &ge; 10)"]
+        CHK_COUNT -- "No (Count &ge; 10)" --> LOAD_REF["Retrieve Animal Stored Baseline B(t)<br/>&amp; Welford Variance Estimator M2"]:::processNode
+
+        LOAD_REF --> SIGMA_FLOORS["Apply Metric-Specific Standard Deviation Floors (&sigma;_min):<br/>• Temperature: &sigma;_min = 0.35 &deg;C<br/>• Heart Rate: &sigma;_min = 5.0 BPM<br/>• Respiratory Rate: &sigma;_min = 2.5 br/min<br/>• Blood Oxygen: &sigma;_min = 2.0 %"]:::metricNode
+
+        SIGMA_FLOORS --> CALC_Z["Calculate Effective Variance &amp; Statistical Z-Score:<br/>&sigma;_effective = max( &radic;(M2 / (n - 1)), &sigma;_min )<br/><b>z = |X(t) - B(t)| / &sigma;_effective</b>"]:::processNode
+
+        CALC_Z --> EVAL_ANOMALY{"Dual-Layer Screening Check<br/>Layer 1 (Statistical): Does z &ge; 2.5?<br/>Layer 2 (Absolute Margins):<br/>• |&Delta;T| &gt; 1.2 &deg;C  • |&Delta;HR| &gt; 25 BPM<br/>• |&Delta;RR| &gt; 8 br/min  • &Delta;SpO2 &gt; 5% drop"}:::decisionNode
+
+        EVAL_ANOMALY -- "ANY Check Breached (Anomaly)" --> ANOMALY_BRANCH["<b>1. Trigger Clinical Warning / Alert</b><br/><b>2. Baseline Isolation &amp; Freeze:</b><br/>• SKIP rolling EMA baseline update<br/>• SKIP Welford variance update<br/><i>(Protects baseline profile from contamination)</i>"]:::alertNode
+
+        EVAL_ANOMALY -- "ALL Checks Passed (Normal)" --> NORMAL_BRANCH["<b>1. Update Rolling Baseline via EMA (&alpha; = 0.05):</b><br/><b>B(t) = 0.05 &middot; X(t) + 0.95 &middot; B(t - 1)</b><br/><b>2. Update Welford Running Variance:</b><br/>Online Mean &amp; M2 Accumulation"]:::normalNode
+    end
+    </div>
+    <div class="note">
+      <strong>Methodological Grounding:</strong> The first 10 readings compute the initial arithmetic baseline mean. The system assumes this calibration period represents a reasonable operational baseline, rather than guaranteeing resting conditions. Crucially, standard-deviation floors (&sigma;_min) are individualized by physiological modality (0.35&deg;C, 5.0 BPM, 2.5 br/min, 2.0%). Both EMA baseline adaptation and Welford variance updates are strictly skipped when any screening threshold is breached, preventing acute anomalies from polluting future reference profiles.
+    </div>
+  </div>
+
+  <!-- DIAGRAM 2 -->
+  <div class="card">
+    <h2>2. Multi-Modal Non-Linear Risk-Scoring Engine <span class="badge">calculateRiskScore.js</span></h2>
+    <div class="mermaid">
+flowchart TD
+    classDef inputNode fill:#eff6ff,stroke:#1d4ed8,stroke-width:2px,color:#0f2942,font-weight:bold;
+    classDef baseNode fill:#f1f5f9,stroke:#475569,stroke-width:2px,color:#0f2942,font-weight:bold;
+    classDef multNode fill:#fef2f2,stroke:#dc2626,stroke-width:1.5px,color:#991b1b,font-weight:bold;
+    classDef defaultMult fill:#f0fdf4,stroke:#16a34a,stroke-width:1.5px,color:#14532d;
+    classDef interNode fill:#faf5ff,stroke:#7c3aed,stroke-width:2px,color:#581c87,font-weight:bold;
+    classDef herdNode fill:#f0fdfa,stroke:#0f766e,stroke-width:2px,color:#134e4a,font-weight:bold;
+    classDef finalNode fill:#0f2942,stroke:#1e3a8a,stroke-width:2.5px,color:#ffffff,font-weight:bold;
+
+    INPUTS["<b>1. Physiological &amp; Behavioral Inputs</b><br/>• DS18B20 Contact Temp  • MAX30102 Heart Rate &amp; SpO2  • Derived Respiratory Rate<br/>• Behavioral Context: Motion, Recumbency, Rumination, Head-Shaking"]:::inputNode --> BASE_SUM["<b>Base Risk Score Summation</b><br/>BaseScore = &sum; RiskContributions<br/>Evaluates Clinical Severity Flags: isFebrile, hasTachycardia, isHypoxic"]:::baseNode
+
+    subgraph SYNERGY_RULES ["2. Multi-Modal Synergistic Multipliers (calculateRiskScore.js)"]
+        direction TB
+        R1["Fever + Rumination Cessation (DS18B20 + Gyro-Z) &rarr; <b>1.65&times; Multiplier</b> (Severe Ruminal Arrest)"]:::multNode
+        R2["Fever + Low Motion / Recumbency (DS18B20 + Accel) &rarr; <b>1.50&times; Multiplier</b> (Febrile Lethargy / Sepsis Risk)"]:::multNode
+        R3["Critical Heart Rate + Critical Low Oxygen (MAX30102 HR + SpO2) &rarr; <b>1.40&times; Multiplier</b> (Cardiorespiratory Distress)"]:::multNode
+        R4["Fever + Critical Heart Rate (DS18B20 + MAX30102 HR) &rarr; <b>1.35&times; Multiplier</b> (Systemic Septicemia / SIRS)"]:::multNode
+        R5["Critical Heart Rate + Head Shaking (MAX30102 + Gyro) &rarr; <b>1.30&times; Multiplier</b> (Neuro-Parasitic Agitation)"]:::multNode
+        R6["Critical HR at Rest, Without Fever (MAX30102 + Accel) &rarr; <b>1.25&times; Multiplier</b> (Acute Pain / Resting Tachycardia)"]:::multNode
+        R0["Default: No Clinical Synergy Criteria Met &rarr; <b>1.00&times; Multiplier</b> (Independent Linear Baseline)"]:::defaultMult
+        
+        R1 --- R2 --- R3 --- R4 --- R5 --- R6 --- R0
+    end
+
+    BASE_SUM --> SYNERGY_RULES
+
+    SYNERGY_RULES --> SELECT_MAX["<b>Apply Largest Applicable Synergy Multiplier</b><br/>SynergyMultiplier = Math.max(1.0, MatchedMultipliers)<br/><b>ScaledScore = round(BaseScore &middot; SynergyMultiplier)</b>"]:::interNode
+
+    SELECT_MAX --> ADD_HERD["<b>3. Weighted Herd-Exposure Injection</b><br/>Exposure Contribution = round(HerdRiskScore &middot; 0.20)<br/><b>CombinedScore = ScaledScore + Exposure Contribution</b>"]:::herdNode
+
+    HERD_SRC["Spatial Herd Exposure Service (herdGraph.service.js)<br/>(Evaluates Neighbor Health, Species, and Pen Enclosures)"]:::herdNode -.->|HerdRiskScore| ADD_HERD
+
+    ADD_HERD --> CLAMP_FINAL["<b>4. Final Clinical Risk Score</b><br/><b>FinalRisk = clamp(CombinedScore, 0, 100)</b><br/>• Healthy: [0, 29]  • Warning Tier: [30, 69]  • Critical Tier: [70, 100]"]:::finalNode
+    </div>
+    <div class="note">
+      <strong>Methodological Grounding:</strong> The engine applies the <em>largest applicable synergy multiplier</em> via <code>Math.max()</code> to the base sum of metric risk contributions, adds 20% of the calculated herd-exposure risk, and clamps the result to [0, 100]. Multipliers represent heuristic risk amplifications, not diagnostic probabilities.
+    </div>
+  </div>
+
+  <!-- DIAGRAM 3 -->
+  <div class="card">
+    <h2>3. Spatial Herd-Exposure Screening Model <span class="badge">herdGraph.service.js</span></h2>
+    <div class="mermaid">
+flowchart TD
+    classDef indexCase fill:#fef2f2,stroke:#dc2626,stroke-width:2.5px,color:#991b1b,font-weight:bold;
+    classDef neighborCrit fill:#fff1f2,stroke:#f43f5e,stroke-width:2px,color:#881337;
+    classDef neighborWarn fill:#fffbeb,stroke:#d97706,stroke-width:2px,color:#78350f;
+    classDef neighborClean fill:#ecfdf5,stroke:#059669,stroke-width:2px,color:#064e3b;
+    classDef engineBox fill:#eff6ff,stroke:#1d4ed8,stroke-width:2px,color:#0f2942,font-weight:bold;
+    classDef targetAnimal fill:#faf5ff,stroke:#7c3aed,stroke-width:2.5px,color:#581c87,font-weight:bold;
+    classDef advisoryBox fill:#0f2942,stroke:#0f766e,stroke-width:2.5px,color:#ffffff,font-weight:bold;
+
+    subgraph ENCLOSURES ["Topological Enclosure &amp; Pen Infrastructure (Zone Topology)"]
+        subgraph ZONE_A ["Enclosure Zone Alpha (Shared Common Pen)"]
+            A1["Neighbor A (Index Case / Sick Bovine)<br/>• Health Status: CRITICAL<br/>• Neighbor Risk = 80 pts"]:::indexCase
+            A2["Neighbor B (Febrile Calf)<br/>• Health Status: WARNING<br/>• Neighbor Risk = 40 pts"]:::neighborWarn
+            TARGET["Target Animal i (e.g., Cow Lune-02)<br/>Currently Healthy / Monitored"]:::targetAnimal
+        end
+
+        subgraph ZONE_B ["Enclosure Zone Beta (Separate Pen / Quarantine Ward)"]
+            B1["Neighbor C (Isolated Bovine)<br/>• Status: CRITICAL (Risk = 80)<br/>• Quarantine Isolation Barrier"]:::neighborCrit
+            B2["Neighbor D (Non-Ruminant / Canine)<br/>• Status: HEALTHY (Risk = 0)<br/>• Species: Canine"]:::neighborClean
+        end
+    end
+
+    subgraph ENGINE ["Weighted Herd-Exposure Screening Engine (herdGraph.service.js)"]
+        direction TB
+        W_ZONE["<b>Enclosure Zone Weight (W_zone):</b><br/>• Shared Pen / Same Closed Space: <b>0.90</b><br/>• Separate Enclosure / Quarantine Barrier: <b>0.05</b>"]:::engineBox
+        
+        W_SPEC["<b>Species Susceptibility Weight (W_species):</b><br/>• Same Species (Cow &harr; Cow): <b>1.00</b><br/>• Cross-Ruminant (Cow &harr; Sheep/Goat): <b>0.35</b><br/>• Non-Susceptible / Unrelated (Cow &harr; Canine): <b>0.05</b>"]:::engineBox
+
+        PAIR_WEIGHT["<b>Composite Link Weight:</b><br/><b>W_ij = round(W_species &middot; W_zone, 2)</b><br/>• Cow in Same Pen: 1.00 &middot; 0.90 = <b>0.90</b><br/>• Cross-Ruminant Same Pen: 0.35 &middot; 0.90 = <b>0.32</b><br/>• Any Animal in Quarantine: W_zone = <b>0.05</b>"]:::engineBox
+
+        CONTRIB["<b>Exposure Contribution per Neighbor:</b><br/><b>C_j = NeighborRisk_j &middot; W_ij</b><br/>• Neighbor A (Critical, Same Pen): 80 &middot; 0.90 = <b>72.0 pts</b><br/>• Neighbor B (Warning, Same Pen): 40 &middot; 0.90 = <b>36.0 pts</b><br/>• Neighbor C (Critical, Quarantine): 80 &middot; 0.05 = <b>4.0 pts</b>"]:::engineBox
+    end
+
+    A1 -->|Same Pen / Same Species| ENGINE
+    A2 -->|Same Pen / Same Species| ENGINE
+    B1 -->|Quarantine Barrier| ENGINE
+    B2 -->|Non-Susceptible| ENGINE
+    W_ZONE --> PAIR_WEIGHT
+    W_SPEC --> PAIR_WEIGHT
+    PAIR_WEIGHT --> CONTRIB
+
+    CONTRIB --> SUM_EXPOSURE["<b>Cumulative Exposure Risk:</b><br/><b>HerdRiskScore(i) = &sum; C_j</b>"]:::engineBox
+
+    SUM_EXPOSURE --> INTEGRATION["<b>Clinical Risk Engine Integration:</b><br/>Injected into calculateRiskScore.js<br/><b>+ round(HerdRiskScore &middot; 0.20)</b>"]:::targetAnimal
+
+    SUM_EXPOSURE --> ADVISORY["<b>Actionable Herd Screening Advisory:</b><br/>• Flags Contagion Exposure Pressure<br/>• Recommends Pen-Level Veterinary Inspection<br/><i>(Heuristic exposure index; not mathematical proof of transmission)</i>"]:::advisoryBox
+    </div>
+    <div class="note">
+      <strong>Methodological Grounding:</strong> Framed strictly as <em>weighted herd-exposure screening</em> rather than mathematical proof of outbreak propagation or predictive epidemiological models. It calculates an exposure heuristic based on physical co-location and species transmission factors.
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

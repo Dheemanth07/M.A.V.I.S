@@ -83,10 +83,13 @@ function AppContent() {
     });
 
     useEffect(() => {
-        if (user?.role && !localStorage.getItem('mavis_active_role')) {
+        if (accountRole !== 'admin') {
+            setActiveRole('user');
+            localStorage.removeItem('mavis_active_role');
+        } else if (user?.role && !localStorage.getItem('mavis_active_role')) {
             setActiveRole(user.role);
         }
-    }, [user?.id, user?.role]);
+    }, [user?.id, user?.role, accountRole]);
 
     const handleSetRole = (newRole: 'user' | 'admin') => {
         if (accountRole === 'admin') {

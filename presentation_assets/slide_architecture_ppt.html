@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M.A.V.I.S. - System Architecture PPT Diagram</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    flowchart: {
+      useMaxWidth: false,
+      htmlLabels: true,
+      curve: 'basis',
+      nodeSpacing: 18,
+      rankSpacing: 22
+    },
+    themeVariables: {
+      fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, sans-serif',
+      fontSize: '11px',
+      primaryColor: '#eff6ff',
+      primaryBorderColor: '#1d4ed8',
+      primaryTextColor: '#0f2942',
+      lineColor: '#334155'
+    }
+  });
+</script>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 25px;
+    background: #0b1120;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+  }
+  .ppt-slide {
+    width: 1280px;
+    height: 720px;
+    background: #ffffff;
+    color: #1e293b;
+    position: relative;
+    padding: 20px 36px 14px 36px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .slide-header {
+    text-align: center;
+    position: relative;
+    padding-bottom: 2px;
+  }
+  .slide-header h1 {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 32px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    margin: 0;
+    color: #0f172a;
+    text-transform: uppercase;
+  }
+  .slide-header .slide-subtitle {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #334155;
+    margin-top: 2px;
+  }
+  .header-logo-right {
+    position: absolute;
+    top: -5px;
+    right: 0;
+    height: 52px;
+    object-fit: contain;
+  }
+  .slide-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+  }
+  .mermaid {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  .slide-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 5px;
+    font-size: 11.5px;
+    color: #64748b;
+  }
+  .footer-logo-left {
+    height: 28px;
+    object-fit: contain;
+  }
+</style>
+</head>
+<body>
+
+  <!-- ==================== PPT SLIDE: SYSTEM ARCHITECTURE ==================== -->
+  <div class="ppt-slide" id="slide_arch">
+    <div class="slide-header">
+      <h1>SYSTEM ARCHITECTURE</h1>
+      <div class="slide-subtitle">3-Tier Edge Sensing, Local Intelligence &amp; Presentation Architecture</div>
+      <img src="../presentation_assets/rnsit_25_logo.png" class="header-logo-right" alt="RNSIT 25">
+    </div>
+
+    <div class="slide-content">
+      <div class="mermaid" id="arch_diagram">
+flowchart TD
+    classDef edgeBox fill:#f0fdfa,stroke:#0f766e,stroke-width:1.3px,color:#0f2942,font-size:10.5px;
+    classDef mcuBox fill:#ccfbf1,stroke:#0f766e,stroke-width:1.8px,color:#115e59,font-weight:bold,font-size:11px;
+    classDef gwBox fill:#eff6ff,stroke:#2563eb,stroke-width:1.3px,color:#0f2942,font-size:10.5px;
+    classDef dbBox fill:#fffbeb,stroke:#d97706,stroke-width:1.5px,color:#78350f,font-weight:bold,font-size:10.5px;
+    classDef subEng fill:#faf5ff,stroke:#7c3aed,stroke-width:1.5px,color:#4c1d95,font-weight:bold,font-size:10.5px;
+    classDef alertBox fill:#fef2f2,stroke:#dc2626,stroke-width:1.5px,color:#991b1b,font-weight:bold,font-size:10.5px;
+    classDef sockBox fill:#f0fdf4,stroke:#16a34a,stroke-width:1.5px,color:#14532d,font-weight:bold,font-size:10.5px;
+    classDef uiBox fill:#f8fafc,stroke:#475569,stroke-width:1.3px,color:#0f2942,font-size:10.5px;
+    classDef uiMain fill:#0f2942,stroke:#1e3a8a,stroke-width:2px,color:#ffffff,font-weight:bold,font-size:11px;
+
+    subgraph TIER1 [1. Edge Sensing Tier - Wearable ESP32 Smart Collar]
+        direction LR
+        S_T["<b>Temperature Sensor</b><br/>DS18B20 1-Wire"]:::edgeBox
+        S_O["<b>Heart Rate and SpO2</b><br/>MAX30102 I2C"]:::edgeBox
+        S_M["<b>6-Axis Motion Sensor</b><br/>MPU6050 I2C"]:::edgeBox
+        S_B["<b>Battery ADC</b><br/>Voltage Divider"]:::edgeBox
+
+        ESP["<b>ESP32 Microcontroller</b><br/>FreeRTOS Dual-Core Tasks | 10-pt Moving Average Filter"]:::mcuBox
+
+        S_T --> ESP
+        S_O --> ESP
+        S_M --> ESP
+        S_B --> ESP
+    end
+
+    subgraph TIER2 [2. Local Gateway and Intelligence Tier - Node.js Express]
+        direction TB
+        ING["<b>Telemetry Ingestion and Joi Validation</b><br/>REST Endpoint (/api/telemetry/ingest)"]:::gwBox
+        
+        DB["<b>MongoDB Database</b><br/>Time-Series Storage (In-Memory Fallback)"]:::dbBox
+        HEALTH["<b>Clinical Health and Anomaly Engine</b><br/>• Welford Variance and Z-Score Screening (z >= 2.5)<br/>• Synergistic Multipliers (1.65x Rumen Arrest | 1.50x Sepsis)<br/>• Weighted Herd-Exposure (+20% Herd Risk)"]:::subEng
+        OLLAMA["<b>Local SLM AI Copilot</b><br/>Ollama llama3.2 (On-Demand Advisory)"]:::edgeBox
+
+        ALERT["<b>Alert Lifecycle Service</b><br/>Deduplication and Severity Tiers"]:::alertBox
+        SOCKET["<b>Socket.IO Real-Time Event Hub</b><br/>Bi-Directional Telemetry and Alerts WebSocket Broadcast"]:::sockBox
+
+        ING --> DB
+        ING --> HEALTH
+        HEALTH -.-> OLLAMA
+        HEALTH --> ALERT
+        ALERT --> SOCKET
+        ING --> SOCKET
+    end
+
+    subgraph TIER3 [3. Presentation Tier - React 19 TypeScript]
+        direction LR
+        DASH["<b>React 19 Web Dashboard</b><br/>Vite | Modular Component UI | No Tailwind"]:::uiMain
+        TWIN["<b>Biological Digital Twin</b><br/>Live Vitals and 3D Collar Avatar"]:::uiBox
+        HERD["<b>Live Herd Matrix</b><br/>Multi-Animal Spatial Map"]:::uiBox
+        RPT["<b>Clinical Reports and Trends</b><br/>24h Recharts and PDF Export"]:::uiBox
+
+        DASH --> TWIN
+        DASH --> HERD
+        DASH --> RPT
+    end
+
+    ESP -->|Wi-Fi JSON Stream 3s Cycle| ING
+    SOCKET -->|Real-Time Telemetry and Alerts WebSocket| DASH
+      </div>
+    </div>
+
+    <div class="slide-footer">
+      <img src="../presentation_assets/rnsit_dept_banner.png" class="footer-logo-left" alt="RNSIT CSE">
+      <div>04/09/2026</div>
+      <div style="font-weight: 700; color: #0f172a; font-size: 14px;">12</div>
+    </div>
+  </div>
+
+</body>
+</html>

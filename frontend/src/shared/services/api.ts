@@ -94,7 +94,12 @@ export class ApiService {
         const res = await fetch(`${this.apiBase}/animals/${animalId}/health`, {
             headers: this.getAuthHeaders()
         });
-        if (!res.ok) throw new Error('Failed to fetch health status');
+        if (!res.ok) {
+            const errJson = await res.json().catch(() => ({}));
+            const err: any = new Error(errJson.message || `Failed to fetch health status (${res.status})`);
+            err.statusCode = res.status;
+            throw err;
+        }
         const json = await res.json();
         return json.data || json;
     }

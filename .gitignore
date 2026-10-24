@@ -35,3 +35,4 @@ Thumbs.db
 *.tmp
 *.temp
 scratch/
+presentation_assets/*_preview*.png

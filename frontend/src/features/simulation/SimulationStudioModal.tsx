@@ -62,7 +62,7 @@ export const SimulationStudioModal: React.FC<SimulationStudioModalProps> = ({ on
         try {
             const list = await fetchAnimals();
             setAnimals(list);
-            if (list.length > 0 && selectedAnimalId === 'all') {
+            if (list.length > 0 && (selectedAnimalId === 'all' || !list.some(a => a._id === selectedAnimalId))) {
                 setSelectedAnimalId(list[0]._id);
             }
         } catch (e: any) {

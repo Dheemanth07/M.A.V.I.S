@@ -27,6 +27,7 @@ async function verifyAllRoutes() {
             breed: "Retriever",
             age: 1,
             weight: 12,
+            herd: "Verify-Isolated-Pen",
             location: { lat: 13.0, lng: 77.0 }
         };
         const createRes = await fetch(`${BASE_URL}/api/animals`, {
@@ -94,7 +95,7 @@ async function verifyAllRoutes() {
             animalId: animalId,
             physiology: {
                 temperature: 38.0,
-                heartRate: 85,
+                heartRate: 72,
                 respiratoryRate: 22,
                 bloodOxygen: 98
             },
@@ -161,7 +162,10 @@ async function verifyAllRoutes() {
 
         // 11. DELETE /api/animals/:id (Delete Animal)
         console.log(`11. Testing Delete Animal profile (DELETE /api/animals/${animalId})...`);
-        const deleteRes = await fetch(`${BASE_URL}/api/animals/${animalId}`, { method: "DELETE" });
+        const deleteRes = await fetch(`${BASE_URL}/api/animals/${animalId}`, {
+            method: "DELETE",
+            headers: { "x-user-role": "admin" }
+        });
         assertEqual(deleteRes.status, 200, "DELETE animal status code");
         console.log("    ✓ Animal profile deleted successfully.\n");
 

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M.A.V.I.S. - Compact PPT Slide Layouts</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    flowchart: {
+      useMaxWidth: false,
+      htmlLabels: true,
+      curve: 'basis',
+      nodeSpacing: 25,
+      rankSpacing: 35
+    },
+    themeVariables: {
+      fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      fontSize: '11px',
+      primaryColor: '#eff6ff',
+      primaryBorderColor: '#1d4ed8',
+      primaryTextColor: '#0f2942',
+      lineColor: '#334155'
+    }
+  });
+</script>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 30px;
+    background: #0b1120;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+  }
+  
+  /* Standard 16:9 PPT Slide Dimensions: 1280px x 720px */
+  .ppt-slide {
+    width: 1280px;
+    height: 720px;
+    background: #ffffff;
+    color: #1e293b;
+    position: relative;
+    padding: 24px 40px 20px 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  /* Slide Header matching user PPT */
+  .slide-header {
+    text-align: center;
+    position: relative;
+    padding-bottom: 6px;
+  }
+  .slide-header h1 {
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 36px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+    margin: 0;
+    color: #0f172a;
+    text-transform: uppercase;
+  }
+  .slide-header .slide-subtitle {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    color: #334155;
+    margin-top: 4px;
+  }
+  .header-logo-right {
+    position: absolute;
+    top: -5px;
+    right: 0;
+    height: 60px;
+    object-fit: contain;
+  }
+
+  /* Slide Content Canvas */
+  .slide-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 0;
+    width: 100%;
+  }
+
+  .mermaid-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Slide Footer matching user PPT */
+  .slide-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 8px;
+    font-size: 12px;
+    color: #64748b;
+  }
+  .footer-logo-left {
+    height: 32px;
+    object-fit: contain;
+  }
+  .footer-center {
+    font-weight: 500;
+    color: #64748b;
+  }
+  .footer-right {
+    font-weight: 700;
+    color: #0f172a;
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+
+  <!-- ==================== SLIDE 10: PERSONALIZED BASELINE & ANOMALY DETECTION ==================== -->
+  <div class="ppt-slide" id="slide10">
+    <div class="slide-header">
+      <h1>METHODOLOGY</h1>
+      <div class="slide-subtitle">Personalized Baseline Learning &amp; Anomaly Detection</div>
+      <img src="../presentation_assets/rnsit_25_logo.png" class="header-logo-right" alt="RNSIT 25">
+    </div>
+
+    <div class="slide-content">
+      <div class="mermaid-wrapper">
+        <div class="mermaid" id="diag1">
+flowchart LR
+    classDef inp fill:#eff6ff,stroke:#2563eb,stroke-width:1.5px,color:#0f2942,font-weight:bold,font-size:11px;
+    classDef dec fill:#fffbeb,stroke:#d97706,stroke-width:1.5px,color:#78350f,font-weight:bold,font-size:11px;
+    classDef calib fill:#f0fdfa,stroke:#0f766e,stroke-width:1.5px,color:#0f2942,font-size:10.5px;
+    classDef gate fill:#faf5ff,stroke:#7c3aed,stroke-width:1.5px,color:#4c1d95,font-weight:bold,font-size:10.5px;
+    classDef alert fill:#fef2f2,stroke:#dc2626,stroke-width:1.8px,color:#991b1b,font-weight:bold,font-size:10.5px;
+    classDef pass fill:#ecfdf5,stroke:#059669,stroke-width:1.8px,color:#064e3b,font-weight:bold,font-size:10.5px;
+
+    S1["<b>1. Ingested Telemetry X(t)</b><br/>• Temp (DS18B20)<br/>• HR &amp; SpO2 (MAX30102)<br/>• Derived Resp Rate"]:::inp
+
+    S2{"<b>2. State Check</b><br/>Readings<br/>N &lt; 10?"}:::dec
+
+    S3A["<b>3A. Initial Baseline Calibration (N &lt; 10)</b><br/>• Accumulate 10 Readings &amp; Init Welford<br/>• <b>Lock B_0 = (1/10) &middot; &sum; X(t)</b><br/><i>(Reasonable baseline assumed)</i>"]:::calib
+
+    S3B["<b>3B. Modality Variance &amp; Z-Score (N &ge; 10)</b><br/>• Welford &sigma; = &radic;(M2/(n-1)) | <b>&sigma;_min Floors:</b><br/>  Temp 0.35&deg;C | HR 5 BPM | RR 2.5 | SpO2 2%<br/>• <b>Z-Score: z = |X(t) - B(t)| / &sigma;_eff</b>"]:::calib
+
+    S4["<b>4. Dual-Layer Screening Gate</b><br/>• <b>Layer 1 (Stat):</b> Does z &ge; 2.5?<br/>• <b>Layer 2 (Margins):</b> |&Delta;T| &gt; 1.2&deg;C |<br/>  |&Delta;HR| &gt; 25 BPM | |&Delta;RR| &gt; 8 | &Delta;SpO2 &gt; 5%"]:::gate
+
+    OUT_BAD["🚨 <b>Screening Breached (Anomaly)</b><br/>• Emit Anomaly Alert &amp; Warnings<br/>• <b>FREEZE:</b> Skip EMA Baseline Update<br/>• <b>FREEZE:</b> Skip Welford Update"]:::alert
+
+    OUT_GOOD["✅ <b>Screening Passed (Normal)</b><br/>• <b>Adapt Baseline via EMA (&alpha;=0.05):</b><br/>  B(t) = 0.05&middot;X(t) + 0.95&middot;B(t-1)<br/>• <b>Update Welford:</b> Count, Mean &amp; M2"]:::pass
+
+    S1 --> S2
+    S2 -- "Yes (N &lt; 10)" --> S3A
+    S2 -- "No (N &ge; 10)" --> S3B
+    S3B --> S4
+    S4 -- "ANY Breached" --> OUT_BAD
+    S4 -- "ALL Passed" --> OUT_GOOD
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-footer">
+      <img src="../presentation_assets/rnsit_dept_banner.png" class="footer-logo-left" alt="RNSIT CSE">
+      <div class="footer-center">04/09/2026</div>
+      <div class="footer-right">10</div>
+    </div>
+  </div>
+
+
+  <!-- ==================== SLIDE 11: NON-LINEAR RISK SCORING ENGINE ==================== -->
+  <div class="ppt-slide" id="slide11">
+    <div class="slide-header">
+      <h1>METHODOLOGY</h1>
+      <div class="slide-subtitle">Non-Linear Risk Scoring Engine</div>
+      <img src="../presentation_assets/rnsit_25_logo.png" class="header-logo-right" alt="RNSIT 25">
+    </div>
+
+    <div class="slide-content">
+      <div class="mermaid-wrapper">
+        <div class="mermaid" id="diag2">
+flowchart LR
+    classDef inp fill:#eff6ff,stroke:#2563eb,stroke-width:1.5px,color:#0f2942,font-weight:bold,font-size:10.5px;
+    classDef base fill:#f8fafc,stroke:#475569,stroke-width:1.5px,color:#0f2942,font-weight:bold,font-size:10.5px;
+    classDef syn fill:#fff1f2,stroke:#e11d48,stroke-width:1.5px,color:#9f1239,font-size:10px;
+    classDef maxNode fill:#faf5ff,stroke:#7c3aed,stroke-width:1.5px,color:#581c87,font-weight:bold,font-size:10.5px;
+    classDef herd fill:#f0fdfa,stroke:#0f766e,stroke-width:1.5px,color:#134e4a,font-size:10px;
+    classDef fin fill:#0f2942,stroke:#1e3a8a,stroke-width:2px,color:#ffffff,font-weight:bold,font-size:10.5px;
+
+    M1["<b>1. Telemetry &amp; Vitals</b><br/>• Temp, HR, SpO2, RR<br/>• Motion, Posture, Rumen"]:::inp
+
+    M2["<b>2. Base Risk Sum</b><br/><b>Base = &sum; RiskContrib</b><br/>Flags: isFebrile, Tachy,<br/>Hypoxic (Severity Tiers)"]:::base
+
+    M3["<b>3. Synergy Multipliers</b><br/>• Fever + Rumination Cessation: <b>1.65&times;</b><br/>• Fever + Low Motion / Recumbent: <b>1.50&times;</b><br/>• Crit HR + Crit Low SpO2: <b>1.40&times;</b><br/>• Fever + Crit HR: <b>1.35&times;</b><br/>• Crit HR + Head Shaking: <b>1.30&times;</b><br/>• Crit HR at Rest (No Fever): <b>1.25&times;</b><br/>• Default Independent Baseline: <b>1.00&times;</b>"]:::syn
+
+    M4["<b>4. Max Synergy Scaling</b><br/>Mult = Math.max(1.0, Matched)<br/>────────────────────<br/><b>Scaled = round(Base &middot; Mult)</b>"]:::maxNode
+
+    M5["<b>5. Weighted Herd Exposure</b><br/><b>herdGraph.service.js</b><br/>• Shared Pen: 0.90 | Quarantine: 0.05<br/>• Same Species: 1.00 | Cross-Rum: 0.35<br/><b>Exposure = round(HerdRisk &middot; 0.20)</b><br/><i>(Exposure heuristic; not spread proof)</i>"]:::herd
+
+    M6["<b>6. Final Risk Score</b><br/><b>clamp(Scaled + Expos, 0, 100)</b><br/>• Healthy: [0 .. 29]<br/>• Warning: [30 .. 69]<br/>• Critical: [70 .. 100]"]:::fin
+
+    M1 --> M2
+    M2 --> M3
+    M3 --> M4
+    M4 --> M5
+    M5 --> M6
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-footer">
+      <img src="../presentation_assets/rnsit_dept_banner.png" class="footer-logo-left" alt="RNSIT CSE">
+      <div class="footer-center">04/09/2026</div>
+      <div class="footer-right">11</div>
+    </div>
+  </div>
+
+</body>
+</html>

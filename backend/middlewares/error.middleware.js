@@ -18,12 +18,18 @@ const globalErrorHandler = (err, req, res, next) => {
     err.statusCode = err.statusCode || 500;
     err.status = err.status || "error";
 
-    logger.error(`${req.method} ${req.path} - ${err.message}`, {
+    const logMeta = {
         status: err.status,
         statusCode: err.statusCode,
         queryKeys: Object.keys(req.query || {}),
         ...(isDev && { stack: err.stack }),
-    });
+    };
+
+    if (err.statusCode >= 500) {
+        logger.error(`${req.method} ${req.path} - ${err.message}`, logMeta);
+    } else {
+        logger.warn(`${req.method} ${req.path} - ${err.message}`, logMeta);
+    }
 
     res.status(err.statusCode).json({
         status: err.status,

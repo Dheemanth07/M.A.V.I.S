@@ -54,6 +54,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     }, [user, token]);
 
+    useEffect(() => {
+        if (user?.id) {
+            fetch(`http://localhost:5000/api/auth/profile/${user.id}`)
+                .then(res => res.ok ? res.json() : null)
+                .then(json => {
+                    if (json?.data?.user) {
+                        setUser(json.data.user);
+                    }
+                })
+                .catch(() => {});
+        }
+    }, [user?.id]);
+
     const login = async (email: string, password: string) => {
         const res = await fetch('http://localhost:5000/api/auth/login', {
             method: 'POST',

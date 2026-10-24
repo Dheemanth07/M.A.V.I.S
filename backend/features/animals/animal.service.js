@@ -179,8 +179,7 @@ class AnimalService {
             }
         }
 
-        // Section 6 & 7 Compliance: Herd Interaction Graph Engine R(i) = sum_j (R(j) * W(i,j))
-        const ownerFilter = animal.owner ? { owner: animal.owner } : {};
+        const ownerFilter = animal.owner ? { owner: animal.owner } : { owner: null };
         const allAnimals = await this.#animalRepository.findAll(ownerFilter);
         const { herdRiskScore, warnings: herdWarnings } = calculateHerdGraphRisk(animal, allAnimals);
         if (herdWarnings.length > 0) {

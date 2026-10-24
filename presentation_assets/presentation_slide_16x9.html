@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M.A.V.I.S. - PPT Slide Presentation (16:9 Widescreen)</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'base',
+    flowchart: {
+      useMaxWidth: false,
+      htmlLabels: true,
+      curve: 'basis'
+    },
+    themeVariables: {
+      fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      fontSize: '14px',
+      primaryColor: '#eff6ff',
+      primaryBorderColor: '#1d4ed8',
+      primaryTextColor: '#0f2942',
+      lineColor: '#334155'
+    }
+  });
+</script>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 30px;
+    background: #0f172a;
+    color: #f8fafc;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+  }
+  .slide-container {
+    width: 1440px;
+    height: 810px; /* Exact 16:9 widescreen presentation ratio */
+    background: #ffffff;
+    color: #0f2942;
+    border-radius: 12px;
+    padding: 28px 36px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+    position: relative;
+    border: 1px solid #cbd5e1;
+  }
+  .slide-header {
+    border-bottom: 2.5px solid #0f766e;
+    padding-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .slide-title {
+    font-size: 24px;
+    font-weight: 800;
+    color: #0f2942;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .slide-badge {
+    background: #0f766e;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 5px;
+    letter-spacing: 0.5px;
+  }
+  .slide-subtitle {
+    font-size: 13.5px;
+    color: #64748b;
+    margin: 4px 0 0 0;
+  }
+  .slide-body {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px 0;
+    width: 100%;
+  }
+  .mermaid {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    transform: scale(0.98);
+  }
+  .slide-footer {
+    border-top: 1.5px solid #e2e8f0;
+    padding-top: 8px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #475569;
+  }
+  .slide-footer strong {
+    color: #0f766e;
+  }
+</style>
+</head>
+<body>
+
+  <!-- SLIDE 1: ADAPTIVE BASELINE & ANOMALY SCREENING PIPELINE -->
+  <div class="slide-container" id="slide1">
+    <div class="slide-header">
+      <div>
+        <div class="slide-title">
+          Adaptive Baseline &amp; Statistical Anomaly-Screening Pipeline
+          <span class="slide-badge">sensor.service.js</span>
+        </div>
+        <p class="slide-subtitle">Stage-wise horizontal ingestion, baseline calibration, dual-layer screening, and anomaly isolation</p>
+      </div>
+      <div style="font-size: 13px; font-weight: 700; color: #0f766e;">M.A.V.I.S. Core Methodology | Slide 1 (16:9)</div>
+    </div>
+
+    <div class="slide-body">
+      <div class="mermaid">
+flowchart LR
+    classDef inp fill:#eff6ff,stroke:#1d4ed8,stroke-width:2px,color:#0f2942,font-weight:bold,font-size:13px;
+    classDef dec fill:#fffbeb,stroke:#d97706,stroke-width:2px,color:#78350f,font-weight:bold,font-size:13px;
+    classDef calib fill:#f0fdfa,stroke:#0f766e,stroke-width:2px,color:#0f2942,font-size:12.5px;
+    classDef norm fill:#ecfdf5,stroke:#059669,stroke-width:2px,color:#064e3b,font-weight:bold,font-size:13px;
+    classDef alert fill:#fef2f2,stroke:#dc2626,stroke-width:2px,color:#991b1b,font-weight:bold,font-size:13px;
+    classDef gate fill:#faf5ff,stroke:#7c3aed,stroke-width:2px,color:#581c87,font-weight:bold,font-size:13px;
+
+    STAGE1["<b>1. Ingested Telemetry X(t)</b><br/>• Temperature (DS18B20)<br/>• Heart Rate &amp; SpO2 (MAX30102)<br/>• Derived Respiratory Rate"]:::inp
+
+    STAGE2{"<b>2. State Check</b><br/>Ingested Count<br/>N &lt; 10?"}:::dec
+
+    STAGE3A["<b>3A. Initial Baseline Calibration (N &lt; 10)</b><br/>• Accumulate 10 Ingested Readings<br/>• Initialize Online Welford Variance Tracker<br/>• <b>Lock B_0 = (1 / 10) &middot; &sum; X(t)</b><br/><i>(Assumes reasonable baseline; not guaranteed resting)</i>"]:::calib
+
+    STAGE3B["<b>3B. Modality Variance &amp; Z-Score (N &ge; 10)</b><br/>• Online Welford Variance: &sigma; = &radic;(M2 / (n - 1))<br/>• <b>Metric-Specific Floors:</b> T: 0.35&deg;C | HR: 5 BPM | RR: 2.5 | O2: 2%<br/>• Effective Spread: &sigma;_eff = max(&sigma;, &sigma;_min)<br/>• <b>Statistical Z-Score: z = |X(t) - B(t)| / &sigma;_eff</b>"]:::calib
+
+    STAGE4["<b>4. Dual-Layer Screening Gate</b><br/>• Layer 1 (Statistical): Does z &ge; 2.5?<br/>• Layer 2 (Absolute Margins):<br/>  |&Delta;T| &gt; 1.2&deg;C  |  |&Delta;HR| &gt; 25 BPM<br/>  |&Delta;RR| &gt; 8 br/min  |  &Delta;SpO2 &gt; 5% drop"]:::gate
+
+    OUT_ALERT["🚨 <b>Screening Breached (Anomaly)</b><br/>• Emit Anomaly Alert &amp; Warnings<br/>• <b>FREEZE:</b> Skip EMA Baseline Update<br/>• <b>FREEZE:</b> Skip Welford Variance Update<br/><i>(Strict isolation prevents drift)</i>"]:::alert
+
+    OUT_PASS["✅ <b>Screening Passed (Normal)</b><br/>• <b>Adapt Baseline via EMA (&alpha; = 0.05):</b><br/>  B(t) = 0.05 &middot; X(t) + 0.95 &middot; B(t - 1)<br/>• <b>Update Welford Online Stats:</b><br/>  Increment Count, Mean &amp; M2"]:::norm
+
+    STAGE1 --> STAGE2
+    STAGE2 -- "Yes (N &lt; 10)" --> STAGE3A
+    STAGE2 -- "No (N &ge; 10)" --> STAGE3B
+    STAGE3B --> STAGE4
+    STAGE4 -- "ANY Check Breached" --> OUT_ALERT
+    STAGE4 -- "ALL Checks Passed" --> OUT_PASS
+      </div>
+    </div>
+
+    <div class="slide-footer">
+      <span><strong>Calibration Assumption:</strong> Initial 10 readings compute arithmetic mean, assuming an operational baseline (not guaranteed resting). Metric &sigma; floors differ by vital sign.</span>
+      <span><strong>Anomaly Isolation:</strong> Flagged readings are strictly barred from updating EMA and Welford statistics.</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: MULTI-MODAL RISK SCORING & HERD MODEL -->
+  <div class="slide-container" id="slide2">
+    <div class="slide-header">
+      <div>
+        <div class="slide-title">
+          Multi-Modal Non-Linear Risk Engine &amp; Herd-Exposure Screening
+          <span class="slide-badge">calculateRiskScore.js</span>
+        </div>
+        <p class="slide-subtitle">Multi-parameter base risk, synergistic clinical multipliers, weighted herd exposure, and 0–100 clamping</p>
+      </div>
+      <div style="font-size: 13px; font-weight: 700; color: #0f766e;">M.A.V.I.S. Core Methodology | Slide 2 (16:9)</div>
+    </div>
+
+    <div class="slide-body">
+      <div class="mermaid">
+flowchart LR
+    classDef inp fill:#eff6ff,stroke:#1d4ed8,stroke-width:2px,color:#0f2942,font-weight:bold,font-size:12.5px;
+    classDef base fill:#f1f5f9,stroke:#475569,stroke-width:2px,color:#0f2942,font-weight:bold,font-size:12.5px;
+    classDef syn fill:#fef2f2,stroke:#dc2626,stroke-width:2px,color:#991b1b,font-size:11.5px;
+    classDef maxNode fill:#faf5ff,stroke:#7c3aed,stroke-width:2px,color:#581c87,font-weight:bold,font-size:12.5px;
+    classDef herd fill:#f0fdfa,stroke:#0f766e,stroke-width:2px,color:#134e4a,font-size:12px;
+    classDef fin fill:#0f2942,stroke:#1e3a8a,stroke-width:2.5px,color:#ffffff,font-weight:bold,font-size:13px;
+
+    S1["<b>1. Telemetry &amp; Vitals</b><br/>• Temp, HR, SpO2, Resp<br/>• Motion, Posture, Rumen"]:::inp
+
+    S2["<b>2. Base Risk Sum</b><br/><b>Base = &sum; RiskContrib</b><br/>Flags: isFebrile,<br/>hasTachycardia, isHypoxic"]:::base
+
+    S3["<b>3. Synergy Multipliers</b><br/>• Fever + No Rumination: <b>1.65&times;</b><br/>• Fever + Lethargy: <b>1.50&times;</b><br/>• Crit HR + Crit Low O2: <b>1.40&times;</b><br/>• Fever + Crit HR: <b>1.35&times;</b><br/>• Crit HR + Head Shake: <b>1.30&times;</b><br/>• Crit HR at Rest (No Fever): <b>1.25&times;</b><br/>• Default Independent: <b>1.00&times;</b>"]:::syn
+
+    S4["<b>4. Max Synergy Scaling</b><br/>Mult = Math.max(1.0, Matched)<br/>──────────────────────<br/><b>Scaled = round(Base &middot; Mult)</b>"]:::maxNode
+
+    S5["<b>5. Weighted Herd Exposure</b><br/><b>herdGraph.service.js</b><br/>• Shared Pen: W_zone = 0.90 | Quaran: 0.05<br/>• Same Species: 1.00 | Cross-Ruminant: 0.35<br/><b>Exposure = round(HerdRisk &middot; 0.20)</b><br/><i>(Heuristic index; not proof of transmission)</i>"]:::herd
+
+    S6["<b>6. Final Risk Score</b><br/><b>clamp(Scaled + Exposure, 0, 100)</b><br/>• Healthy: [0 .. 29]<br/>• Warning: [30 .. 69]<br/>• Critical: [70 .. 100]"]:::fin
+
+    S1 --> S2
+    S2 --> S3
+    S3 --> S4
+    S4 --> S5
+    S5 --> S6
+      </div>
+    </div>
+
+    <div class="slide-footer">
+      <span><strong>Non-Linear Synergies:</strong> Co-occurring pathological signs apply the largest applicable multiplier via <code>Math.max()</code> (up to 1.65&times;).</span>
+      <span><strong>Exposure Framing:</strong> Herd model is described as weighted exposure screening, not proof of infectious disease spread. Clamped to [0, 100].</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: UNIFIED SINGLE SLIDE (BOTH PIPELINES BALANCED ON ONE PRESENTATION SLIDE) -->
+  <div class="slide-container" id="slide3">
+    <div class="slide-header">
+      <div>
+        <div class="slide-title">
+          M.A.V.I.S. Core Methodology: Adaptive Screening &amp; Non-Linear Risk Engine
+          <span class="slide-badge">Single Slide Master Architecture</span>
+        </div>
+        <p class="slide-subtitle">Complete end-to-end mathematical methodology optimized for 1-slide presentation display</p>
+      </div>
+      <div style="font-size: 13px; font-weight: 700; color: #0f766e;">M.A.V.I.S. Methodology | 1 Slide Master</div>
+    </div>
+
+    <div class="slide-body" style="display: flex; flex-direction: column; gap: 14px; width: 100%;">
+      <!-- Row 1: Pipeline A -->
+      <div style="width: 100%; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 10px 16px; background: #fafcff;">
+        <div style="font-size: 13px; font-weight: 800; color: #0f766e; border-bottom: 1.5px solid #0f766e; padding-bottom: 4px; margin-bottom: 6px; display: flex; justify-content: space-between;">
+          <span>A. Adaptive Baseline Calibration &amp; Statistical Anomaly Screening (sensor.service.js)</span>
+          <span style="font-size: 11px; font-weight: 600; color: #64748b;">Calibration N=10 | Welford σ | z ≥ 2.5 | Metric Floors | EMA α=0.05 | Baseline Isolation</span>
+        </div>
+        <div class="mermaid">
+flowchart LR
+    classDef nInp fill:#eff6ff,stroke:#1d4ed8,stroke-width:1.5px,color:#0f2942,font-weight:bold,font-size:11px;
+    classDef nDec fill:#fffbeb,stroke:#d97706,stroke-width:1.5px,color:#78350f,font-weight:bold,font-size:11px;
+    classDef nCal fill:#f0fdfa,stroke:#0f766e,stroke-width:1.5px,color:#0f2942,font-size:11px;
+    classDef nScr fill:#faf5ff,stroke:#7c3aed,stroke-width:1.5px,color:#581c87,font-weight:bold,font-size:11px;
+    classDef nBad fill:#fef2f2,stroke:#dc2626,stroke-width:1.5px,color:#991b1b,font-weight:bold,font-size:11px;
+    classDef nGood fill:#ecfdf5,stroke:#059669,stroke-width:1.5px,color:#064e3b,font-weight:bold,font-size:11px;
+
+    R["Telemetry Ingest<br/>X(t)"]:::nInp --> C{"Readings<br/>N &lt; 10?"}:::nDec
+    C -- "Yes" --> B0["<b>Phase 1: Initial Calibration</b><br/>Lock B_0 = (1/10)&sum;X(t)<br/><i>(Reasonable baseline assumed)</i>"]:::nCal
+    C -- "No" --> SCR["<b>Phase 2: Dual-Layer Screening Gate</b><br/>• Statistical: <b>z = |X(t) - B(t)| / &sigma;_eff &ge; 2.5</b> (&sigma;_min floors by metric)<br/>• Physical Margins: |&Delta;T|&gt;1.2&deg;C | |&Delta;HR|&gt;25 | |&Delta;RR|&gt;8 | &Delta;SpO2&gt;5% drop"]:::nScr
+
+    SCR -- "ANY Breached" --> FRZ["🚨 <b>Alert &amp; Baseline Freeze</b><br/>• Skip EMA Update<br/>• Skip Welford Update"]:::nBad
+    SCR -- "ALL Passed" --> UPD["✅ <b>Normal Adaptive Update</b><br/>• EMA: B(t) = 0.05&middot;X(t) + 0.95&middot;B(t-1)<br/>• Welford: Update Count, Mean &amp; M2"]:::nGood
+        </div>
+      </div>
+
+      <!-- Row 2: Engine B -->
+      <div style="width: 100%; border: 1.5px solid #cbd5e1; border-radius: 8px; padding: 10px 16px; background: #fafcff;">
+        <div style="font-size: 13px; font-weight: 800; color: #1e3a8a; border-bottom: 1.5px solid #1e3a8a; padding-bottom: 4px; margin-bottom: 6px; display: flex; justify-content: space-between;">
+          <span>B. Multi-Modal Non-Linear Risk-Scoring &amp; Spatial Herd Exposure (calculateRiskScore.js)</span>
+          <span style="font-size: 11px; font-weight: 600; color: #64748b;">Base Score + Flags | Math.max() Multipliers | +20% Herd Risk | Clamped [0, 100]</span>
+        </div>
+        <div class="mermaid">
+flowchart LR
+    classDef mInp fill:#eff6ff,stroke:#1d4ed8,stroke-width:1.5px,color:#0f2942,font-weight:bold,font-size:11px;
+    classDef mSyn fill:#fef2f2,stroke:#dc2626,stroke-width:1.5px,color:#991b1b,font-size:10.5px;
+    classDef mScl fill:#faf5ff,stroke:#7c3aed,stroke-width:1.5px,color:#581c87,font-weight:bold,font-size:11px;
+    classDef mHrd fill:#f0fdfa,stroke:#0f766e,stroke-width:1.5px,color:#134e4a,font-size:11px;
+    classDef mFin fill:#0f2942,stroke:#1e3a8a,stroke-width:2px,color:#ffffff,font-weight:bold,font-size:11.5px;
+
+    BS["<b>Base Risk Sum</b><br/>&sum; Metric Contributions<br/>Flags: Febrile, Tachy, Hypox"]:::mInp --> SYN["<b>Synergy Multipliers (Math.max)</b><br/>• Fever + Rumination Stop: <b>1.65&times;</b><br/>• Fever + Low Motion / Recumbent: <b>1.50&times;</b><br/>• Crit HR + Crit Low SpO2: <b>1.40&times;</b><br/>• Fever + Crit HR: <b>1.35&times;</b><br/>• Crit HR + Head Shake: <b>1.30&times;</b><br/>• Crit HR at Rest (No Fever): <b>1.25&times;</b>"]:::mSyn
+
+    SYN --> SCL["<b>Max Synergy Scaling</b><br/><b>Scaled = round(Base &middot; MaxMult)</b>"]:::mScl
+
+    SCL --> HRD["<b>Weighted Herd Exposure</b><br/><b>+ round(HerdRisk &middot; 0.20)</b><br/>W_zone: Pen 0.90 / Quaran 0.05<br/>W_spec: Same 1.00 / Cross 0.35<br/><i>(Exposure heuristic; not proof)</i>"]:::mHrd
+
+    HRD --> FIN["<b>Final Risk Score</b><br/><b>clamp([0, 100])</b><br/>• Healthy: [0..29]<br/>• Warning: [30..69]<br/>• Critical: [70..100]"]:::mFin
+        </div>
+      </div>
+    </div>
+
+    <div class="slide-footer">
+      <span><strong>Integrated Pipeline:</strong> Ingest &rarr; Adaptive Baseline &amp; Anomaly Screening &rarr; Synergistic Risk Multiplication &rarr; Spatial Herd Exposure &rarr; Final Clamped Score [0, 100].</span>
+      <span><strong>Presentation Format:</strong> Standard 16:9 Landscape Widescreen Slide</span>
+    </div>
+  </div>
+
+</body>
+</html>

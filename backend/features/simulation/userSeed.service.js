@@ -14,6 +14,13 @@ import logger from "../../utils/logger.js";
 export const getDemoEmail = () => (process.env.DEMO_USER_EMAIL || "demo@mavis.care").toLowerCase();
 export const getDemoPassword = () => process.env.DEMO_USER_PASSWORD || "mavis-demo-2026";
 export const isDemoProvisioningEnabled = () => process.env.ENABLE_DEMO_ACCOUNT !== "false";
+export const getCaregiverEmail = () => (process.env.CAREGIVER_EMAIL || "dheemanth1007@gmail.com").toLowerCase().trim();
+
+export const isEligibleForDemoHerd = (email) => {
+    if (!email) return false;
+    const clean = email.toLowerCase().trim();
+    return clean === getDemoEmail() || clean === getCaregiverEmail();
+};
 
 function hashPassword(password) {
     return crypto.pbkdf2Sync(password, "mavis_salt_2026", 1000, 64, "sha512").toString("hex");
@@ -21,8 +28,8 @@ function hashPassword(password) {
 
 /**
  * Ensures the dedicated demonstration account (default: demo@mavis.care / mavis-demo-2026)
- * exists with its 8 multi-species demo subjects, historical trends, and active alerts.
- * Role is restricted to 'viewer' with non-destructive permissions.
+ * and primary caregiver account (dheemanth1007@gmail.com) exist with full 8 multi-species demo subjects,
+ * historical trends, and active alerts.
  */
 export async function ensureDemoAccountAndHerd() {
     if (!isDemoProvisioningEnabled()) {
@@ -48,43 +55,26 @@ export async function ensureDemoAccountAndHerd() {
             logger.info(`Initialized dedicated public demo account: ${demoEmail} (role: viewer)`);
         }
 
-        // Clean up any fake starter animals that were mistakenly created for non-demo users
-        const nonDemoUsers = await User.find({ email: { $ne: demoEmail } });
-        const nonDemoUserIds = nonDemoUsers.map(u => u._id);
-        if (nonDemoUserIds.length > 0) {
-            const fakeAnimals = await AnimalData.find({
-                owner: { $in: nonDemoUserIds },
-                name: { $in: [
-                    "Bessie-01 (Holstein)",
-                    "Luna-02 (Jersey)",
-                    "Bella-03 (Guernsey)",
-                    "Daisy-04 (Ayrshire)",
-                    "Max-05 (Labrador)",
-                    "Buddy-06 (Shepherd)",
-                    "Oliver-07 (Persian)",
-                    "Rocky-08 (Golden)"
-                ]}
-            });
-
-            if (fakeAnimals.length > 0) {
-                const fakeIds = fakeAnimals.map(a => a._id);
-                await SensorData.deleteMany({ animalId: { $in: fakeIds } });
-                await AlertData.deleteMany({ animalId: { $in: fakeIds } });
-                await AnimalData.deleteMany({ _id: { $in: fakeIds } });
-                logger.info(`Cleaned up ${fakeAnimals.length} auto-seeded animals from non-demo accounts to ensure clean empty state.`);
-            }
-        }
-
         // Seed demo herd for dedicated demo user if missing
         await seedUserHerdIfNeeded(demoUser._id);
+
+        // Also ensure primary caregiver account has its simulation herd
+        const caregiverEmail = getCaregiverEmail();
+        const caregiverUser = await User.findOne({ email: caregiverEmail });
+        if (caregiverUser) {
+            if (caregiverUser.role !== "user") {
+                caregiverUser.role = "user";
+                await caregiverUser.save();
+            }
+            await seedUserHerdIfNeeded(caregiverUser._id);
+        }
     } catch (err) {
         logger.error("Error ensuring demo account and herd:", err);
     }
 }
 
 /**
- * Seeds an isolated dataset ONLY if the user is the configured demo user.
- * For all other accounts, this returns empty without seeding anything.
+ * Seeds an isolated dataset for eligible simulation accounts (demo@mavis.care and dheemanth1007@gmail.com).
  * 
  * @param {string|import("mongoose").Types.ObjectId} userId - User ObjectId.
  * @returns {Promise<Array>} List of user animals.
@@ -94,9 +84,7 @@ export async function seedUserHerdIfNeeded(userId) {
 
     try {
         const user = await User.findById(userId);
-        const demoEmail = getDemoEmail();
-        if (!user || user.email.toLowerCase() !== demoEmail) {
-            // All non-demo users start with an empty account!
+        if (!user || !isEligibleForDemoHerd(user.email)) {
             return [];
         }
 
@@ -105,7 +93,7 @@ export async function seedUserHerdIfNeeded(userId) {
             return await AnimalData.find({ owner: userId }).sort({ createdAt: 1, _id: 1 });
         }
 
-        logger.info(`Provisioning 8-subject simulation herd for demo account (${demoEmail})...`);
+        logger.info(`Provisioning 8-subject simulation herd for account (${user.email})...`);
 
         // If partial demo data existed, clean it up for a pristine 8-subject set
         const existingDemoAnimals = await AnimalData.find({ owner: userId });
@@ -396,7 +384,7 @@ export async function seedUserHerdIfNeeded(userId) {
             await AlertData.insertMany(alertsToSeed);
         }
 
-        logger.info(`Successfully provisioned demo herd for ${DEMO_EMAIL}.`);
+        logger.info(`Successfully provisioned simulation herd for ${user.email}.`);
         return createdAnimals;
     } catch (err) {
         logger.error(`Error provisioning starter herd for demo user:`, err);

@@ -16,18 +16,35 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
     const [loading, setLoading] = useState<boolean>(false);
     const [showAlertDetails, setShowAlertDetails] = useState<boolean>(false);
 
-    const loadTwinData = async (id: string) => {
+    // Keep selectedAnimalId synchronized with active animals list
+    React.useEffect(() => {
+        if (animals && animals.length > 0) {
+            const exists = animals.some(a => a._id === selectedAnimalId);
+            if (!exists || !selectedAnimalId) {
+                setSelectedAnimalId(animals[0]._id);
+            }
+        } else if (animals && animals.length === 0 && selectedAnimalId) {
+            setSelectedAnimalId('');
+            setHealthSummary(null);
+        }
+    }, [animals, selectedAnimalId]);
+
+    const loadTwinData = React.useCallback(async (id: string) => {
         if (!id) return;
         setLoading(true);
         try {
             const data = await fetchHealthStatus(id);
             setHealthSummary(data);
-        } catch (err) {
-            console.error('Failed to load health status profile:', err);
+        } catch (err: any) {
+            console.warn('Could not load health status profile for animal:', id, err?.message || err);
+            // If the animal was deleted or not found, fall back to the first available animal
+            if (animals && animals.length > 0 && animals[0]._id !== id) {
+                setSelectedAnimalId(animals[0]._id);
+            }
         } finally {
             setLoading(false);
         }
-    };
+    }, [animals]);
 
     React.useEffect(() => {
         if (selectedAnimalId) {
@@ -37,7 +54,7 @@ export const DigitalTwinMonitor: React.FC<DigitalTwinMonitorProps> = ({ animals 
             }, 3000);
             return () => clearInterval(interval);
         }
-    }, [selectedAnimalId]);
+    }, [selectedAnimalId, loadTwinData]);
 
     const selectedAnimal = animals.find(a => a._id === selectedAnimalId) || animals[0];
 

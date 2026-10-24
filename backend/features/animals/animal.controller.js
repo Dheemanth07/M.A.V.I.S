@@ -30,7 +30,7 @@ class AnimalController {
 
         try {
             const payload = { ...req.body };
-            if (req.user && req.user.id && !payload.owner) {
+            if (req.user && req.user.id && mongoose.Types.ObjectId.isValid(req.user.id) && !payload.owner) {
                 payload.owner = req.user.id;
             }
             const animal = await service.createAnimal(payload);

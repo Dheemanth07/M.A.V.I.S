@@ -4,7 +4,7 @@
 import crypto from "crypto";
 import User from "./user.model.js";
 import AppError from "../../utils/AppError.js";
-import { seedUserHerdIfNeeded, getDemoEmail } from "../simulation/userSeed.service.js";
+import { seedUserHerdIfNeeded, getDemoEmail, isEligibleForDemoHerd } from "../simulation/userSeed.service.js";
 
 export class AuthService {
     #userModel;
@@ -38,7 +38,7 @@ export class AuthService {
             role: role || "user"
         });
 
-        if (newUser.email === getDemoEmail()) {
+        if (isEligibleForDemoHerd(newUser.email)) {
             await seedUserHerdIfNeeded(newUser._id);
         }
 
@@ -68,7 +68,7 @@ export class AuthService {
             throw new AppError("Invalid email or password", 401);
         }
 
-        if (user.email === getDemoEmail()) {
+        if (isEligibleForDemoHerd(user.email)) {
             await seedUserHerdIfNeeded(user._id);
         }
 

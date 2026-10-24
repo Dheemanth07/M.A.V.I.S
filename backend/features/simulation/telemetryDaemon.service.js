@@ -9,7 +9,7 @@ import AnimalData from "../animals/animal.model.js";
 import SensorData from "../sensors/sensor.model.js";
 import AlertData from "../alerts/alert.model.js";
 import logger from "../../utils/logger.js";
-import { getDemoEmail } from "./userSeed.service.js";
+import { getDemoEmail, getCaregiverEmail } from "./userSeed.service.js";
 import mavisEvents, { EVENTS } from "../../config/events.js";
 
 class TelemetryDaemon {
@@ -47,10 +47,13 @@ class TelemetryDaemon {
             this.#tick++;
             try {
                 const User = (await import("../auth/user.model.js")).default;
-                const demoUser = await User.findOne({ email: getDemoEmail() });
-                if (!demoUser) return;
+                const activeUsers = await User.find({
+                    email: { $in: [getDemoEmail(), getCaregiverEmail()] }
+                });
+                if (!activeUsers || activeUsers.length === 0) return;
 
-                const animals = await AnimalData.find({ owner: demoUser._id, isActive: true });
+                const userIds = activeUsers.map(u => u._id);
+                const animals = await AnimalData.find({ owner: { $in: userIds }, isActive: true });
                 if (!animals || animals.length === 0) return;
 
                 for (const animal of animals) {
